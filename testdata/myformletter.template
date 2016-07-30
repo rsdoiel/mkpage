@@ -1,0 +1,11 @@
+Date: {{.now}}
+
+Hello {{.name -}},
+     
+The current weather is
+ 
+{{.weather}}
+ 
+Thank you
+
+{{.signature}}
