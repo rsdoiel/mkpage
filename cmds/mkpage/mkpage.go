@@ -134,14 +134,12 @@ func main() {
 	for i, arg := range args {
 		if strings.Contains(arg, "=") == true {
 			// Update data map
-			fmt.Printf("DEBUG found a pair %s\n", arg)
 			pair := strings.SplitN(arg, "=", 2)
 			if len(pair) != 2 {
 				fmt.Fprintf(os.Stderr, "Can't read pair (%d) %s\n", i+1, arg)
 				os.Exit(1)
 			}
 			data[pair[0]] = []byte(pair[1])
-			fmt.Printf("DEBUG adding pair: %+v\n", data)
 		} else {
 			// Must be the template source
 			src, err = ioutil.ReadFile(arg)

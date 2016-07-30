@@ -2,6 +2,9 @@
 # Simple Makefile
 #
 build:
+	gofmt -w mkpage.go
+	gofmt -w mkpage_test.go
+	gofmt -w cmds/mkpage/mkpage.go
 	go build
 	go build -o bin/mkpage cmds/mkpage/mkpage.go
 

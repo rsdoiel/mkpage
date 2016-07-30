@@ -47,8 +47,7 @@ func ResolveData(data map[string][]byte, useMarkdownProcessor bool) (map[string]
 				return out, err
 			}
 			ext := path.Ext(string(val))
-			fmt.Printf("DEBUG ext: %s\n", ext)
-			if useMarkdownProcessor == true {
+			if useMarkdownProcessor == true && bytes.Compare([]byte(ext), []byte(".md")) == 0 {
 				out[key] = string(blackfriday.MarkdownCommon(buf))
 			} else {
 				out[key] = string(buf)

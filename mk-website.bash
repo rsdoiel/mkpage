@@ -20,15 +20,15 @@ function mkPage () {
     html="$3"
 
     echo "Rendering $html from $content and $nav"
-    mkpage \
-        "navContent=$nav" \
-        "pageContent=$content" \
+    mkpage -m \
+        "nav=$nav" \
+        "content=$content" \
         page.template > $html
 }
 
 echo "Checking necessary software is installed"
 softwareCheck mkpage
-echo "Generating website index.html with shorthand"
+echo "Generating website index.html with mkpage"
 mkPage nav.md README.md index.html
-echo "Generating install.html with shorthand"
+echo "Generating install.html with mkpage"
 mkPage nav.md INSTALL.md install.html

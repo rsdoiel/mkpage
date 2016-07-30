@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>mkpage: A hypothetical template and markdown procesor</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+    <link rel="shortcut icon" href="http://www.gravatar.com/avatar/60c7b20527f236c7156a85772a97430f.png">
+    <link rel="stylesheet" type="text/css"  href="css/site.css" media="screen" />
+  </head>
+  <body>
+    <header>
+      <img src="http://www.gravatar.com/avatar/60c7b20527f236c7156a85772a97430f.png" title="When I press keys letters and punctuation sometimes appear on the surface." alt="Androidified Robert in a beret and black t-shirt.">
+      <div>
+	      <h1>mkpage</h1>
+	      <h2>A hypothetical template and markdown processor</h2>
+      </div>
+    </header>
+    <section>{{- .content -}}</section>
+    <nav>{{- .nav -}}</nav>
+    <footer>
+    </footer>
+    </body>
+</html>
