@@ -1,4 +1,7 @@
 
+This is hypothetical at this stage...
+
+
 # mkpage
 
 An experimental template engine with an embedded markdown processor.  *mkpage* (pronounced "make page") is 
