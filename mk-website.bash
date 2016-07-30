@@ -21,8 +21,11 @@ function mkPage () {
 
     echo "Rendering $html from $content and $nav"
     mkpage -m \
+	"title=string:mkpage: A hypothetical template and markdown processor" \
         "nav=$nav" \
         "content=$content" \
+	    "sitebuilt=string:Updated $(date)" \
+        "copyright=copyright.md" \
         page.template > $html
 }
 

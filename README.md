@@ -5,8 +5,8 @@ This is hypothetical at this stage...
 # mkpage
 
 An experimental template engine with an embedded markdown processor.  *mkpage* (pronounced "make page") is 
-a simple command line tool which accepts key value pairs and applies them to a Golang text or html 
-template.  The key side of a pair corresponds to the template keys in the template document (e.g. 
+a simple command line tool which accepts key value pairs and applies them to a Golang text/template.
+The key side of a pair corresponds to the template keys in the template document (e.g. 
 {{.pageContent}} is represented by the key *pageContent*). The value side of the pair can be a string, 
 filename or URL for a data source. Here's a simple example of a form letter
 
@@ -28,15 +28,15 @@ Render the template above (i.e. myformletter.template) would be accomplished fro
 data sources--
 
 + "now" and "name" are strings
-+ "weatherForcast" comes from a URL
-+ "license" comes from a file in our local disc
++ "weather" comes from a URL
++ "signature" comes from a file in our local disc
 
 That would be expressed on the command line as follows
 
 ```shell
-    mkpage now=string:"$(date)" \
-        name=string:Frieda \
-        weather="http://forecast.weather.gov/MapClick.php?lat=9.9667&lon=139.6667&FcstType=json" \
+    mkpage "now=string:$(date)" \
+        "name=string:Little Frieda" \
+        "weather=http://forecast.weather.gov/MapClick.php?lat=9.9667&lon=139.6667&FcstType=json" \
         signature=testdata/signature.txt \
         testdata/myformletter.template
 ```
@@ -52,7 +52,6 @@ a filename referenced with the extension of ".md" will run through the markdown 
 the template.  This allows you to easily generate pages and website from markdown files using simple templates.
 
 + -m, -markdown - use a markdown processor when reading ".md" files 
-+ -html - Apply Go's [html/template](https://golang.org/pkg/html/template/) rather than *text/template* 
 + -h, -help - get command line help
 + -v, -version - show *mkpage* version number
 + -l, -license - show *mkpage* license information

@@ -1,3 +1,21 @@
+//
+// mkpage is a thought experiment in a light weight template and markdown processor
+//
+// @author R. S. Doiel, <rsdoiel@gmail.com>
+//
+// Copyright (c) 2016, R. S. Doiel
+// All rights not granted herein are expressly reserved by R. S. Doiel.
+//
+// Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+//
+// 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+//
+// 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+//
+// 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
 package main
 
 import (
@@ -17,7 +35,6 @@ var (
 	showVersion bool
 	showLicense bool
 
-	useHTMLTemplate      bool
 	useMarkdownProcessor bool
 )
 
@@ -36,6 +53,7 @@ func usage(fp *os.File, appName string) {
 	})
 
 	fmt.Fprintf(fp, `
+
  EXAMPLE
 
  Template
@@ -66,10 +84,9 @@ func usage(fp *os.File, appName string) {
 		signature=test/signature.txt \
 		testdata/myformletter.template
 
- Golang's template docs can be found at 
+ Golang's text/template docs can be found at 
 
- + https://golang.org/pkg/text/template/
- + https://golang.org/pkg/html/template/
+      https://golang.org/pkg/text/template/
 
  Version %s
 
@@ -101,7 +118,6 @@ func init() {
 	flag.BoolVar(&showVersion, "v", false, "show version")
 	flag.BoolVar(&showLicense, "l", false, "show license")
 
-	flag.BoolVar(&useHTMLTemplate, "html", false, "use Go's html/template instead of text/template")
 	flag.BoolVar(&useMarkdownProcessor, "m", false, "apply markdown processor to \".md\" files")
 	flag.BoolVar(&useMarkdownProcessor, "markdown", false, "apply markdown processor to \".md\" files")
 }
@@ -125,11 +141,7 @@ func main() {
 		license(os.Stdout, appName)
 	}
 
-	templateType := mkpage.Text
-	if useHTMLTemplate == true {
-		templateType = mkpage.HTML
-	}
-	data := make(map[string][]byte)
+	data := make(map[string]string)
 	args := flag.Args()
 	for i, arg := range args {
 		if strings.Contains(arg, "=") == true {
@@ -139,15 +151,19 @@ func main() {
 				fmt.Fprintf(os.Stderr, "Can't read pair (%d) %s\n", i+1, arg)
 				os.Exit(1)
 			}
-			data[pair[0]] = []byte(pair[1])
+			data[pair[0]] = pair[1]
 		} else {
 			// Must be the template source
 			src, err = ioutil.ReadFile(arg)
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "Can't read %s %s", arg, err)
+				fmt.Fprintf(os.Stderr, "Can't read %s %s\n", arg, err)
 				os.Exit(1)
 			}
 		}
 	}
-	mkpage.MakePage(os.Stdout, string(src), templateType, data, useMarkdownProcessor)
+	err = mkpage.MakePage(os.Stdout, string(src), data, useMarkdownProcessor)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%s\n", err)
+		os.Exit(1)
+	}
 }

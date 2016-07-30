@@ -11,6 +11,10 @@ build:
 test:
 	go test
 
+save:
+	git commit -am "quick save"
+	git push origin master
+
 clean:
 	if [ -d bin ]; then rm -fR bin; fi
 	if [ -d dist ]; then rm -fR dist; fi

@@ -1,14 +1,31 @@
+//
+// mkpage is a thought experiment in a light weight template and markdown processor
+//
+// @author R. S. Doiel, <rsdoiel@gmail.com>
+//
+// Copyright (c) 2016, R. S. Doiel
+// All rights not granted herein are expressly reserved by R. S. Doiel.
+//
+// Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+//
+// 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+//
+// 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+//
+// 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
 package mkpage
 
 import (
-	"bytes"
 	"fmt"
-	HTMLTemplate "html/template"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"path"
-	TextTemplate "text/template"
+	"strings"
+	"text/template"
 
 	// 3rd Party Packages
 	"github.com/russross/blackfriday"
@@ -16,22 +33,20 @@ import (
 
 const (
 	Version = "v0.0.1"
-	HTML    = iota
-	Text    = iota
 )
 
 // ResolveData takes a data map and reads in the files and URL sources as needed turning
 // the data into strings to be applied to the template.
-func ResolveData(data map[string][]byte, useMarkdownProcessor bool) (map[string]string, error) {
+func ResolveData(data map[string]string, useMarkdownProcessor bool) (map[string]string, error) {
 	var out map[string]string
 
 	out = make(map[string]string)
 	for key, val := range data {
 		switch {
-		case bytes.HasPrefix(val, []byte("string:")) == true:
-			out[key] = string(bytes.TrimPrefix(val, []byte("string:")))
-		case bytes.HasPrefix(val, []byte("http://")) == true || bytes.HasPrefix(val, []byte("https://")):
-			resp, err := http.Get(string(val))
+		case strings.HasPrefix(val, "string:") == true:
+			out[key] = strings.TrimPrefix(val, "string:")
+		case strings.HasPrefix(val, "http://") == true || strings.HasPrefix(val, "https://") == true:
+			resp, err := http.Get(val)
 			if err != nil {
 				return out, err
 			}
@@ -42,12 +57,12 @@ func ResolveData(data map[string][]byte, useMarkdownProcessor bool) (map[string]
 			}
 			out[key] = string(buf)
 		default:
-			buf, err := ioutil.ReadFile(string(val))
+			buf, err := ioutil.ReadFile(val)
 			if err != nil {
 				return out, err
 			}
-			ext := path.Ext(string(val))
-			if useMarkdownProcessor == true && bytes.Compare([]byte(ext), []byte(".md")) == 0 {
+			ext := path.Ext(val)
+			if useMarkdownProcessor == true && strings.Compare(ext, ".md") == 0 {
 				out[key] = string(blackfriday.MarkdownCommon(buf))
 			} else {
 				out[key] = string(buf)
@@ -58,23 +73,14 @@ func ResolveData(data map[string][]byte, useMarkdownProcessor bool) (map[string]
 }
 
 // MakePage applies the provided data to the template provided and renders to writer and returns an error if something goes wrong
-func MakePage(wr io.Writer, templateSource string, templateType int, keyValues map[string][]byte, useMarkdownProcessor bool) error {
+func MakePage(wr io.Writer, templateSource string, keyValues map[string]string, useMarkdownProcessor bool) error {
 	data, err := ResolveData(keyValues, useMarkdownProcessor)
 	if err != nil {
 		return fmt.Errorf("Can't resolve data source %s", err)
 	}
-	switch templateType {
-	case HTML:
-		tmpl, err := HTMLTemplate.New("html").Parse(templateSource)
-		if err != nil {
-			return err
-		}
-		return tmpl.Execute(wr, data)
-	default:
-		tmpl, err := TextTemplate.New("text").Parse(templateSource)
-		if err != nil {
-			return err
-		}
-		return tmpl.Execute(wr, data)
+	tmpl, err := template.New("text").Parse(templateSource)
+	if err != nil {
+		return err
 	}
+	return tmpl.Execute(wr, data)
 }

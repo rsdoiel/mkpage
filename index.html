@@ -1,25 +1,21 @@
 <!DOCTYPE html>
 <html>
-    <head>
-          <title>mkpage: 
-	  A thought experiment in a light weight template/markdown processor
-	  </title>
-          <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.5.0/pure-min.css">
-          <link rel="stylesheet" href="css/site.css">
-    </head>
-    <body>
-        <header>
-		<h1>mkpage</h1>
-		<h2>A thought experiment in a light weight template/markdown processor</h2>
-        </header>
-        <section>
-        <p>This is hypothetical at this stage&hellip;</p>
+<head>
+    <title>mkpage: A hypothetical template and markdown processor</title>
+    <link href='https://fonts.googleapis.com/css?family=Noto+Sans:400,700,400italic' rel='stylesheet' type='text/css'>
+    <link href="css/site.css" rel="stylesheet" />
+<head>
+<body>
+    <header>
+        <h1>mkpage: A hypothetical template and markdown processor</h1>
+    </header>
+    <section><p>This is hypothetical at this stage&hellip;</p>
 
 <h1>mkpage</h1>
 
 <p>An experimental template engine with an embedded markdown processor.  <em>mkpage</em> (pronounced &ldquo;make page&rdquo;) is
-a simple command line tool which accepts key value pairs and applies them to a Golang text or html
-template.  The key side of a pair corresponds to the template keys in the template document (e.g.
+a simple command line tool which accepts key value pairs and applies them to a Golang text/template.
+The key side of a pair corresponds to the template keys in the template document (e.g.
 {{.pageContent}} is represented by the key <em>pageContent</em>). The value side of the pair can be a string,
 filename or URL for a data source. Here&rsquo;s a simple example of a form letter</p>
 
@@ -41,15 +37,15 @@ data sources&ndash;</p>
 
 <ul>
 <li>&ldquo;now&rdquo; and &ldquo;name&rdquo; are strings</li>
-<li>&ldquo;weatherForcast&rdquo; comes from a URL</li>
-<li>&ldquo;license&rdquo; comes from a file in our local disc</li>
+<li>&ldquo;weather&rdquo; comes from a URL</li>
+<li>&ldquo;signature&rdquo; comes from a file in our local disc</li>
 </ul>
 
 <p>That would be expressed on the command line as follows</p>
 
-<pre><code class="language-shell">    mkpage now=string:&quot;$(date)&quot; \
-        name=string:Frieda \
-        weather=&quot;http://forecast.weather.gov/MapClick.php?lat=9.9667&amp;lon=139.6667&amp;FcstType=json&quot; \
+<pre><code class="language-shell">    mkpage &quot;now=string:$(date)&quot; \
+        &quot;name=string:Little Frieda&quot; \
+        &quot;weather=http://forecast.weather.gov/MapClick.php?lat=9.9667&amp;lon=139.6667&amp;FcstType=json&quot; \
         signature=testdata/signature.txt \
         testdata/myformletter.template
 </code></pre>
@@ -66,20 +62,21 @@ the template.  This allows you to easily generate pages and website from markdow
 
 <ul>
 <li>-m, -markdown - use a markdown processor when reading &ldquo;.md&rdquo; files</li>
-<li>-html - Apply Go&rsquo;s <a href="https://golang.org/pkg/html/template/">html/template</a> rather than <em>text/template</em></li>
 <li>-h, -help - get command line help</li>
 <li>-v, -version - show <em>mkpage</em> version number</li>
 <li>-l, -license - show <em>mkpage</em> license information</li>
 </ul>
-
-        </section>
-        <nav><ul>
+</section>
+    <nav><ul>
 <li><a href="./">mkpage</a></li>
 <li><a href="LICENSE">LICENSE</a></li>
 <li><a href="install.html">Install</a></li>
 </ul>
 </nav>
-        <footer>
-        </footer>
-    </body>
+    <footer>
+    <p>copyright &copy; 2016 R. S. Doiel
+See: <a href="LICENSE">LICENSE</a></p>
+
+    </footer>
+</body>
 </html>
