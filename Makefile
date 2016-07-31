@@ -7,12 +7,12 @@ build:
 	gofmt -w cmds/mkpage/mkpage.go
 	go build
 	go build -o bin/mkpage cmds/mkpage/mkpage.go
-	./mk-website.bash
 
 test:
 	go test
 
 save:
+	./mk-website.bash
 	git commit -am "quick save"
 	git push origin master
 
