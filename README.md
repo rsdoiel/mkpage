@@ -42,7 +42,7 @@ That would be expressed on the command line as follows
 ```
 
 Since we are leveraging Go's [text/template](https://golang.org/pkg/text/template/) the template itself
-and be more than simple substitution.
+can be more than a simple substitution.
 
 ## Options
 
