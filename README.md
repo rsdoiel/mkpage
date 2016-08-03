@@ -1,17 +1,17 @@
 
-This is hypothetical at this stage...
+This is prototypical at this stage...
 
 
 # mkpage
 
 An experimental template engine with an embedded markdown processor.  *mkpage* (pronounced "make page") is 
-a simple command line tool which accepts key value pairs and applies them to a Golang text/template.
+a simple command line tool which accepts key value pairs and applies them to a Golang [text/template](https://golang.org/pkg/text/template/).
 The key side of a pair corresponds to the template keys in the template document (e.g. 
 {{.pageContent}} is represented by the key *pageContent*). The value side of the pair can be a string, 
 filename or URL for a data source. Here's a simple example of a form letter
 
 ```template
-    Date: {{- .now}}
+    Date: {{.now}}
 
     Hello {{.name -}},
     
@@ -36,7 +36,7 @@ That would be expressed on the command line as follows
 ```shell
     mkpage "now=string:$(date)" \
         "name=string:Little Frieda" \
-        "weather=http://forecast.weather.gov/MapClick.php?lat=9.9667&lon=139.6667&FcstType=json" \
+        "weather=http://forecast.weather.gov/MapClick.php?lat=13.4712&lon=144.7496&FcstType=json" \
         signature=testdata/signature.txt \
         testdata/myformletter.template
 ```

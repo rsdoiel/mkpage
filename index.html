@@ -9,17 +9,17 @@
     <header>
         <h1>mkpage: A hypothetical template and markdown processor</h1>
     </header>
-    <section><p>This is hypothetical at this stage&hellip;</p>
+    <section><p>This is prototypical at this stage&hellip;</p>
 
 <h1>mkpage</h1>
 
 <p>An experimental template engine with an embedded markdown processor.  <em>mkpage</em> (pronounced &ldquo;make page&rdquo;) is
-a simple command line tool which accepts key value pairs and applies them to a Golang text/template.
+a simple command line tool which accepts key value pairs and applies them to a Golang <a href="https://golang.org/pkg/text/template/">text/template</a>.
 The key side of a pair corresponds to the template keys in the template document (e.g.
 {{.pageContent}} is represented by the key <em>pageContent</em>). The value side of the pair can be a string,
 filename or URL for a data source. Here&rsquo;s a simple example of a form letter</p>
 
-<pre><code class="language-template">    Date: {{- .now}}
+<pre><code class="language-template">    Date: {{.now}}
 
     Hello {{.name -}},
     
@@ -45,7 +45,7 @@ data sources&ndash;</p>
 
 <pre><code class="language-shell">    mkpage &quot;now=string:$(date)&quot; \
         &quot;name=string:Little Frieda&quot; \
-        &quot;weather=http://forecast.weather.gov/MapClick.php?lat=9.9667&amp;lon=139.6667&amp;FcstType=json&quot; \
+        &quot;weather=http://forecast.weather.gov/MapClick.php?lat=13.4712&amp;lon=144.7496&amp;FcstType=json&quot; \
         signature=testdata/signature.txt \
         testdata/myformletter.template
 </code></pre>

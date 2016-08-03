@@ -30,7 +30,7 @@ func TestResolveData(t *testing.T) {
 		"Hello":   "string:Hi there!",
 		"Nav":     path.Join("testdata", "nav.md"),
 		"Content": path.Join("testdata", "content.md"),
-		"Weather": "http://forecast.weather.gov/MapClick.php?lat=38.4247341&lon=-86.9624086&FcstType=json",
+		"Weather": "http://forecast.weather.gov/MapClick.php?lat=13.4712&lon=144.7496&FcstType=json",
 	}
 	data, err := ResolveData(in, true)
 	if err != nil {
