@@ -1,0 +1,135 @@
+{
+	"operationalMode":"Production",
+	"srsName":"WGS 1984",
+	"creationDate":"2016-08-04T04:32:18+10:00",
+	"creationDateLocal":"4 Aug 08:45 am ChST",
+	"productionCenter":"Tiyan, GU",
+	"credit":"http://www.prh.noaa.gov/guam/",
+	"moreInformation":"http://weather.gov",
+	"location":{
+		"region":"crh",
+		"latitude":"13.47",
+		"longitude":"144.74",
+		"elevation":"56",
+		"wfo":"GUM",
+		"timezone":"G|N|-10",
+		"areaDescription":"Hagatna GU",
+		"radar":"PGUA",
+		"zone":"GUZ001",
+		"county":"GUC010",
+		"firezone":"GUZ001",
+		"metar":"PGUM"
+},
+	"time":{
+		"layoutKey":"k-p12h-n13-1",
+		"startPeriodName":[
+			"Today",
+			"Tonight",
+			"Friday",
+			"Friday Night",
+			"Saturday",
+			"Saturday Night",
+			"Sunday",
+			"Sunday Night",
+			"Monday",
+			"Monday Night",
+			"Tuesday",
+			"Tuesday Night",
+			"Wednesday"
+		],
+		"startValidTime":[
+			"2016-08-04T09:00:00+10:00",
+			"2016-08-04T18:00:00+10:00",
+			"2016-08-05T06:00:00+10:00",
+			"2016-08-05T18:00:00+10:00",
+			"2016-08-06T06:00:00+10:00",
+			"2016-08-06T18:00:00+10:00",
+			"2016-08-07T06:00:00+10:00",
+			"2016-08-07T18:00:00+10:00",
+			"2016-08-08T06:00:00+10:00",
+			"2016-08-08T18:00:00+10:00",
+			"2016-08-09T06:00:00+10:00",
+			"2016-08-09T18:00:00+10:00",
+			"2016-08-10T06:00:00+10:00"
+		],
+		"tempLabel":["High","Low","High","Low","High","Low","High","Low","High","Low","High","Low","High"]
+	},
+	"data":{
+		"temperature":["84","75","88","79","89","79","89","79","90","80","89","79","89"],
+		"pop":["70","70","40",null,null,null,null,null,null,null,null,null,null],
+
+		"weather":[
+			"Showers Likely",
+			"Showers Likely then Scattered Showers",
+			"Breezy. Scattered Showers then Partly Sunny",
+			"Mostly Cloudy and Breezy then Mostly Cloudy",
+			"Partly Sunny",
+			"Mostly Cloudy",
+			"Partly Sunny",
+			"Mostly Cloudy",
+			"Mostly Sunny then Isolated Showers",
+			"Isolated Showers",
+			"Partly Sunny",
+			"Mostly Cloudy",
+			"Partly Sunny"
+			],
+		"iconLink":[
+			"http://forecast.weather.gov/newimages/medium/shra70.png",
+            "http://forecast.weather.gov/DualImage.php?i=nshra&j=nshra&ip=70&jp=40",
+            "http://forecast.weather.gov/DualImage.php?i=shra&j=wind_bkn&ip=40",
+            "http://forecast.weather.gov/DualImage.php?i=nwind_bkn&j=nbkn",
+			"http://forecast.weather.gov/newimages/medium/bkn.png",
+			"http://forecast.weather.gov/newimages/medium/nbkn.png",
+			"http://forecast.weather.gov/newimages/medium/bkn.png",
+			"http://forecast.weather.gov/newimages/medium/nbkn.png",
+            "http://forecast.weather.gov/DualImage.php?i=sct&j=hi_shwrs&jp=20",
+			"http://forecast.weather.gov/newimages/medium/hi_nshwrs.png",
+			"http://forecast.weather.gov/newimages/medium/bkn.png",
+			"http://forecast.weather.gov/newimages/medium/nbkn.png",
+			"http://forecast.weather.gov/newimages/medium/bkn.png"
+			],
+		"hazard":[
+			"Special Weather Statement"
+			],
+		"hazardUrl":[
+			"http://forecast.weather.gov/showsigwx.php?warnzone=GUZ001&amp;warncounty=GUC010&amp;firewxzone=GUZ001&amp;local_place1=Hagatna+GU&amp;product1=Special+Weather+Statement"
+			],
+		"text":[
+			"Showers likely and possibly a thunderstorm.  Mostly cloudy, with a high near 84. West southwest wind 15 to 18 mph.  Chance of precipitation is 70%.",
+			"Showers likely and possibly a thunderstorm before 7pm, then scattered showers and thunderstorms after 7pm.  Mostly cloudy, with a low around 75. West southwest wind 14 to 18 mph.  Chance of precipitation is 70%.",
+			"Scattered showers and thunderstorms before 7am.  Partly sunny, with a high near 88. Breezy, with a southwest wind 14 to 21 mph.  Chance of precipitation is 40%.",
+			"Mostly cloudy, with a low around 79. Breezy, with a southwest wind 11 to 20 mph. ",
+			"Partly sunny, with a high near 89. Southwest wind 11 to 17 mph. ",
+			"Mostly cloudy, with a low around 79.",
+			"Partly sunny, with a high near 89.",
+			"Mostly cloudy, with a low around 79.",
+			"Mostly sunny, with a high near 90.",
+			"Isolated showers.  Partly cloudy, with a low around 80.",
+			"Partly sunny, with a high near 89.",
+			"Mostly cloudy, with a low around 79.",
+			"Partly sunny, with a high near 89."			]
+		},
+		"currentobservation":{
+			"id":"PGUM",
+			"name":"Agana, Guam International Airport",
+			"elev":"299",
+			"latitude":"13.48",
+			"longitude":"144.8",
+			"Date":"4 Aug 08:45 am ChST",
+			"Temp":"77",
+			"Dewp":"77",
+			"Relh":"100",
+			"Winds":"8",
+			"Windd":"360",
+			"Gust":"0",
+			"Weather":" Rain Fog/Mist",
+			"Weatherimage":"ra.png",
+			"Visibility":"5.00",
+			"Altimeter":"NA",
+			"SLP":"29.73",
+			"timezone":"ChST",
+			"state":"GU",
+			"WindChill":"NA"
+		}
+	}
+	
