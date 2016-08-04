@@ -19,6 +19,7 @@
 package mkpage
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -32,15 +33,24 @@ import (
 )
 
 const (
-	Version = "v0.0.1"
+	Version = "v0.0.2"
 )
 
 // ResolveData takes a data map and reads in the files and URL sources as needed turning
 // the data into strings to be applied to the template.
-func ResolveData(data map[string]string, useMarkdownProcessor bool) (map[string]string, error) {
-	var out map[string]string
+func ResolveData(data map[string]string, useMarkdownProcessor bool) (map[string]interface{}, error) {
+	var out map[string]interface{}
 
-	out = make(map[string]string)
+	isContentType := func(vals []string, target string) bool {
+		for _, h := range vals {
+			if strings.Contains(h, target) == true {
+				return true
+			}
+		}
+		return false
+	}
+
+	out = make(map[string]interface{})
 	for key, val := range data {
 		switch {
 		case strings.HasPrefix(val, "string:") == true:
@@ -51,11 +61,22 @@ func ResolveData(data map[string]string, useMarkdownProcessor bool) (map[string]
 				return out, err
 			}
 			defer resp.Body.Close()
-			buf, err := ioutil.ReadAll(resp.Body)
-			if err != nil {
-				return out, err
+			if resp.StatusCode == 200 {
+				buf, err := ioutil.ReadAll(resp.Body)
+				if err != nil {
+					return out, err
+				}
+				if contentTypes, ok := resp.Header["Content-Type"]; ok == true && isContentType(contentTypes, "application/json") == true {
+					var o interface{}
+					err := json.Unmarshal(buf, &o)
+					if err == nil {
+						out[key] = o
+					}
+				} else {
+					out[key] = string(buf)
+				}
+
 			}
-			out[key] = string(buf)
 		default:
 			buf, err := ioutil.ReadFile(val)
 			if err != nil {

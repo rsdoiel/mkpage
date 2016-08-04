@@ -19,13 +19,37 @@
 package mkpage
 
 import (
+	"bytes"
 	"fmt"
-	"os"
+	"io"
+	"io/ioutil"
 	"path"
+	"strings"
 	"testing"
+
+	// 3rd Party Packages
+	"github.com/russross/blackfriday"
 )
 
 func TestResolveData(t *testing.T) {
+	checkMap := func(ky string, expected string, m map[string]interface{}) error {
+		if val, ok := m[ky]; ok == true {
+			switch vv := val.(type) {
+			case string:
+				s := fmt.Sprintf("%s", val)
+				if strings.Compare(expected, s) == 0 {
+					return nil
+				}
+				return fmt.Errorf("expected %q, found %q, %d", expected, s, strings.Compare(expected, s))
+			default:
+				return fmt.Errorf("expected %s, found type %b, %s", expected, vv, val)
+			}
+		} else {
+			return fmt.Errorf("expected %s, missing %s", expected, ky)
+		}
+		return nil
+	}
+
 	in := map[string]string{
 		"Hello":   "string:Hi there!",
 		"Nav":     path.Join("testdata", "nav.md"),
@@ -37,10 +61,51 @@ func TestResolveData(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	fmt.Printf("%+v\n", data)
+	if err := checkMap("Hello", "Hi there!", data); err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	src, err := ioutil.ReadFile(path.Join("testdata", "nav.md"))
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	expected := string(blackfriday.MarkdownCommon(src))
+
+	if err := checkMap("Nav", expected, data); err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	src, err = ioutil.ReadFile(path.Join("testdata", "content.md"))
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	expected = string(blackfriday.MarkdownCommon(src))
+
+	if err := checkMap("Content", expected, data); err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	if _, ok := data["Weather"]; ok == false {
+		t.Error("Expected a JSON blob for weather")
+		t.FailNow()
+	}
+
 }
 
 func TestMakePage(t *testing.T) {
+	checkForString := func(src, target string) bool {
+		if strings.Contains(src, target) == false {
+			t.Errorf("expected %q in %s", target, src)
+			return false
+		}
+		return true
+	}
+
 	src := `
 Hello {{.hello}}
 
@@ -48,19 +113,25 @@ Nav: {{.nav}}
 
 Content: {{.content}}
 
-Weather: {{.weather}}
+Weather: {{.weather.data.text}}
 `
 
 	in := map[string]string{
 		"hello":   "string:Hi there!",
 		"nav":     path.Join("testdata", "nav.md"),
 		"content": path.Join("testdata", "content.md"),
-		"weather": "http://forecast.weather.gov/MapClick.php?lat=9.9667&lon=139.6667&FcstType=json",
+		"weather": "http://forecast.weather.gov/MapClick.php?lat=13.4712&lon=144.7496&FcstType=json",
 	}
 
-	err := MakePage(os.Stdout, src, in, true)
+	var buf bytes.Buffer
+	wr := io.Writer(&buf)
+
+	err := MakePage(wr, src, in, true)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
+	out := buf.String()
+	checkForString(out, "Hi there!")
+	checkForString(out, "<ul>")
 }
