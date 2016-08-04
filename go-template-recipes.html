@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>mkpage: A prototypical template and markdown processor</title>
+    <link href='https://fonts.googleapis.com/css?family=Noto+Sans:400,700,400italic' rel='stylesheet' type='text/css'>
+    <link href="css/site.css" rel="stylesheet" />
+<head>
+<body>
+    <header>
+        <h1>mkpage: A prototypical template and markdown processor</h1>
+    </header>
+    <section><h1>Go text/template recipes</h1>
+
+<p><em>mkpage</em> template engine is Go&rsquo;s <a href="https://golang.org/pkg/text/template/">text/template</a>. Go&rsquo;s templates
+provide a flexible and simple <a href="https://en.wikipedia.org/wiki/Domain-specific_language">DSL</a> describing
+how to assemble a document based on a data structure passed to it.  <em>mkpage</em> uses a list of key/value
+pairs on the command line to populate the data structure the template package expects.  This includes
+support for JSON formatted text from strings, files and URL response.</p>
+
+<p>While Go&rsquo;s template package is not complicated to use it doesn&rsquo;t come with allot of example or tutorials.
+Most articles you find on Go&rsquo;s template package either are for writing your own server code using the
+templates to format responses or their for sofisticated content generation systems like <a href="http://gohugo.io">Hugo</a>
+that extend the basic template system by large measures towards systems like Jykell or Ruby&rsquo;s Jade templates.</p>
+
+<p><em>mkpage</em> uses Go&rsquo;s template as is.  It is meant to be a trivially easy system for producing simple content whether
+plain text or HTML.</p>
+
+<h2>simple data map with get well card</h2>
+
+<p>In this example we want to add a name to a simple get well message.</p>
+
+<p>Our template is called <strong>get-well.tmpl</strong>. It looks like</p>
+
+<pre><code class="language-go">    Dear {{ .name -}},
+
+    Hope you are feeling better today.
+
+    Sencerly,
+
+    Mojo Sam
+</code></pre>
+
+<p>On the command line we can run <em>mkpage</em> with the following options</p>
+
+<pre><code class="language-shell">    mkpage &quot;name=string:Little Frieda&quot; page.tmpl
+</code></pre>
+
+<p>The output would look like</p>
+
+<pre><code class="language-text">    Little Frieda,
+
+    Hope you are feeling better today.
+
+    Sencerly,
+
+    Mojo Sam
+</code></pre>
+
+<h3>Explanation</h3>
+
+<p>The key &ldquo;name&rdquo; has a string value of &ldquo;Little Frieda&rdquo;.  The template indicates this needs to be included
+after the word &ldquo;Dear&rdquo;. The key &ldquo;name&rdquo; is proceeded by a period or dot.  The substitution happens between
+the opening &ldquo;{{&rdquo; and closing &ldquo;}}&rdquo;.  Notice the &ldquo;-&rdquo; before the closing &ldquo;}}&rdquo;. This tells the template
+engine to not allow spacas after the value and the next non-space character (i.e. the comma of the
+opening line).</p>
+
+<h2>JSON data with weather forecast</h2>
+
+<p>In this example we get the current weather forecast for Guam.  The source of the weather information
+is <a href="http://noaa.gov">NOAA</a>&rsquo;s <a href="http://weather.gov">National Weather Services</a> website.  By including the
+parameter &ldquo;FcstType=json&rdquo; at the end of the URL you get a JSON version of the weather forecast rather
+than the HTML or XML alternatives.</p>
+
+<ul>
+<li>data source: <a href="http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&amp;lon=144.74977715100056&amp;FsctType=json">http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&amp;lon=144.74977715100056&amp;FsctType=json</a></li>
+</ul>
+
+<p>Our template will be call <strong>forecast.tmpl</strong>. It will be used to produce a Markdown file of weather related
+information obtained from the JSON response.</p>
+
+<pre><code class="language-go">    {{with $co := .forecast.currentobservation}}
+    Current Observation:
+
+        + {{ $co.name }}
+        + Elevation: {{ $co.elev }}
+        + Latitude: {{ $co.latitude }}
+        + Longitude: {{ $co.longitude }}
+        + Date: {{ $co.Date }}
+        + Temp: {{ $co.Temp }}
+        + Dew Point: {{ $co.Dewp }}
+        + Relative Humidity: {{ $co.Relh }}
+        + Winds: {{ $co.Winds }}
+        + Wind direction: {{ $co.Windd }}
+        + Gust: {{ $co.Gust }}
+        + Visibility: {{ $co.Visibility }}
+
+    {{end}}
+
+    Forecast:
+    {{range .forecast.data.text }}
+        + {{ . -}}
+    {{end}}
+</code></pre>
+
+<p>The command line for <em>mkpage</em> would look like</p>
+
+<pre><code class="language-shell">    mkpage &quot;forecast=http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&amp;lon=144.74977715100056&amp;FcstType=json&quot; testdata/forecast.tmpl
+</code></pre>
+
+<p>The resulting page should look something like</p>
+
+<pre><code class="language-text">
+    Current Observation:
+
+        + Agana, Guam International Airport
+        + Elevation: 299
+        + Latitude: 13.48
+        + Longitude: 144.8
+        + Date: 5 Aug 08:54 am ChST
+        + Temp: 82
+        + Dew Point: 79
+        + Relative Humidity: 89
+        + Winds: 12
+        + Wind direction: 220
+        + Gust: 0
+        + Visibility: 10.00
+
+
+    Forecast:
+
+        + Scattered showers and thunderstorms.  Mostly cloudy, with a high near 84. Breezy, with a southwest wind 23 to 25 mph, with gusts as high as 32 mph.  Chance of precipitation is 40%.
+        + Scattered showers and thunderstorms.  Mostly cloudy, with a low around 79. Breezy, with a southwest wind 15 to 20 mph, with gusts as high as 25 mph.  Chance of precipitation is 40%.
+        + Mostly cloudy, with a high near 88. Heat index values as high as 99. Breezy, with a southwest wind 17 to 21 mph, with gusts as high as 26 mph. 
+        + Mostly cloudy, with a low around 79. Southwest wind 13 to 17 mph, with gusts as high as 22 mph. 
+        + Mostly cloudy, with a high near 88. Southwest wind 14 to 17 mph, with gusts as high as 22 mph. 
+        + Mostly cloudy, with a low around 79.
+        + Mostly sunny, with a high near 89.
+        + Partly cloudy, with a low around 80.
+        + Scattered showers and thunderstorms.  Mostly cloudy, with a high near 89. Chance of precipitation is 40%.
+        + Scattered showers and thunderstorms.  Mostly cloudy, with a low around 79. Chance of precipitation is 40%.
+        + Scattered showers and thunderstorms.  Mostly cloudy, with a high near 89. Chance of precipitation is 40%.
+        + Scattered showers and thunderstorms.  Mostly cloudy, with a low around 79. Chance of precipitation is 40%.
+        + Partly sunny, with a high near 89.
+</code></pre>
+</section>
+    <nav><ul>
+<li><a href="/">home</a></li>
+<li><a href="./">mkpage</a></li>
+<li><a href="go-template-recipes.html">Go template recipes</a></li>
+<li><a href="LICENSE">LICENSE</a></li>
+<li><a href="install.html">Install</a></li>
+<li><a href="https://github.com/rsdoiel/mkpage">Github</a></li>
+</ul>
+</nav>
+    <footer>
+    <p>copyright &copy; 2016 R. S. Doiel
+See: <a href="LICENSE">LICENSE</a></p>
+
+    </footer>
+</body>
+</html>

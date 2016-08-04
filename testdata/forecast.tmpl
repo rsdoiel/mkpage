@@ -1,0 +1,22 @@
+{{with $co := .forecast.currentobservation}}
+Current Observation:
+
++ {{ $co.name }}
++ Elevation: {{ $co.elev }}
++ Latitude: {{ $co.latitude }}
++ Longitude: {{ $co.longitude }}
++ Date: {{ $co.Date }}
++ Temp: {{ $co.Temp }}
++ Dew Point: {{ $co.Dewp }}
++ Relative Humidity: {{ $co.Relh }}
++ Winds: {{ $co.Winds }}
++ Wind direction: {{ $co.Windd }}
++ Gust: {{ $co.Gust }}
++ Visibility: {{ $co.Visibility }}
+
+{{end}}
+
+Forecast:
+{{range .forecast.data.text }}
+      + {{ . -}}
+{{end}}
