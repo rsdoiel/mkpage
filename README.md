@@ -46,6 +46,53 @@ That would be expressed on the command line as follows
 Since we are leveraging Go's [text/template](https://golang.org/pkg/text/template/) the template itself
 can be more than a simple substitution.
 
+## Template blocks
+
+The Go text templates support defining blocks and rendering them in conjuction with a main template. This is
+also supported by *mkpage*. For each template encountered on the command line it is added to an array of templates
+passed and parse by the text template package.  This is then executed and output rendered by *mkpage*.
+
+```shell
+    mkpage "content=string:Hello World" testdata/page.tmpl testdata/header.tmpl testdata/footer.tmpl
+```
+
+Here is what *page.tmpl* would look like
+
+```go
+    {{template "header" . }}
+
+        {{.content}}
+
+    {{template "footer" . }}
+```
+
+The header and footer are then defined in their own template files (though they also could be combined into one).
+
+*header.tmpl*
+
+```go
+    {{define "header"}}This is the document header{{end}}
+```
+
+*footer.tmpl*
+
+```go
+    {{define "footer"}}This is the footer{{end}}
+```
+
+In this example the output would look like
+
+```text
+    This is the document header
+
+        Hello World
+
+    This is the footer
+```
+
+
+
+
 ## Options
 
 In additional to populating a template with values from data sources *mkpage* also includes the

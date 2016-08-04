@@ -21,10 +21,10 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path"
 	"strings"
+	"text/template"
 
 	// My package
 	"github.com/rsdoiel/mkpage"
@@ -124,7 +124,6 @@ func init() {
 
 func main() {
 	var (
-		src []byte
 		err error
 	)
 
@@ -141,6 +140,7 @@ func main() {
 		license(os.Stdout, appName)
 	}
 
+	var templateSources []string
 	data := make(map[string]string)
 	args := flag.Args()
 	for i, arg := range args {
@@ -154,15 +154,15 @@ func main() {
 			data[pair[0]] = pair[1]
 		} else {
 			// Must be the template source
-			src, err = ioutil.ReadFile(arg)
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "Can't read %s %s\n", arg, err)
-				os.Exit(1)
-			}
+			templateSources = append(templateSources, arg)
 		}
 	}
-	err = mkpage.MakePage(os.Stdout, string(src), data, useMarkdownProcessor)
+	tmpl, err := template.ParseFiles(templateSources...)
 	if err != nil {
+		fmt.Fprintf(os.Stderr, "Template parsing failed, %s\n", err)
+		os.Exit(1)
+	}
+	if err := mkpage.MakePage(os.Stdout, tmpl, data, useMarkdownProcessor); err != nil {
 		fmt.Fprintf(os.Stderr, "%s\n", err)
 		os.Exit(1)
 	}

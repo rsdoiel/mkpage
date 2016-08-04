@@ -26,6 +26,7 @@ import (
 	"path"
 	"strings"
 	"testing"
+	"text/template"
 
 	// 3rd Party Packages
 	"github.com/russross/blackfriday"
@@ -126,7 +127,8 @@ Weather: {{.weather.data.text}}
 	var buf bytes.Buffer
 	wr := io.Writer(&buf)
 
-	err := MakePage(wr, src, in, true)
+	tmpl := template.Must(template.New("text").Parse(src))
+	err := MakePage(wr, tmpl, in, true)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

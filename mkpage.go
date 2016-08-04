@@ -33,7 +33,7 @@ import (
 )
 
 const (
-	Version = "v0.0.2"
+	Version = "v0.0.3"
 )
 
 // ResolveData takes a data map and reads in the files and URL sources as needed turning
@@ -58,7 +58,7 @@ func ResolveData(data map[string]string, useMarkdownProcessor bool) (map[string]
 		case strings.HasPrefix(val, "http://") == true || strings.HasPrefix(val, "https://") == true:
 			resp, err := http.Get(val)
 			if err != nil {
-				return out, err
+				return out, fmt.Errorf("Error from %s, %s", val, err)
 			}
 			defer resp.Body.Close()
 			if resp.StatusCode == 200 {
@@ -69,9 +69,10 @@ func ResolveData(data map[string]string, useMarkdownProcessor bool) (map[string]
 				if contentTypes, ok := resp.Header["Content-Type"]; ok == true && isContentType(contentTypes, "application/json") == true {
 					var o interface{}
 					err := json.Unmarshal(buf, &o)
-					if err == nil {
-						out[key] = o
+					if err != nil {
+						return out, fmt.Errorf("Can't JSON decode %s", val)
 					}
+					out[key] = o
 				} else {
 					out[key] = string(buf)
 				}
@@ -80,7 +81,7 @@ func ResolveData(data map[string]string, useMarkdownProcessor bool) (map[string]
 		default:
 			buf, err := ioutil.ReadFile(val)
 			if err != nil {
-				return out, err
+				return out, fmt.Errorf("Can't read %s, %s", val, err)
 			}
 			ext := path.Ext(val)
 			if useMarkdownProcessor == true && strings.Compare(ext, ".md") == 0 {
@@ -94,14 +95,10 @@ func ResolveData(data map[string]string, useMarkdownProcessor bool) (map[string]
 }
 
 // MakePage applies the provided data to the template provided and renders to writer and returns an error if something goes wrong
-func MakePage(wr io.Writer, templateSource string, keyValues map[string]string, useMarkdownProcessor bool) error {
+func MakePage(wr io.Writer, tmpl *template.Template, keyValues map[string]string, useMarkdownProcessor bool) error {
 	data, err := ResolveData(keyValues, useMarkdownProcessor)
 	if err != nil {
 		return fmt.Errorf("Can't resolve data source %s", err)
-	}
-	tmpl, err := template.New("text").Parse(templateSource)
-	if err != nil {
-		return err
 	}
 	return tmpl.Execute(wr, data)
 }
