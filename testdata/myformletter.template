@@ -2,9 +2,10 @@ Date: {{.now}}
 
 Hello {{.name -}},
      
-The current weather is
- 
-{{.weather}}
+The weather forecast:
+{{ range .weather.data.text}}
+    + {{ . -}}
+{{end}}
  
 Thank you
 

@@ -15,10 +15,10 @@ filename or URL for a data source. Here's a simple example of a form letter
 
     Hello {{.name -}},
     
-    The weather forcast
+    Forecast:
 
     {{range .weather.data.text}}
-        {{ . }}
+       + {{ . }}
     {{end}}
 
     Thank you
@@ -30,7 +30,7 @@ Render the template above (i.e. myformletter.template) would be accomplished fro
 data sources--
 
 + "now" and "name" are strings
-+ "weather" comes from a URL
++ "weather" comes from a URL of JSON content
 + "signature" comes from a file in our local disc
 
 That would be expressed on the command line as follows

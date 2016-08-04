@@ -23,10 +23,10 @@ filename or URL for a data source. Here&rsquo;s a simple example of a form lette
 
     Hello {{.name -}},
     
-    The weather forcast
+    Forecast:
 
     {{range .weather.data.text}}
-        {{ . }}
+       + {{ . }}
     {{end}}
 
     Thank you
@@ -39,7 +39,7 @@ data sources&ndash;</p>
 
 <ul>
 <li>&ldquo;now&rdquo; and &ldquo;name&rdquo; are strings</li>
-<li>&ldquo;weather&rdquo; comes from a URL</li>
+<li>&ldquo;weather&rdquo; comes from a URL of JSON content</li>
 <li>&ldquo;signature&rdquo; comes from a file in our local disc</li>
 </ul>
 
