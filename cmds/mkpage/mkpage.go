@@ -40,9 +40,9 @@ var (
 
 func usage(fp *os.File, appName string) {
 	fmt.Fprintf(fp, `
- USAGE: %s [OPTION] [KEY/VALUE DATA PAIRS] TEMPLATE_FILENAME
+ USAGE: %s [OPTION] [KEY/VALUE DATA PAIRS] TEMPLATE_FILENAME [TEMPLATE_FILENAMES]
 
- Using the key value pairs populate the template and render to stdout.
+ Using the key value pairs populate the template(s) and render to stdout.
 
  OPTIONS
 
@@ -132,12 +132,15 @@ func main() {
 
 	if showHelp == true {
 		usage(os.Stdout, appName)
+		os.Exit(0)
 	}
 	if showVersion == true {
 		fmt.Printf(" Version %s\n", mkpage.Version)
+		os.Exit(0)
 	}
 	if showLicense == true {
 		license(os.Stdout, appName)
+		os.Exit(0)
 	}
 
 	var templateSources []string
@@ -157,6 +160,12 @@ func main() {
 			templateSources = append(templateSources, arg)
 		}
 	}
+	if len(templateSources) == 0 {
+		usage(os.Stderr, appName)
+		fmt.Fprintln(os.Stderr, "ERROR: Missing a page template")
+		os.Exit(1)
+	}
+
 	tmpl, err := template.ParseFiles(templateSources...)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Template parsing failed, %s\n", err)

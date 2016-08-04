@@ -84,6 +84,7 @@ func ResolveData(data map[string]string, useMarkdownProcessor bool) (map[string]
 				return out, fmt.Errorf("Can't read %s, %s", val, err)
 			}
 			ext := path.Ext(val)
+			//FIXME: if the file is BibTeX, run the BibTeX parser, if JSON decode it
 			if useMarkdownProcessor == true && strings.Compare(ext, ".md") == 0 {
 				out[key] = string(blackfriday.MarkdownCommon(buf))
 			} else {
