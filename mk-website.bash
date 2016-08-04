@@ -1,8 +1,8 @@
 #!/bin/bash
 
 function checkApp() {
-    APP_NAME=$1
-    if [ "$APP_NAME" = "" ]; then
+    APP_NAME=$(which $1)
+    if [ "$APP_NAME" = "" ] && [ ! -f "./bin/$1" ]; then
         echo "Missing $APP_NAME"
         exit 1
     fi
@@ -14,13 +14,18 @@ function softwareCheck() {
     done
 }
 
-function mkPage () {
+function MakePage () {
     nav="$1"
     content="$2"
     html="$3"
+    # Always use the latest compiled mkpage
+    APP=$(which mkpage)
+    if [ -f ./bin/mkpage ]; then
+        APP="./bin/mkpage"
+    fi
 
     echo "Rendering $html from $content and $nav"
-    mkpage -m \
+    $APP -m \
 	"title=string:mkpage: A hypothetical template and markdown processor" \
         "nav=$nav" \
         "content=$content" \
@@ -32,6 +37,6 @@ function mkPage () {
 echo "Checking necessary software is installed"
 softwareCheck mkpage
 echo "Generating website index.html with mkpage"
-mkPage nav.md README.md index.html
+MakePage nav.md README.md index.html
 echo "Generating install.html with mkpage"
-mkPage nav.md INSTALL.md install.html
+MakePage nav.md INSTALL.md install.html
