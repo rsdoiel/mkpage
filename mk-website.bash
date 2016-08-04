@@ -26,7 +26,7 @@ function MakePage () {
 
     echo "Rendering $html from $content and $nav"
     $APP -m \
-	"title=string:mkpage: A hypothetical template and markdown processor" \
+	"title=string:mkpage: A prototypical template and markdown processor" \
         "nav=$nav" \
         "content=$content" \
 	    "sitebuilt=string:Updated $(date)" \
@@ -40,3 +40,6 @@ echo "Generating website index.html with mkpage"
 MakePage nav.md README.md index.html
 echo "Generating install.html with mkpage"
 MakePage nav.md INSTALL.md install.html
+echo "Generating go-template-recipes.html with mkpage"
+MakePage nav.md go-template-recipes.md go-template-recipes.html
+
