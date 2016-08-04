@@ -15,9 +15,11 @@ filename or URL for a data source. Here's a simple example of a form letter
 
     Hello {{.name -}},
     
-    The current weather is
+    The weather forcast
 
-    {{.weather}}
+    {{range .weather.data.text}}
+        {{ . }}
+    {{end}}
 
     Thank you
 

@@ -23,9 +23,11 @@ filename or URL for a data source. Here&rsquo;s a simple example of a form lette
 
     Hello {{.name -}},
     
-    The current weather is
+    The weather forcast
 
-    {{.weather}}
+    {{range .weather.data.text}}
+        {{ . }}
+    {{end}}
 
     Thank you
 
