@@ -34,7 +34,7 @@ import (
 )
 
 const (
-	Version = "v0.0.3"
+	Version = "v0.0.4"
 )
 
 // ResolveData takes a data map and reads in the files and URL sources as needed turning
