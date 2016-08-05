@@ -15,7 +15,7 @@ that extend the basic template system by large measures towards systems like Jyk
 *mkpage* uses Go's template as is.  It is meant to be a trivially easy system for producing simple content whether 
 plain text or HTML.
 
-## simple data map with get well card
+## simple stings, a get well card
 
 In this example we want to add a name to a simple get well message.
 
@@ -57,7 +57,7 @@ the opening "{{" and closing "}}".  Notice the "-" before the closing "}}". This
 engine to not allow spacas after the value and the next non-space character (i.e. the comma of the 
 opening line).
 
-## JSON data a key/value blob report
+## JSON data, a key/value blob report
 
 In this example we construct a JSON object as part of the key/value pairs on the command line and
 pass it through the blob.tmpl template that displays they pairs.
@@ -91,7 +91,7 @@ We use the range function to iterate over the key/value pairs of our JSON object
 we assign those values to the template variables called "$key" and "$val". These are then used
 to format our output. Also notice the trailing values "-" which supresses and extra new line.
 
-## JSON data with weather forecast
+## JSON data, a weather forecast
 
 In this example we get the current weather forecast for Guam.  The source of the weather information
 is [NOAA](http://noaa.gov)'s [National Weather Services](http://weather.gov) website.  By including the
