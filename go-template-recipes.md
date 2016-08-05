@@ -34,7 +34,7 @@ Our template is called **get-well.tmpl**. It looks like
 On the command line we can run *mkpage* with the following options
 
 ```shell
-    mkpage "name=string:Little Frieda" page.tmpl
+    mkpage "name=string:Little Frieda" get-well.tmpl
 ```
 
 The output would look like
