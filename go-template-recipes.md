@@ -57,6 +57,40 @@ the opening "{{" and closing "}}".  Notice the "-" before the closing "}}". This
 engine to not allow spacas after the value and the next non-space character (i.e. the comma of the 
 opening line).
 
+## JSON data a key/value blob report
+
+In this example we construct a JSON object as part of the key/value pairs on the command line and
+pass it through the blob.tmpl template that displays they pairs.
+
+The command envokation looks like
+
+```shell
+    mkpage 'blob=json:{"one":1,"two":2}'  blob.tmpl
+```
+
+The template is a simple range construct
+
+```go
+    {{range $key,$val := .blob }}
+        Key: {{ $key }} Value: {{ $val -}}
+    {{end}}
+```
+
+Results in text like
+
+```text
+    
+       Key: one Value: 1
+       Key: two Value: 2
+
+```
+
+### Explanation
+
+We use the range function to iterate over the key/value pairs of our JSON object. Additionally
+we assign those values to the template variables called "$key" and "$val". These are then used
+to format our output. Also notice the trailing values "-" which supresses and extra new line.
+
 ## JSON data with weather forecast
 
 In this example we get the current weather forecast for Guam.  The source of the weather information

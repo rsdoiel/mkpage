@@ -19,6 +19,7 @@
 package mkpage
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -55,6 +56,14 @@ func ResolveData(data map[string]string, useMarkdownProcessor bool) (map[string]
 		switch {
 		case strings.HasPrefix(val, "string:") == true:
 			out[key] = strings.TrimPrefix(val, "string:")
+		case strings.HasPrefix(val, "json:") == true:
+			var o interface{}
+			err := json.Unmarshal(bytes.TrimPrefix([]byte(val), []byte("json:")), &o)
+			if err != nil {
+				return out, fmt.Errorf("Can't JSON decode %s, %s", val, err)
+			}
+			out[key] = o
+
 		case strings.HasPrefix(val, "http://") == true || strings.HasPrefix(val, "https://") == true:
 			resp, err := http.Get(val)
 			if err != nil {
@@ -70,7 +79,7 @@ func ResolveData(data map[string]string, useMarkdownProcessor bool) (map[string]
 					var o interface{}
 					err := json.Unmarshal(buf, &o)
 					if err != nil {
-						return out, fmt.Errorf("Can't JSON decode %s", val)
+						return out, fmt.Errorf("Can't JSON decode %s, %s", val, err)
 					}
 					out[key] = o
 				} else {
@@ -85,9 +94,17 @@ func ResolveData(data map[string]string, useMarkdownProcessor bool) (map[string]
 			}
 			ext := path.Ext(val)
 			//FIXME: if the file is BibTeX, run the BibTeX parser, if JSON decode it
-			if useMarkdownProcessor == true && strings.Compare(ext, ".md") == 0 {
+			switch {
+			case useMarkdownProcessor == true && strings.Compare(ext, ".md") == 0:
 				out[key] = string(blackfriday.MarkdownCommon(buf))
-			} else {
+			case strings.Compare(ext, ".json") == 0:
+				var o interface{}
+				err := json.Unmarshal(buf, &o)
+				if err != nil {
+					return out, fmt.Errorf("Can't JSON decode %s, %s", val, err)
+				}
+				out[key] = o
+			default:
 				out[key] = string(buf)
 			}
 		}
