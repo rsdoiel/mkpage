@@ -34,7 +34,74 @@ import (
 )
 
 const (
+	// Version of the mkpage package.
 	Version = "v0.0.4"
+
+	// The default HTML provided by md2slides package, you probably want to override this...
+	DefaultTemplateSource = `<!DOCTYPE html>
+<html>
+<head>
+  {{if .Title -}}<title>{{- .Title -}}</title>{{- end}}
+  {{if .CSSPath -}}<link href="{{ .CSSPath }}" rel="stylesheet" />{{else -}}
+  <style>
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 10%;
+      padding: 0;
+      font-size: 12px;
+      font-family: sans-serif;
+    }
+
+    ul {
+      list-style: circle;
+      text-indent: 0.25em;
+    }
+
+    nav {
+      position: absolute;
+      top: 0em; 
+      margin:0;
+      padding:0.24em;
+      width: 100%;
+      height: 4em;
+      text-align: left;
+      font-size: 60%;
+    }
+
+	header {
+		width: 100%;
+		height: auto;
+	}
+
+	footer {
+		width: 100%;
+		height: auto;
+	}
+
+    section {
+      width: 100%;
+      height: auto;
+    }
+  </style>
+  {{- end }}
+</head>
+<body>
+  {{if .header -}}
+  <header>{{- .header -}}</header>
+  {{end}}
+  {{if .nav -}}
+  <nav>{{- .nav -}}</nav>
+  {{end}}
+  {{if .content -}}
+  <section>{{ .content }}</section>
+  {{end}}
+  {{if .footer -}}
+  <footer>{{ .footer }}</footer>
+  {{end}}
+</body>
+</html>
+`
 )
 
 // ResolveData takes a data map and reads in the files and URL sources as needed turning
