@@ -20,10 +20,31 @@ support for JSON formatted text from strings, files and URL response.</p>
 <p>While Go&rsquo;s template package is not complicated to use it doesn&rsquo;t come with allot of example or tutorials.
 Most articles you find on Go&rsquo;s template package either are for writing your own server code using the
 templates to format responses or their for sofisticated content generation systems like <a href="http://gohugo.io">Hugo</a>
-that extend the basic template system by large measures towards systems like Jykell or Ruby&rsquo;s Jade templates.</p>
+that extend the basic template system by large measures towards systems like <a href="https://jekyllrb.com/">Jekyll</a>
+or <a href="http://jade-lang.com/">Jade</a> templates.</p>
 
-<p><em>mkpage</em> uses Go&rsquo;s template as is.  It is meant to be a trivially easy system for producing simple content whether
-plain text or HTML.</p>
+<p><em>mkpage</em> uses Go&rsquo;s template as is.  It is meant to be a trivially easy system for producing simple content from
+plain text, markdown text, JSON or HTML.</p>
+
+<h2>three formats of content</h2>
+
+<p><em>mkpage</em> supports three formats of text</p>
+
+<ul>
+<li>text/plain</li>
+<li>text/markdown</li>
+<li>application/json</li>
+</ul>
+
+<h2>three data source</h2>
+
+<p><em>mkpage</em> supports three data sources</p>
+
+<ul>
+<li>explicit strings (prividing a hint prefix, e.g. &ldquo;text:&ldquo;, &ldquo;markdown:&ldquo;, &ldquo;json:&ldquo;)</li>
+<li>files (the default data source)</li>
+<li>URLs as data sources (prefixed with http:// and https:// as appropriate)</li>
+</ul>
 
 <h2>simple stings, a get well card</h2>
 

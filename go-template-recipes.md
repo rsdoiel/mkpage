@@ -10,10 +10,28 @@ support for JSON formatted text from strings, files and URL response.
 While Go's template package is not complicated to use it doesn't come with allot of example or tutorials.
 Most articles you find on Go's template package either are for writing your own server code using the
 templates to format responses or their for sofisticated content generation systems like [Hugo](http://gohugo.io)
-that extend the basic template system by large measures towards systems like Jykell or Ruby's Jade templates.
+that extend the basic template system by large measures towards systems like [Jekyll](https://jekyllrb.com/) 
+or [Jade](http://jade-lang.com/) templates.
 
-*mkpage* uses Go's template as is.  It is meant to be a trivially easy system for producing simple content whether 
-plain text or HTML.
+*mkpage* uses Go's template as is.  It is meant to be a trivially easy system for producing simple content from 
+plain text, markdown text, JSON or HTML.
+
+## three formats of content
+
+*mkpage* supports three formats of text
+
++ text/plain
++ text/markdown
++ application/json
+
+## three data source
+
+*mkpage* supports three data sources 
+
++ explicit strings (prividing a hint prefix, e.g. "text:", "markdown:", "json:")
++ files (the default data source)
++ URLs as data sources (prefixed with http:// and https:// as appropriate)
+
 
 ## simple stings, a get well card
 
