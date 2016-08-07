@@ -78,7 +78,7 @@ func usage(fp *os.File, appName string) {
  That would be expressed on the command line as follows
 
 	mkpage "now=text:$(date)" "name=text:Little Frieda" \
-		"weather=http://forecast.weather.gov/MapClick.php?lat=9.9667&lon=139.6667&FcstType=json" \
+		"weather=http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&lon=144.74977715100056&FcstType=json" \
 		signature=testdata/signature.txt \
 		testdata/myformletter.template
 

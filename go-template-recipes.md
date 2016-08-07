@@ -34,7 +34,7 @@ Our template is called **get-well.tmpl**. It looks like
 On the command line we can run *mkpage* with the following options
 
 ```shell
-    mkpage "name=string:Little Frieda" get-well.tmpl
+    mkpage "name=text:Little Frieda" get-well.tmpl
 ```
 
 The output would look like
@@ -98,7 +98,7 @@ is [NOAA](http://noaa.gov)'s [National Weather Services](http://weather.gov) web
 parameter "FcstType=json" at the end of the URL you get a JSON version of the weather forecast rather 
 than the HTML or XML alternatives.
 
-+ data source: http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&lon=144.74977715100056&FsctType=json
++ data source: http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&lon=144.74977715100056&FcstType=json
 
 Our template will be call **forecast.tmpl**. It will be used to produce a Markdown file of weather related
 information obtained from the JSON response.

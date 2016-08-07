@@ -25,11 +25,11 @@ function MakePage () {
     fi
 
     echo "Rendering $html from $content and $nav"
-    $APP -m \
-	"title=string:mkpage: A prototypical template and markdown processor" \
+    $APP \
+	"title=text:mkpage: An experimental template and markdown processor" \
         "nav=$nav" \
         "content=$content" \
-	    "sitebuilt=string:Updated $(date)" \
+	    "sitebuilt=text:Updated $(date)" \
         "copyright=copyright.md" \
         page.tmpl > $html
 }
