@@ -35,11 +35,22 @@ import (
 
 const (
 	Version = "v0.0.4"
+
+	// Prefix for explicit string types
+
+	// JSONPrefix designates a string as JSON formatted content
+	JSONPrefix = "json:"
+	// MarkdownPrefix designates a string as Markdown content
+	MarkdownPrefix = "markdown:"
+	// TextPrefix designates a string as text/plain not needed processing
+	TextPrefix = "text:"
+
+	// SOMEDAY: should add XML, BibTeX, YaML support...
 )
 
-// ResolveData takes a data map and reads in the files and URL sources as needed turning
-// the data into strings to be applied to the template.
-func ResolveData(data map[string]string, useMarkdownProcessor bool) (map[string]interface{}, error) {
+// ResolveData takes a data map and reads in the files and URL sources
+// as needed turning the data into strings to be applied to the template.
+func ResolveData(data map[string]string) (map[string]interface{}, error) {
 	var out map[string]interface{}
 
 	isContentType := func(vals []string, target string) bool {
@@ -54,11 +65,13 @@ func ResolveData(data map[string]string, useMarkdownProcessor bool) (map[string]
 	out = make(map[string]interface{})
 	for key, val := range data {
 		switch {
-		case strings.HasPrefix(val, "string:") == true:
-			out[key] = strings.TrimPrefix(val, "string:")
-		case strings.HasPrefix(val, "json:") == true:
+		case strings.HasPrefix(val, TextPrefix) == true:
+			out[key] = strings.TrimPrefix(val, TextPrefix)
+		case strings.HasPrefix(val, MarkdownPrefix) == true:
+			out[key] = string(blackfriday.MarkdownCommon([]byte(strings.TrimPrefix(val, MarkdoPrefix))))
+		case strings.HasPrefix(val, JSONPrefix) == true:
 			var o interface{}
-			err := json.Unmarshal(bytes.TrimPrefix([]byte(val), []byte("json:")), &o)
+			err := json.Unmarshal(bytes.TrimPrefix([]byte(val), []byte(JSONPrefix)), &o)
 			if err != nil {
 				return out, fmt.Errorf("Can't JSON decode %s, %s", val, err)
 			}
@@ -93,9 +106,8 @@ func ResolveData(data map[string]string, useMarkdownProcessor bool) (map[string]
 				return out, fmt.Errorf("Can't read %s, %s", val, err)
 			}
 			ext := path.Ext(val)
-			//FIXME: if the file is BibTeX, run the BibTeX parser, if JSON decode it
 			switch {
-			case useMarkdownProcessor == true && strings.Compare(ext, ".md") == 0:
+			case strings.Compare(ext, ".md") == 0:
 				out[key] = string(blackfriday.MarkdownCommon(buf))
 			case strings.Compare(ext, ".json") == 0:
 				var o interface{}
@@ -113,8 +125,8 @@ func ResolveData(data map[string]string, useMarkdownProcessor bool) (map[string]
 }
 
 // MakePage applies the provided data to the template provided and renders to writer and returns an error if something goes wrong
-func MakePage(wr io.Writer, tmpl *template.Template, keyValues map[string]string, useMarkdownProcessor bool) error {
-	data, err := ResolveData(keyValues, useMarkdownProcessor)
+func MakePage(wr io.Writer, tmpl *template.Template, keyValues map[string]string) error {
+	data, err := ResolveData(keyValues)
 	if err != nil {
 		return fmt.Errorf("Can't resolve data source %s", err)
 	}
