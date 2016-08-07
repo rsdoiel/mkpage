@@ -14,10 +14,14 @@
 <h1>mkpage</h1>
 
 <p>An experimental template engine with an embedded markdown processor.  <em>mkpage</em> (pronounced &ldquo;make page&rdquo;) is
-a simple command line tool which accepts key value pairs and applies them to a Golang <a href="https://golang.org/pkg/text/template/">text/template</a>.
-The key side of a pair corresponds to the template keys in the template document (e.g.
-{{.pageContent}} is represented by the key <em>pageContent</em>). The value side of the pair can be a string,
-filename or URL for a data source. Here&rsquo;s a simple example of a form letter</p>
+a simple command line tool which accepts key value pairs and applies them to a
+Golang <a href="https://golang.org/pkg/text/template/">text/template</a>.  The key side of a pair corresponds to the
+template element names that will be replaced in the render version of the document. If a key was cllaed
+&ldquo;pageContent&rdquo; the template element would look like &ldquo;{{ .pageContent }}&rdquo;. The value of &ldquo;pageContent&rdquo; would
+replace &ldquo;{{ .pageContent }}&rdquo;. Go text/templates elements can do more than that but the is the core idea.
+On the value side of the key/value pair you have strings of one of three formats - plain text, markdown
+and JSON.  These three formatted strings can be explicit strings, data from a file or content received from
+a URL. Here&rsquo;s a basic demonstration starting with the template.</p>
 
 <pre><code class="language-template">    Date: {{.now}}
 
@@ -34,32 +38,60 @@ filename or URL for a data source. Here&rsquo;s a simple example of a form lette
     {{.signature}}
 </code></pre>
 
-<p>Render the template above (i.e. myformletter.template) would be accomplished from the following
-data sources&ndash;</p>
+<p>To render the template above (i.e. myformletter.tmpl) is expecting values from various data sources.
+This break down is as follows.</p>
 
 <ul>
-<li>&ldquo;now&rdquo; and &ldquo;name&rdquo; are strings</li>
+<li>&ldquo;now&rdquo; and &ldquo;name&rdquo; are explicit strings</li>
 <li>&ldquo;weather&rdquo; comes from a URL of JSON content</li>
 <li>&ldquo;signature&rdquo; comes from a file in our local disc</li>
 </ul>
 
-<p>That would be expressed on the command line as follows</p>
+<p>Here is how we would express the key/value pairs on the command line.</p>
 
 <pre><code class="language-shell">    mkpage &quot;now=text:$(date)&quot; \
         &quot;name=text:Little Frieda&quot; \
         &quot;weather=http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&amp;lon=144.74977715100056&amp;FcstType=json&quot; \
         signature=testdata/signature.txt \
-        testdata/myformletter.template
+        testdata/myformletter.tmpl
 </code></pre>
 
+<p>Notice the two explicit strings are prefixed with &ldquo;text:&rdquo; (other possible formats are &ldquo;markdown:&ldquo;, &ldquo;json:&ldquo;).
+Values without a prefix are assumed to be file paths. We see that in testdata/signature.txt.  Likewise the
+weather data is coming from a URL. <em>mkpage</em> distinguishes that by the prefixes &ldquo;http://&rdquo; and &ldquo;https://&ldquo;.
+Since a HTTP response contains headers describing the content type (e.g.  &ldquo;Content-Type: text/markdown&rdquo;) we
+do not require any other prefix. Likewise a filename&rsquo;s extension can give us an inference of the data format
+it contains. &ldquo;.json&rdquo; is a JSON document, &ldquo;.md&rdquo; is a Markdown document and everything else is just plain text.</p>
+
 <p>Since we are leveraging Go&rsquo;s <a href="https://golang.org/pkg/text/template/">text/template</a> the template itself
-can be more than a simple substitution.</p>
+can be more than a simple substitution. It can contain conditional expressions, ranges for data and even
+include blocks from other templates.</p>
 
-<h2>Template blocks</h2>
+<h2>Templates</h2>
 
-<p>The Go text templates support defining blocks and rendering them in conjuction with a main template. This is
+<p><em>mkpage</em> template engine is the Go <a href="https://golang.org/pkg/text/template/">text/template</a> package.
+Other template systems could be implemented but I&rsquo;m keeping the experiment simple at this point.</p>
+
+<h3>Conditional elements</h3>
+
+<p>One nice feature of Go&rsquo;s text/template DSL is that template elements can be condition. This can
+be done using the &ldquo;if&rdquo; and &ldquo;with&rdquo; template functions. Here&rsquo;s how to show a title conditionally
+using the &ldquo;if&rdquo; function.</p>
+
+<pre><code class="language-go">    {{if .title}}And the title is: {{.title}}{{end}}
+</code></pre>
+
+<p>or using &ldquo;with&rdquo;</p>
+
+<pre><code class="language-go">    {{with .title}}{{ . }}{{end}}
+</code></pre>
+
+<h3>Template blocks</h3>
+
+<p>Go text/templates support defining blocks and rendering them in conjuction with a main template. This is
 also supported by <em>mkpage</em>. For each template encountered on the command line it is added to an array of templates
-passed and parse by the text template package.  This is then executed and output rendered by <em>mkpage</em>.</p>
+parsed by the text/template package.  Collectively they are then executed which causes final results
+render to stdout by <em>mkpage</em>.</p>
 
 <pre><code class="language-shell">    mkpage &quot;content=text:Hello World&quot; testdata/page.tmpl testdata/header.tmpl testdata/footer.tmpl
 </code></pre>
@@ -73,7 +105,8 @@ passed and parse by the text template package.  This is then executed and output
     {{template &quot;footer&quot; . }}
 </code></pre>
 
-<p>The header and footer are then defined in their own template files (though they also could be combined into one).</p>
+<p>The header and footer are then defined in their own template files (though they also could be combined into one
+or even be defined in the main template file itself).</p>
 
 <p><em>header.tmpl</em></p>
 
@@ -99,23 +132,20 @@ passed and parse by the text template package.  This is then executed and output
 <p><em>mkpage</em> support three content formats</p>
 
 <ul>
-<li>text/plain (e.g. &ldquo;text:&rdquo; when specifying strings, any file extension except &ldquo;.md&rdquo;, and &ldquo;.json&rdquo;)</li>
+<li>text/plain (e.g. &ldquo;text:&rdquo; when specifying strings and any file expect those having the extension &ldquo;.md&rdquo; or &ldquo;.json&rdquo;)</li>
 <li>text/markdown (e.g. &ldquo;markdown:&rdquo; when specifying strings, file extension &ldquo;.md&rdquo;)</li>
 <li>application/json (e.g. &ldquo;json:&rdquo; when specifying strings, file extension &ldquo;.json&rdquo;)</li>
 </ul>
 
-<p>It also supports three content sources</p>
+<p>It also supports three data sources</p>
 
 <ul>
 <li>an explicit string (prefixed with a hint, e.g. &ldquo;text:&ldquo;, &ldquo;markdown:&ldquo;, &ldquo;json:&ldquo;)</li>
-<li>a filepath</li>
+<li>a filepath and filename</li>
 <li>a URL</li>
 </ul>
 
-<h2>Templates</h2>
-
-<p><em>mkpage</em> template engine is the Go <a href="https://golang.org/pkg/text/template/">text/template</a> package.
-Other template systems could be implemented but I&rsquo;m keeping the experiment simple at this point.</p>
+<p>Content type is evaluate and if necessary transformed before going into the Go text/template.</p>
 
 <h2>A note about Markdown dialect</h2>
 

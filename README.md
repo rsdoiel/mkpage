@@ -4,10 +4,14 @@ This is experimental..., things are sure to change
 # mkpage
 
 An experimental template engine with an embedded markdown processor.  *mkpage* (pronounced "make page") is 
-a simple command line tool which accepts key value pairs and applies them to a Golang [text/template](https://golang.org/pkg/text/template/).
-The key side of a pair corresponds to the template keys in the template document (e.g. 
-{{.pageContent}} is represented by the key *pageContent*). The value side of the pair can be a string, 
-filename or URL for a data source. Here's a simple example of a form letter
+a simple command line tool which accepts key value pairs and applies them to a 
+Golang [text/template](https://golang.org/pkg/text/template/).  The key side of a pair corresponds to the 
+template element names that will be replaced in the render version of the document. If a key was cllaed
+"pageContent" the template element would look like "{{ .pageContent }}". The value of "pageContent" would
+replace "{{ .pageContent }}". Go text/templates elements can do more than that but the is the core idea.
+On the value side of the key/value pair you have strings of one of three formats - plain text, markdown
+and JSON.  These three formatted strings can be explicit strings, data from a file or content received from
+a URL. Here's a basic demonstration starting with the template.
 
 ```template
     Date: {{.now}}
@@ -25,31 +29,64 @@ filename or URL for a data source. Here's a simple example of a form letter
     {{.signature}}
 ```
 
-Render the template above (i.e. myformletter.template) would be accomplished from the following
-data sources--
+To render the template above (i.e. myformletter.tmpl) is expecting values from various data sources.
+This break down is as follows.
 
-+ "now" and "name" are strings
++ "now" and "name" are explicit strings
 + "weather" comes from a URL of JSON content
 + "signature" comes from a file in our local disc
 
-That would be expressed on the command line as follows
+Here is how we would express the key/value pairs on the command line.
 
 ```shell
     mkpage "now=text:$(date)" \
         "name=text:Little Frieda" \
         "weather=http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&lon=144.74977715100056&FcstType=json" \
         signature=testdata/signature.txt \
-        testdata/myformletter.template
+        testdata/myformletter.tmpl
 ```
 
+Notice the two explicit strings are prefixed with "text:" (other possible formats are "markdown:", "json:").
+Values without a prefix are assumed to be file paths. We see that in testdata/signature.txt.  Likewise the 
+weather data is coming from a URL. *mkpage* distinguishes that by the prefixes "http://" and "https://". 
+Since a HTTP response contains headers describing the content type (e.g.  "Content-Type: text/markdown") we 
+do not require any other prefix. Likewise a filename's extension can give us an inference of the data format 
+it contains. ".json" is a JSON document, ".md" is a Markdown document and everything else is just plain text.
+
+
 Since we are leveraging Go's [text/template](https://golang.org/pkg/text/template/) the template itself
-can be more than a simple substitution.
+can be more than a simple substitution. It can contain conditional expressions, ranges for data and even
+include blocks from other templates.
 
-## Template blocks
 
-The Go text templates support defining blocks and rendering them in conjuction with a main template. This is
+
+## Templates
+
+*mkpage* template engine is the Go [text/template](https://golang.org/pkg/text/template/) package. 
+Other template systems could be implemented but I'm keeping the experiment simple at this point.
+
+### Conditional elements
+
+One nice feature of Go's text/template DSL is that template elements can be condition. This can
+be done using the "if" and "with" template functions. Here's how to show a title conditionally
+using the "if" function.
+
+```go
+    {{if .title}}And the title is: {{.title}}{{end}}
+```
+
+or using "with"
+
+```go
+    {{with .title}}{{ . }}{{end}}
+```
+
+### Template blocks
+
+Go text/templates support defining blocks and rendering them in conjuction with a main template. This is
 also supported by *mkpage*. For each template encountered on the command line it is added to an array of templates
-passed and parse by the text template package.  This is then executed and output rendered by *mkpage*.
+parsed by the text/template package.  Collectively they are then executed which causes final results 
+render to stdout by *mkpage*.
 
 ```shell
     mkpage "content=text:Hello World" testdata/page.tmpl testdata/header.tmpl testdata/footer.tmpl
@@ -65,7 +102,8 @@ Here is what *page.tmpl* would look like
     {{template "footer" . }}
 ```
 
-The header and footer are then defined in their own template files (though they also could be combined into one).
+The header and footer are then defined in their own template files (though they also could be combined into one
+or even be defined in the main template file itself).
 
 *header.tmpl*
 
@@ -94,21 +132,17 @@ In this example the output would look like
 
 *mkpage* support three content formats
 
-+ text/plain (e.g. "text:" when specifying strings, any file extension except ".md", and ".json")
++ text/plain (e.g. "text:" when specifying strings and any file expect those having the extension ".md" or ".json")
 + text/markdown (e.g. "markdown:" when specifying strings, file extension ".md")
 + application/json (e.g. "json:" when specifying strings, file extension ".json")
 
-It also supports three content sources
+It also supports three data sources
 
 + an explicit string (prefixed with a hint, e.g. "text:", "markdown:", "json:")
-+ a filepath
++ a filepath and filename
 + a URL
 
-
-## Templates
-
-*mkpage* template engine is the Go [text/template](https://golang.org/pkg/text/template/) package. 
-Other template systems could be implemented but I'm keeping the experiment simple at this point.
+Content type is evaluate and if necessary transformed before going into the Go text/template.
 
 
 ## A note about Markdown dialect
