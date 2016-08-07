@@ -155,17 +155,23 @@ func ResolveData(data map[string]string) (map[string]interface{}, error) {
 				if err != nil {
 					return out, err
 				}
-				if contentTypes, ok := resp.Header["Content-Type"]; ok == true && isContentType(contentTypes, "application/json") == true {
-					var o interface{}
-					err := json.Unmarshal(buf, &o)
-					if err != nil {
-						return out, fmt.Errorf("Can't JSON decode %s, %s", val, err)
+				if contentTypes, ok := resp.Header["Content-Type"]; ok == true {
+					switch {
+					case isContentType(contentTypes, "application/json") == true:
+						var o interface{}
+						err := json.Unmarshal(buf, &o)
+						if err != nil {
+							return out, fmt.Errorf("Can't JSON decode %s, %s", val, err)
+						}
+						out[key] = o
+					case isContentType(contentTypes, "text/markdown") == true:
+						out[key] = string(blackfriday.MarkdownCommon(buf))
+					default:
+						out[key] = string(buf)
 					}
-					out[key] = o
 				} else {
 					out[key] = string(buf)
 				}
-
 			}
 		default:
 			buf, err := ioutil.ReadFile(val)
