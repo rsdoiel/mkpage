@@ -100,7 +100,6 @@ In additional to populating a template with values from data sources *mkpage* al
 a filename referenced with the extension of ".md" will run through the markdown process for being put into 
 the template.  This allows you to easily generate pages and website from markdown files using simple templates.
 
-+ -m, -markdown - use a markdown processor when reading ".md" files 
 + -h, -help - get command line help
 + -v, -version - show *mkpage* version number
 + -l, -license - show *mkpage* license information
