@@ -100,7 +100,7 @@ In this example the output would look like
 
 It also supports three content sources
 
-+ an explicit string (prefixed with a type, e.g. "text:", "markdown:", "json:")
++ an explicit string (prefixed with a hint, e.g. "text:", "markdown:", "json:")
 + a filepath
 + a URL
 
