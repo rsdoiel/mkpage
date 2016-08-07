@@ -17,8 +17,8 @@
 a simple command line tool which accepts key value pairs and applies them to a
 Golang <a href="https://golang.org/pkg/text/template/">text/template</a>.  The key side of a pair corresponds to the
 template element names that will be replaced in the render version of the document. If a key was cllaed
-&ldquo;pageContent&rdquo; the template element would look like &ldquo;{{ .pageContent }}&rdquo;. The value of &ldquo;pageContent&rdquo; would
-replace &ldquo;{{ .pageContent }}&rdquo;. Go text/templates elements can do more than that but the is the core idea.
+&ldquo;pageContent&rdquo; the template element would look like <code>{{ .pageContent }}</code>. The value of &ldquo;pageContent&rdquo; would
+replace <code>{{ .pageContent }}</code>. Go text/templates elements can do more than that but the is the core idea.
 On the value side of the key/value pair you have strings of one of three formats - plain text, markdown
 and JSON.  These three formatted strings can be explicit strings, data from a file or content received from
 a URL. Here&rsquo;s a basic demonstration starting with the template.</p>

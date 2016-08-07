@@ -7,8 +7,8 @@ An experimental template engine with an embedded markdown processor.  *mkpage* (
 a simple command line tool which accepts key value pairs and applies them to a 
 Golang [text/template](https://golang.org/pkg/text/template/).  The key side of a pair corresponds to the 
 template element names that will be replaced in the render version of the document. If a key was cllaed
-"pageContent" the template element would look like "{{ .pageContent }}". The value of "pageContent" would
-replace "{{ .pageContent }}". Go text/templates elements can do more than that but the is the core idea.
+"pageContent" the template element would look like `{{ .pageContent }}`. The value of "pageContent" would
+replace `{{ .pageContent }}`. Go text/templates elements can do more than that but the is the core idea.
 On the value side of the key/value pair you have strings of one of three formats - plain text, markdown
 and JSON.  These three formatted strings can be explicit strings, data from a file or content received from
 a URL. Here's a basic demonstration starting with the template.
