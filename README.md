@@ -36,8 +36,8 @@ data sources--
 That would be expressed on the command line as follows
 
 ```shell
-    mkpage "now=string:$(date)" \
-        "name=string:Little Frieda" \
+    mkpage "now=text:$(date)" \
+        "name=text:Little Frieda" \
         "weather=http://forecast.weather.gov/MapClick.php?lat=13.4712&lon=144.7496&FcstType=json" \
         signature=testdata/signature.txt \
         testdata/myformletter.template
@@ -53,7 +53,7 @@ also supported by *mkpage*. For each template encountered on the command line it
 passed and parse by the text template package.  This is then executed and output rendered by *mkpage*.
 
 ```shell
-    mkpage "content=string:Hello World" testdata/page.tmpl testdata/header.tmpl testdata/footer.tmpl
+    mkpage "content=text:Hello World" testdata/page.tmpl testdata/header.tmpl testdata/footer.tmpl
 ```
 
 Here is what *page.tmpl* would look like

@@ -45,8 +45,8 @@ data sources&ndash;</p>
 
 <p>That would be expressed on the command line as follows</p>
 
-<pre><code class="language-shell">    mkpage &quot;now=string:$(date)&quot; \
-        &quot;name=string:Little Frieda&quot; \
+<pre><code class="language-shell">    mkpage &quot;now=text:$(date)&quot; \
+        &quot;name=text:Little Frieda&quot; \
         &quot;weather=http://forecast.weather.gov/MapClick.php?lat=13.4712&amp;lon=144.7496&amp;FcstType=json&quot; \
         signature=testdata/signature.txt \
         testdata/myformletter.template
@@ -61,7 +61,7 @@ can be more than a simple substitution.</p>
 also supported by <em>mkpage</em>. For each template encountered on the command line it is added to an array of templates
 passed and parse by the text template package.  This is then executed and output rendered by <em>mkpage</em>.</p>
 
-<pre><code class="language-shell">    mkpage &quot;content=string:Hello World&quot; testdata/page.tmpl testdata/header.tmpl testdata/footer.tmpl
+<pre><code class="language-shell">    mkpage &quot;content=text:Hello World&quot; testdata/page.tmpl testdata/header.tmpl testdata/footer.tmpl
 </code></pre>
 
 <p>Here is what <em>page.tmpl</em> would look like</p>

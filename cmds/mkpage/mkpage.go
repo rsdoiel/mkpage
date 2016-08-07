@@ -77,9 +77,9 @@ func usage(fp *os.File, appName string) {
 
  That would be expressed on the command line as follows
 
-	mkpage "now=string:$(date)" "name=string:Little Frieda" \
+	mkpage "now=text:$(date)" "name=text:Little Frieda" \
 		"weather=http://forecast.weather.gov/MapClick.php?lat=9.9667&lon=139.6667&FcstType=json" \
-		signature=test/signature.txt \
+		signature=testdata/signature.txt \
 		testdata/myformletter.template
 
  Golang's text/template docs can be found at 
