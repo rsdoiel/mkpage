@@ -34,8 +34,6 @@ var (
 	showHelp    bool
 	showVersion bool
 	showLicense bool
-
-	useMarkdownProcessor bool
 )
 
 func usage(fp *os.File, appName string) {
@@ -117,9 +115,6 @@ func init() {
 	flag.BoolVar(&showHelp, "h", false, "show help")
 	flag.BoolVar(&showVersion, "v", false, "show version")
 	flag.BoolVar(&showLicense, "l", false, "show license")
-
-	flag.BoolVar(&useMarkdownProcessor, "m", false, "apply markdown processor to \".md\" files")
-	flag.BoolVar(&useMarkdownProcessor, "markdown", false, "apply markdown processor to \".md\" files")
 }
 
 func main() {
@@ -171,7 +166,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Template parsing failed, %s\n", err)
 		os.Exit(1)
 	}
-	if err := mkpage.MakePage(os.Stdout, tmpl, data, useMarkdownProcessor); err != nil {
+	if err := mkpage.MakePage(os.Stdout, tmpl, data); err != nil {
 		fmt.Fprintf(os.Stderr, "%s\n", err)
 		os.Exit(1)
 	}

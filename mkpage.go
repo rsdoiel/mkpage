@@ -1,5 +1,5 @@
 //
-// mkpage is a thought experiment in a light weight template and markdown processor
+// mkpage is an experiment in a light weight template and markdown processor.
 //
 // @author R. S. Doiel, <rsdoiel@gmail.com>
 //
@@ -34,7 +34,8 @@ import (
 )
 
 const (
-	Version = "v0.0.4"
+	// Version of the mkpage package.
+	Version = "v0.0.5"
 
 	// Prefix for explicit string types
 
@@ -46,6 +47,72 @@ const (
 	TextPrefix = "text:"
 
 	// SOMEDAY: should add XML, BibTeX, YaML support...
+
+	// The default HTML provided by md2slides package, you probably want to override this...
+	DefaultTemplateSource = `<!DOCTYPE html>
+<html>
+<head>
+  {{if .Title -}}<title>{{- .Title -}}</title>{{- end}}
+  {{if .CSSPath -}}<link href="{{ .CSSPath }}" rel="stylesheet" />{{else -}}
+  <style>
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 10%;
+      padding: 0;
+      font-size: 12px;
+      font-family: sans-serif;
+    }
+
+    ul {
+      list-style: circle;
+      text-indent: 0.25em;
+    }
+
+    nav {
+      position: absolute;
+      top: 0em; 
+      margin:0;
+      padding:0.24em;
+      width: 100%;
+      height: 4em;
+      text-align: left;
+      font-size: 60%;
+    }
+
+	header {
+		width: 100%;
+		height: auto;
+	}
+
+	footer {
+		width: 100%;
+		height: auto;
+	}
+
+    section {
+      width: 100%;
+      height: auto;
+    }
+  </style>
+  {{- end }}
+</head>
+<body>
+  {{if .header -}}
+  <header>{{- .header -}}</header>
+  {{end}}
+  {{if .nav -}}
+  <nav>{{- .nav -}}</nav>
+  {{end}}
+  {{if .content -}}
+  <section>{{ .content }}</section>
+  {{end}}
+  {{if .footer -}}
+  <footer>{{ .footer }}</footer>
+  {{end}}
+</body>
+</html>
+`
 )
 
 // ResolveData takes a data map and reads in the files and URL sources
@@ -68,7 +135,7 @@ func ResolveData(data map[string]string) (map[string]interface{}, error) {
 		case strings.HasPrefix(val, TextPrefix) == true:
 			out[key] = strings.TrimPrefix(val, TextPrefix)
 		case strings.HasPrefix(val, MarkdownPrefix) == true:
-			out[key] = string(blackfriday.MarkdownCommon([]byte(strings.TrimPrefix(val, MarkdoPrefix))))
+			out[key] = string(blackfriday.MarkdownCommon([]byte(strings.TrimPrefix(val, MarkdownPrefix))))
 		case strings.HasPrefix(val, JSONPrefix) == true:
 			var o interface{}
 			err := json.Unmarshal(bytes.TrimPrefix([]byte(val), []byte(JSONPrefix)), &o)
@@ -124,11 +191,19 @@ func ResolveData(data map[string]string) (map[string]interface{}, error) {
 	return out, nil
 }
 
-// MakePage applies the provided data to the template provided and renders to writer and returns an error if something goes wrong
+// MakePage applies the key/value map to the template and renders to writer and returns an error if something goes wrong
 func MakePage(wr io.Writer, tmpl *template.Template, keyValues map[string]string) error {
 	data, err := ResolveData(keyValues)
 	if err != nil {
 		return fmt.Errorf("Can't resolve data source %s", err)
 	}
 	return tmpl.Execute(wr, data)
+}
+
+// MakePageString applies the key/value map to the template and renders the results to a string and error if someting goes wrong
+func MakePageString(tmpl *template.Template, keyValues map[string]string) (string, error) {
+	var buf bytes.Buffer
+	wr := io.Writer(&buf)
+	err := MakePage(wr, tmpl, keyValues)
+	return buf.String(), err
 }

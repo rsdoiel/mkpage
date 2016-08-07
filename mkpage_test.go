@@ -1,5 +1,5 @@
 //
-// mkpage is a thought experiment in a light weight template and markdown processor
+// mkpage is a thought experiment in a light weight template and markdown processor.
 //
 // @author R. S. Doiel, <rsdoiel@gmail.com>
 //
@@ -19,9 +19,7 @@
 package mkpage
 
 import (
-	"bytes"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"path"
 	"strings"
@@ -51,18 +49,23 @@ func TestResolveData(t *testing.T) {
 		return nil
 	}
 
-	in := map[string]string{
-		"Hello":   "string:Hi there!",
+	keyValues := map[string]string{
+		"Hello":   "text:Hi there!",
+		"Hi":      "markdown:*Hi there!*",
 		"Nav":     path.Join("testdata", "nav.md"),
 		"Content": path.Join("testdata", "content.md"),
 		"Weather": "http://forecast.weather.gov/MapClick.php?lat=13.4712&lon=144.7496&FcstType=json",
 	}
-	data, err := ResolveData(in, true)
+	data, err := ResolveData(keyValues)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 	if err := checkMap("Hello", "Hi there!", data); err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if err := checkMap("Hi", "<p><em>Hi there!</em></p>\n", data); err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
@@ -95,7 +98,6 @@ func TestResolveData(t *testing.T) {
 		t.Error("Expected a JSON blob for weather")
 		t.FailNow()
 	}
-
 }
 
 func TestMakePage(t *testing.T) {
@@ -117,23 +119,19 @@ Content: {{.content}}
 Weather: {{.weather.data.text}}
 `
 
-	in := map[string]string{
-		"hello":   "string:Hi there!",
+	keyValues := map[string]string{
+		"hello":   "text:Hi there!",
 		"nav":     path.Join("testdata", "nav.md"),
 		"content": path.Join("testdata", "content.md"),
 		"weather": "http://forecast.weather.gov/MapClick.php?lat=13.4712&lon=144.7496&FcstType=json",
 	}
 
-	var buf bytes.Buffer
-	wr := io.Writer(&buf)
-
-	tmpl := template.Must(template.New("text").Parse(src))
-	err := MakePage(wr, tmpl, in, true)
+	tmpl := template.Must(template.New("test.tmpl").Parse(src))
+	out, err := MakePageString(tmpl, keyValues)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	out := buf.String()
 	checkForString(out, "Hi there!")
 	checkForString(out, "<ul>")
 }
