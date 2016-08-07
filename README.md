@@ -1,6 +1,5 @@
 
-This is prototypical at this stage...
-
+This is experimental..., things are sure change
 
 # mkpage
 
