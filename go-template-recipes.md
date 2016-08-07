@@ -30,7 +30,7 @@ as well as potentially scriptable in the Bash shell.
 + application/json
 
 
-## only three data sources as supported
+## only three data sources are supported
 
 *mkpage* supports three data sources 
 
