@@ -94,12 +94,38 @@ passed and parse by the text template package.  This is then executed and output
     This is the footer
 </code></pre>
 
-<h2>Options</h2>
+<h2>Content formats and data sources</h2>
+
+<p><em>mkpage</em> support three content formats</p>
+
+<ul>
+<li>text/plain (e.g. &ldquo;text:&rdquo; when specifying strings, any file extension except &ldquo;.md&rdquo;, and &ldquo;.json&rdquo;)</li>
+<li>text/markdown (e.g. &ldquo;markdown:&rdquo; when specifying strings, file extension &ldquo;.md&rdquo;)</li>
+<li>application/json (e.g. &ldquo;json:&rdquo; when specifying strings, file extension &ldquo;.json&rdquo;)</li>
+</ul>
+
+<p>It also supports three content sources</p>
+
+<ul>
+<li>an explicit string (prefixed with a type, e.g. &ldquo;text:&ldquo;, &ldquo;markdown:&ldquo;, &ldquo;json:&ldquo;)</li>
+<li>a filepath</li>
+<li>a URL</li>
+</ul>
+
+<h2>Templates</h2>
+
+<p><em>mkpage</em> template engine is the Go <a href="https://golang.org/pkg/text/template/">text/template</a> package.
+Other template systems could be implemented but I&rsquo;m keeping the experiment simple at this point.</p>
+
+<h2>A note about Markdown dialect</h2>
 
 <p>In additional to populating a template with values from data sources <em>mkpage</em> also includes the
-<a href="https://github.com/russross/blackfriday">blackfriday</a> markdown processor.  Using the &ldquo;-m&rdquo; option any
-a filename referenced with the extension of &ldquo;.md&rdquo; will run through the markdown process for being put into
-the template.  This allows you to easily generate pages and website from markdown files using simple templates.</p>
+<a href="https://github.com/russross/blackfriday">blackfriday</a> markdown processor.  The <code>blackfriday.MarkdownCommon()</code>
+function is envoked whenever markdown content is suggested. That means for strings that have the
+&ldquo;markdown:&rdquo; hint prefix, files ending in &ldquo;.md&rdquo; file extension or URL content with the content type
+returned as &ldquo;text/markdown&rdquo;.</p>
+
+<h2>Options</h2>
 
 <ul>
 <li>-h, -help - get command line help</li>

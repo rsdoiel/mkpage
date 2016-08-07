@@ -90,14 +90,37 @@ In this example the output would look like
 ```
 
 
+## Content formats and data sources
+
+*mkpage* support three content formats
+
++ text/plain (e.g. "text:" when specifying strings, any file extension except ".md", and ".json")
++ text/markdown (e.g. "markdown:" when specifying strings, file extension ".md")
++ application/json (e.g. "json:" when specifying strings, file extension ".json")
+
+It also supports three content sources
+
++ an explicit string (prefixed with a type, e.g. "text:", "markdown:", "json:")
++ a filepath
++ a URL
+
+
+## Templates
+
+*mkpage* template engine is the Go [text/template](https://golang.org/pkg/text/template/) package. 
+Other template systems could be implemented but I'm keeping the experiment simple at this point.
+
+
+## A note about Markdown dialect
+
+In additional to populating a template with values from data sources *mkpage* also includes the
+[blackfriday](https://github.com/russross/blackfriday) markdown processor.  The `blackfriday.MarkdownCommon()`
+function is envoked whenever markdown content is suggested. That means for strings that have the 
+"markdown:" hint prefix, files ending in ".md" file extension or URL content with the content type
+returned as "text/markdown".
 
 
 ## Options
-
-In additional to populating a template with values from data sources *mkpage* also includes the
-[blackfriday](https://github.com/russross/blackfriday) markdown processor.  Using the "-m" option any
-a filename referenced with the extension of ".md" will run through the markdown process for being put into 
-the template.  This allows you to easily generate pages and website from markdown files using simple templates.
 
 + -h, -help - get command line help
 + -v, -version - show *mkpage* version number
