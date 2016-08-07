@@ -1,5 +1,5 @@
 
-This is experimental..., things are sure change
+This is experimental..., things are sure to change
 
 # mkpage
 
