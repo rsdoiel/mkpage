@@ -55,6 +55,12 @@ header h1 {
      color: #FF6E1E;
 }
 
+header a, header a:link, header a:visited, header a:active, header a:hover, header a:focus {
+     color: #FF6E1E;
+     background-color: inherit;
+}
+
+
 a, a:link, a:visited {
      color: #76777B;
      background-color: inherit;
