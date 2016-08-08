@@ -31,9 +31,10 @@ import (
 )
 
 var (
-	showHelp    bool
-	showVersion bool
-	showLicense bool
+	showHelp     bool
+	showVersion  bool
+	showLicense  bool
+	showTemplate bool
 )
 
 func usage(fp *os.File, appName string) {
