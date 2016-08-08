@@ -52,8 +52,8 @@ const (
 	DefaultTemplateSource = `<!DOCTYPE html>
 <html>
 <head>
-  {{if .Title -}}<title>{{- .Title -}}</title>{{- end}}
-  {{if .CSSPath -}}<link href="{{ .CSSPath }}" rel="stylesheet" />{{else -}}
+  {{if .title -}}<title>{{- .title -}}</title>{{- end}}
+  {{if .csspath -}}<link href="{{ .csspath }}" rel="stylesheet" />{{else -}}
   <style>
     body {
       width: 100%;
