@@ -24,7 +24,7 @@ function MakePage () {
         APP="./bin/mkpage"
     fi
 
-    echo "Rendering $html from $content and $nav"
+    echo "Rendering $html"
     $APP \
 	"title=text:mkpage: An experimental template and markdown processor" \
         "nav=$nav" \
