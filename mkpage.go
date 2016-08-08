@@ -1,10 +1,10 @@
 //
 // mkpage is an experiment in a light weight template and markdown processor.
 //
-// @author R. S. Doiel, <rsdoiel@gmail.com>
+// @author R. S. Doiel, <rsdoiel@caltech.edu>
 //
-// Copyright (c) 2016, R. S. Doiel
-// All rights not granted herein are expressly reserved by R. S. Doiel.
+// Copyright (c) 2016, Caltech
+// All rights not granted herein are expressly reserved by Caltech.
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 //
