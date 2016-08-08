@@ -155,13 +155,17 @@ func main() {
 			templateSources = append(templateSources, arg)
 		}
 	}
-	if len(templateSources) == 0 {
-		usage(os.Stderr, appName)
-		fmt.Fprintln(os.Stderr, "ERROR: Missing a page template")
-		os.Exit(1)
-	}
 
-	tmpl, err := template.ParseFiles(templateSources...)
+	// NOTE: Now we assemble everything with the template.
+	var (
+		tmpl *template.Template
+	)
+
+	if len(templateSources) == 0 {
+		tmpl, err = template.New("default.tmpl").Parse(mkpage.DefaultTemplateSource)
+	} else {
+		tmpl, err = template.ParseFiles(templateSources...)
+	}
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Template parsing failed, %s\n", err)
 		os.Exit(1)
