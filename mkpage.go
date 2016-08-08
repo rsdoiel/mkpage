@@ -35,7 +35,7 @@ import (
 
 const (
 	// Version of the mkpage package.
-	Version = "v0.0.5"
+	Version = "v0.0.6"
 
 	// Prefix for explicit string types
 
