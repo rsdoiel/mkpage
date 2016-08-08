@@ -113,8 +113,13 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 func init() {
 	flag.BoolVar(&showHelp, "h", false, "show help")
+	flag.BoolVar(&showHelp, "help", false, "show help")
 	flag.BoolVar(&showVersion, "v", false, "show version")
+	flag.BoolVar(&showVersion, "version", false, "show version")
 	flag.BoolVar(&showLicense, "l", false, "show license")
+	flag.BoolVar(&showLicense, "license", false, "show license")
+	flag.BoolVar(&showTemplate, "t", false, "show the default template")
+	flag.BoolVar(&showTemplate, "template", false, "show the default template")
 }
 
 func main() {
@@ -135,6 +140,11 @@ func main() {
 	}
 	if showLicense == true {
 		license(os.Stdout, appName)
+		os.Exit(0)
+	}
+
+	if showTemplate == true {
+		fmt.Fprintf(os.Stdout, "%s", mkpage.DefaultTemplateSource)
 		os.Exit(0)
 	}
 

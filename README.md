@@ -159,5 +159,6 @@ returned as "text/markdown".
 + -h, -help - get command line help
 + -v, -version - show *mkpage* version number
 + -l, -license - show *mkpage* license information
++ -t, -template - show *mkpage*'s default template
 
 
