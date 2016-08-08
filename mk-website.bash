@@ -36,10 +36,11 @@ function MakePage () {
 
 echo "Checking necessary software is installed"
 softwareCheck mkpage
-echo "Generating website index.html with mkpage"
+echo "Generating website index.html"
 MakePage nav.md README.md index.html
-echo "Generating install.html with mkpage"
+echo "Generating install.html"
 MakePage nav.md INSTALL.md install.html
-echo "Generating go-template-recipes.html with mkpage"
+echo "Generating go-template-recipes.html"
 MakePage nav.md go-template-recipes.md go-template-recipes.html
-
+echo "Generating license.html"
+MakePage nav.md LICENSE license.html
