@@ -1,8 +1,8 @@
 
-+ [home](/)
-+ [mkpage](./)
++ [Home](/)
++ [README](index.html)
++ [Install](install.html)
 + [Go template recipes](go-template-recipes.html)
 + [LICENSE](license.html)
-+ [Install](install.html)
 + [Github](https://github.com/caltechlibrary/mkpage)
 
