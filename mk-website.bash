@@ -43,4 +43,4 @@ MakePage nav.md INSTALL.md install.html
 echo "Generating go-template-recipes.html"
 MakePage nav.md go-template-recipes.md go-template-recipes.html
 echo "Generating license.html"
-MakePage nav.md LICENSE license.html
+MakePage nav.md "markdown:$(cat LICENSE)" license.html
