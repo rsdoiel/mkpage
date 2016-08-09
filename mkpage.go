@@ -35,7 +35,7 @@ import (
 
 const (
 	// Version of the mkpage package.
-	Version = "v0.0.5"
+	Version = "v0.0.7"
 
 	// Prefix for explicit string types
 
@@ -52,8 +52,8 @@ const (
 	DefaultTemplateSource = `<!DOCTYPE html>
 <html>
 <head>
-  {{if .Title -}}<title>{{- .Title -}}</title>{{- end}}
-  {{if .CSSPath -}}<link href="{{ .CSSPath }}" rel="stylesheet" />{{else -}}
+  {{if .title -}}<title>{{- .title -}}</title>{{- end}}
+  {{if .csspath -}}<link href="{{ .csspath }}" rel="stylesheet" />{{else -}}
   <style>
     body {
       width: 100%;

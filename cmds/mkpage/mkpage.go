@@ -31,9 +31,10 @@ import (
 )
 
 var (
-	showHelp    bool
-	showVersion bool
-	showLicense bool
+	showHelp     bool
+	showVersion  bool
+	showLicense  bool
+	showTemplate bool
 )
 
 func usage(fp *os.File, appName string) {
@@ -47,7 +48,9 @@ func usage(fp *os.File, appName string) {
 `, appName)
 
 	flag.VisitAll(func(f *flag.Flag) {
-		fmt.Printf("    -%s %s\n", f.Name, f.Usage)
+		if len(f.Name) > 1 {
+			fmt.Printf("    -%s, -%s %s\n", f.Name[0:1], f.Name, f.Usage)
+		}
 	})
 
 	fmt.Fprintf(fp, `
@@ -113,8 +116,13 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 func init() {
 	flag.BoolVar(&showHelp, "h", false, "show help")
+	flag.BoolVar(&showHelp, "help", false, "show help")
 	flag.BoolVar(&showVersion, "v", false, "show version")
+	flag.BoolVar(&showVersion, "version", false, "show version")
 	flag.BoolVar(&showLicense, "l", false, "show license")
+	flag.BoolVar(&showLicense, "license", false, "show license")
+	flag.BoolVar(&showLicense, "t", false, "show the default template source")
+	flag.BoolVar(&showLicense, "template", false, "show the default template source")
 }
 
 func main() {
@@ -155,13 +163,17 @@ func main() {
 			templateSources = append(templateSources, arg)
 		}
 	}
+
+	// NOTE: Now we're ready to parse and populate our template
+	var (
+		tmpl *template.Template
+	)
 	if len(templateSources) == 0 {
-		usage(os.Stderr, appName)
-		fmt.Fprintln(os.Stderr, "ERROR: Missing a page template")
-		os.Exit(1)
+		tmpl, err = template.New("default.tmpl").Parse(mkpage.DefaultTemplateSource)
+	} else {
+		tmpl, err = template.ParseFiles(templateSources...)
 	}
 
-	tmpl, err := template.ParseFiles(templateSources...)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Template parsing failed, %s\n", err)
 		os.Exit(1)
