@@ -111,8 +111,7 @@ const (
   <footer>{{ .footer }}</footer>
   {{end}}
 </body>
-</html>
-`
+</html>`
 )
 
 // ResolveData takes a data map and reads in the files and URL sources
