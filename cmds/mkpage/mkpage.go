@@ -48,7 +48,9 @@ func usage(fp *os.File, appName string) {
 `, appName)
 
 	flag.VisitAll(func(f *flag.Flag) {
-		fmt.Printf("    -%s %s\n", f.Name, f.Usage)
+		if len(f.Name) > 1 {
+			fmt.Printf("    -%s, -%s    %s\n", f.Name[0:1], f.Name, f.Usage)
+		}
 	})
 
 	fmt.Fprintf(fp, `
