@@ -121,8 +121,8 @@ func init() {
 	flag.BoolVar(&showVersion, "version", false, "show version")
 	flag.BoolVar(&showLicense, "l", false, "show license")
 	flag.BoolVar(&showLicense, "license", false, "show license")
-	flag.BoolVar(&showLicense, "t", false, "show the default template source")
-	flag.BoolVar(&showLicense, "template", false, "show the default template source")
+	flag.BoolVar(&showTemplate, "t", false, "show the default template source")
+	flag.BoolVar(&showTemplate, "template", false, "show the default template source")
 }
 
 func main() {
@@ -143,6 +143,10 @@ func main() {
 	}
 	if showLicense == true {
 		license(os.Stdout, appName)
+		os.Exit(0)
+	}
+	if showTemplate == true {
+		fmt.Fprintf(os.Stdout, "%s\n", mkpage.DefaultTemplateSource)
 		os.Exit(0)
 	}
 
