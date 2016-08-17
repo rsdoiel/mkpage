@@ -58,7 +58,7 @@ const (
     body {
       width: 100%;
       height: 100%;
-      margin: 10%;
+      margin: 0;
       padding: 0;
       font-size: 12px;
       font-family: sans-serif;
@@ -91,8 +91,9 @@ const (
 	}
 
     section {
-      width: 100%;
+      width: 80%;
       height: auto;
+	  padding: 5%;
     }
   </style>
   {{- end }}
