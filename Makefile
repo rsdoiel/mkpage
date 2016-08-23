@@ -27,6 +27,9 @@ install:
 release:
 	./mk-release.bash
 
+website:
+	./mk-website.bash
+
 publish:
 	./mk-website.bash
 	./publish.bash
