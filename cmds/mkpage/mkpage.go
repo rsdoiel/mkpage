@@ -49,7 +49,7 @@ func usage(fp *os.File, appName string) {
 
 	flag.VisitAll(func(f *flag.Flag) {
 		if len(f.Name) > 1 {
-			fmt.Printf("    -%s, -%s    %s\n", f.Name[0:1], f.Name, f.Usage)
+			fmt.Printf("    -%s, -%s\t%s\n", f.Name[0:1], f.Name, f.Usage)
 		}
 	})
 
@@ -147,7 +147,7 @@ func main() {
 	}
 
 	if showTemplate == true {
-		fmt.Fprintf(os.Stdout, "%s", mkpage.DefaultTemplateSource)
+		fmt.Fprintf(os.Stdout, "%s\n", mkpage.DefaultTemplateSource)
 		os.Exit(0)
 	}
 

@@ -38,10 +38,9 @@ defined in your path (e.g. $HOME/bin).</p>
 <ol>
 <li>Go to <a href="https://github.com/caltechlibrary/mkpage/releases/latest">github.com/caltechlibrary/mkpage/releases/latest</a></li>
 <li>Click on the green &ldquo;mkpage-binary-release.zip&rdquo; link and download</li>
-<li>Open a finder window and find the downloaded file and unzip it (e.g. mkpage-binary-release.zip)</li>
-<li>Look in the unziped folder and find dist/macosx-amd64/mkpage</li>
-<li>Drag (or copy) the <em>mkpage</em> to a &ldquo;bin&rdquo; directory in your path</li>
-<li>Open and &ldquo;Terminal&rdquo; and run <code>mkpage -h</code></li>
+<li>Open a terminal and type <code>cd ~/Downloads/mkpage-binary-releasedist/macosx-amd64</code></li>
+<li>Copy the <em>mkpage</em> to a &ldquo;bin&rdquo; directory in your path.  For example, type <code>sudo cp mkpage /usr/local/bin</code></li>
+<li>Test by typing <code>mkpage -h</code></li>
 </ol>
 
 <h2>Windows</h2>
@@ -51,8 +50,9 @@ defined in your path (e.g. $HOME/bin).</p>
 <li>Click on the green &ldquo;mkpage-binary-release.zip&rdquo; link and download</li>
 <li>Open the file manager find the downloaded file and unzip it (e.g. mkpage-binary-release.zip)</li>
 <li>Look in the unziped folder and find dist/windows-amd64/mkpage.exe</li>
-<li>Drag (or copy) the <em>mkpage.exe</em> to a &ldquo;bin&rdquo; directory in your path</li>
-<li>Open Bash and and run <code>mkpage -h</code></li>
+<li>Drag (or copy) the <em>mkpage.exe</em> to a &ldquo;bin&rdquo; directory in your path (a good option is C\Users\username\bin)</li>
+<li>Open Bash and and test by typing <code>mkpage -h</code></li>
+<li>If it doesn&rsquo;t work type <code>echo $PATH</code> and copy <em>mkpage.exe</em> to one of the directories listed</li>
 </ol>
 
 <h2>Linux</h2>
