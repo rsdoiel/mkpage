@@ -1,19 +1,29 @@
 #!/bin/bash
 
-function checkApp() {
-    APP_NAME=$(which $1)
-    if [ "$APP_NAME" = "" ] && [ ! -f "./bin/$1" ]; then
-        echo "Missing $APP_NAME"
-        exit 1
-    fi
-}
-
 function softwareCheck() {
-    for APP_NAME in $@; do
-        checkApp $APP_NAME
+    for NAME in $@; do
+        APP_NAME=$(which $NAME)
+        if [ "$APP_NAME" = "" ] && [ ! -f "./bin/$NAME" ]; then
+            echo "Missing $NAME"
+            exit 1
+        fi
     done
 }
 
+function RelativePath() {
+    # R is our target result path, 
+    # e.g. css/site.css with appropriately prefixed "../"
+    R="$1"
+    # D is the directory of the filepath we're calculating from, 
+    # e.g. lesson1/part2/index.html becomes lesson1/part2
+    D=$(dirname $2)
+    while [ "$D" != "" ] && [ "$D" != "." ]; do
+        R="../$R"
+        D=$(dirname $D)
+    done
+    echo "$R"
+}
+:
 function MakePage () {
     nav="$1"
     content="$2"
