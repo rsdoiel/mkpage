@@ -1,5 +1,6 @@
 //
-// mkpage is a thought experiment in a light weight template and markdown processor
+// reldocpath.go takes a source document path and a target document path with same base path
+// returning a relative path to the target file.
 //
 // @author R. S. Doiel, <rsdoiel@gmail.com>
 //
@@ -21,81 +22,49 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"path"
-	"strings"
-	"text/template"
 
-	// My package
 	"github.com/rsdoiel/mkpage"
 )
 
 var (
-	showHelp     bool
-	showVersion  bool
-	showLicense  bool
-	showTemplate bool
+	showHelp    bool
+	showVersion bool
+	showLicense bool
 )
 
-func usage(fp *os.File, appName string) {
-	fmt.Fprintf(fp, `
- USAGE: %s [OPTION] [KEY/VALUE DATA PAIRS] TEMPLATE_FILENAME [TEMPLATE_FILENAMES]
+func usage(out io.Writer, appname, version string) {
+	fmt.Fprintf(out, `
+ USAGE: %s SOURCE_DOC_PATH TARGET_DOC_PATH 
 
- Using the key value pairs populate the template(s) and render to stdout.
+ Given a source document path, a target document path calculate and
+ the implied common base path calculate the relative path for target.
+
+ EXAMPLE:
+
+ Given
+
+     %s chapter-01/lesson-03.html css/site.css
+
+ would output
+
+     .../css/site.css
 
  OPTIONS
 
-`, appName)
-
+`, appname, appname)
 	flag.VisitAll(func(f *flag.Flag) {
 		if len(f.Name) > 1 {
-			fmt.Printf("    -%s, -%s %s\n", f.Name[0:1], f.Name, f.Usage)
+			fmt.Fprintf(out, "    -%s, --%s\t%s\n", f.Name[0:1], f.Name, f.Usage)
 		}
 	})
-
-	fmt.Fprintf(fp, `
-
- EXAMPLE
-
- Template
-
-    Date: {{- .now}}
-
-    Hello {{.name -}},
-    
-    The current weather is
-
-    {{.weather}}
-
-    Thank you
-
-	{{.signature}}
-
- Render the template above (i.e. myformletter.template) would be accomplished from the following
- data sources--
-
- + "now" and "name" are strings
- + "weatherForcast" comes from a URL
- + "license" comes from a file in our local disc
-
- That would be expressed on the command line as follows
-
-	mkpage "now=text:$(date)" "name=text:Little Frieda" \
-		"weather=http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&lon=144.74977715100056&FcstType=json" \
-		signature=testdata/signature.txt \
-		testdata/myformletter.template
-
- Golang's text/template docs can be found at 
-
-      https://golang.org/pkg/text/template/
-
- Version %s
-
-`, mkpage.Version)
+	fmt.Fprintf(out, "\n\n Version %s\n", version)
 }
 
-func license(fp *os.File, appName string) {
-	fmt.Fprintf(fp, `
+func license(out io.Writer, appname, version string) {
+	fmt.Fprintf(out, `
 %s %s
 
 Copyright (c) 2016, R. S. Doiel
@@ -111,79 +80,40 @@ Redistribution and use in source and binary forms, with or without modification,
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-`, appName, mkpage.Version)
+`, appname, version)
 }
 
 func init() {
-	flag.BoolVar(&showHelp, "h", false, "show help")
-	flag.BoolVar(&showHelp, "help", false, "show help")
-	flag.BoolVar(&showVersion, "v", false, "show version")
-	flag.BoolVar(&showVersion, "version", false, "show version")
-	flag.BoolVar(&showLicense, "l", false, "show license")
-	flag.BoolVar(&showLicense, "license", false, "show license")
-	flag.BoolVar(&showTemplate, "t", false, "show the default template source")
-	flag.BoolVar(&showTemplate, "template", false, "show the default template source")
+	flag.BoolVar(&showHelp, "h", false, "display help")
+	flag.BoolVar(&showHelp, "help", false, "display help")
+	flag.BoolVar(&showVersion, "v", false, "display version")
+	flag.BoolVar(&showVersion, "version", false, "display version")
+	flag.BoolVar(&showLicense, "l", false, "display license")
+	flag.BoolVar(&showLicense, "license", false, "display license")
 }
 
 func main() {
-	var (
-		err error
-	)
-
-	appName := path.Base(os.Args[0])
+	appname := path.Base(os.Args[0])
 	flag.Parse()
 
 	if showHelp == true {
-		usage(os.Stdout, appName)
+		usage(os.Stdout, appname, mkpage.Version)
 		os.Exit(0)
 	}
 	if showVersion == true {
-		fmt.Printf(" Version %s\n", mkpage.Version)
+		fmt.Fprintf(os.Stdout, "%s %s\n", appname, mkpage.Version)
 		os.Exit(0)
 	}
 	if showLicense == true {
-		license(os.Stdout, appName)
+		license(os.Stdout, appname, mkpage.Version)
 		os.Exit(0)
 	}
-	if showTemplate == true {
-		fmt.Fprintf(os.Stdout, "%s\n", mkpage.DefaultTemplateSource)
-		os.Exit(0)
-	}
-
-	var templateSources []string
-	data := make(map[string]string)
 	args := flag.Args()
-	for i, arg := range args {
-		if strings.Contains(arg, "=") == true {
-			// Update data map
-			pair := strings.SplitN(arg, "=", 2)
-			if len(pair) != 2 {
-				fmt.Fprintf(os.Stderr, "Can't read pair (%d) %s\n", i+1, arg)
-				os.Exit(1)
-			}
-			data[pair[0]] = pair[1]
-		} else {
-			// Must be the template source
-			templateSources = append(templateSources, arg)
-		}
-	}
-
-	// NOTE: Now we're ready to parse and populate our template
-	var (
-		tmpl *template.Template
-	)
-	if len(templateSources) == 0 {
-		tmpl, err = template.New("default.tmpl").Parse(mkpage.DefaultTemplateSource)
-	} else {
-		tmpl, err = template.ParseFiles(templateSources...)
-	}
-
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Template parsing failed, %s\n", err)
+	if len(args) != 2 {
+		fmt.Fprintf(os.Stderr, " Expected a source and target file path\n For help try: %s -help", appname)
 		os.Exit(1)
+
 	}
-	if err := mkpage.MakePage(os.Stdout, tmpl, data); err != nil {
-		fmt.Fprintf(os.Stderr, "%s\n", err)
-		os.Exit(1)
-	}
+	source, target := args[0], args[1]
+	fmt.Fprintf(os.Stdout, "%s", mkpage.RelativeDocPath(source, target))
 }
