@@ -1,5 +1,5 @@
 
-This is experimental..., things are sure to change
+    An experiment, a deconstructed content manage system, things are sure to change ...
 
 # mkpage
 
@@ -29,7 +29,7 @@ a URL. Here's a basic demonstration starting with the template.
     {{.signature}}
 ```
 
-To render the template above (i.e. myformletter.tmpl) is expecting values from various data sources.
+To render the template above (i.e. weather_form_letter.tmpl) is expecting values from various data sources.
 This break down is as follows.
 
 + "now" and "name" are explicit strings
@@ -43,7 +43,7 @@ Here is how we would express the key/value pairs on the command line.
         "name=text:Little Frieda" \
         "weather=http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&lon=144.74977715100056&FcstType=json" \
         signature=testdata/signature.txt \
-        testdata/myformletter.tmpl
+        testdata/weather_form_letter.tmpl
 ```
 
 Notice the two explicit strings are prefixed with "text:" (other possible formats are "markdown:", "json:").
@@ -167,20 +167,30 @@ content management system from Bash easier
 
 ### reldocpath
 
-*reldocpath* is intended to easy the calculation of relative
-asset paths (e.g. common css files, images) from a common base path.  
+*reldocpath* is intended to simplify the calculation of relative
+asset paths (e.g. common css files, images, feeds) when working from
+a common project directory.
 
 #### Example
 
-You're assembling document *course/week/01/readings.html* and need to calculate the path to *css* from the
-same working directory then you could use *reldocpath* to get the result
+You know the path from the source document to target document from the project root folder.
+
++ Source is *course/week/01/readings.html*  
++ Target is *css/site.css*.
+
+In Bash this would look like--
 
 ```shell
+    # We know the paths relative to the project directory
     DOC_PATH="course/week/01/readings.html"
     CSS_PATH="css/site.css"
-    RELATIVE_CSS_PATH=$(reldocpath $DOC_PATH $CSS_PATH)
-    # the expected resoult would be ../../../css/site.css
-    echo $RELATIVE_CSS_PATH
+    echo $(reldocpath $DOC_PATH $CSS_PATH)
+```
+
+the output would look like
+
+```shell
+    ../../../css/site.css
 ```
 
 

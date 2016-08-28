@@ -8,7 +8,8 @@
     <header>
         <h1>mkpage: An experimental template and markdown processor</h1>
     </header>
-    <section><p>This is experimental&hellip;, things are sure to change</p>
+    <section><pre><code>An experiment, a deconstructed content manage system, things are sure to change ...
+</code></pre>
 
 <h1>mkpage</h1>
 
@@ -37,7 +38,7 @@ a URL. Here&rsquo;s a basic demonstration starting with the template.</p>
     {{.signature}}
 </code></pre>
 
-<p>To render the template above (i.e. myformletter.tmpl) is expecting values from various data sources.
+<p>To render the template above (i.e. weather_form_letter.tmpl) is expecting values from various data sources.
 This break down is as follows.</p>
 
 <ul>
@@ -52,7 +53,7 @@ This break down is as follows.</p>
         &quot;name=text:Little Frieda&quot; \
         &quot;weather=http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&amp;lon=144.74977715100056&amp;FcstType=json&quot; \
         signature=testdata/signature.txt \
-        testdata/myformletter.tmpl
+        testdata/weather_form_letter.tmpl
 </code></pre>
 
 <p>Notice the two explicit strings are prefixed with &ldquo;text:&rdquo; (other possible formats are &ldquo;markdown:&ldquo;, &ldquo;json:&ldquo;).
@@ -169,19 +170,30 @@ content management system from Bash easier</p>
 
 <h3>reldocpath</h3>
 
-<p><em>reldocpath</em> is intended to easy the calculation of relative
-asset paths (e.g. common css files, images) from a common base path.</p>
+<p><em>reldocpath</em> is intended to simplify the calculation of relative
+asset paths (e.g. common css files, images, feeds) when working from
+a common project directory.</p>
 
 <h4>Example</h4>
 
-<p>You&rsquo;re assembling document <em>course/week/01/readings.html</em> and need to calculate the path to <em>css</em> from the
-same working directory then you could use <em>reldocpath</em> to get the result</p>
+<p>You know the path from the source document to target document from the project root folder.</p>
 
-<pre><code class="language-shell">    DOC_PATH=&quot;course/week/01/readings.html&quot;
+<ul>
+<li>Source is <em>course/week/01/readings.html</em><br /></li>
+<li>Target is <em>css/site.css</em>.</li>
+</ul>
+
+<p>In Bash this would look like&ndash;</p>
+
+<pre><code class="language-shell">    # We know the paths relative to the project directory
+    DOC_PATH=&quot;course/week/01/readings.html&quot;
     CSS_PATH=&quot;css/site.css&quot;
-    RELATIVE_CSS_PATH=$(reldocpath $DOC_PATH $CSS_PATH)
-    # the expected resoult would be ../../../css/site.css
-    echo $RELATIVE_CSS_PATH
+    echo $(reldocpath $DOC_PATH $CSS_PATH)
+</code></pre>
+
+<p>the output would look like</p>
+
+<pre><code class="language-shell">    ../../../css/site.css
 </code></pre>
 </section>
     <nav><ul>

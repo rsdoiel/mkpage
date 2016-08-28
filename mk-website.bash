@@ -23,14 +23,14 @@ function MakePage () {
     if [ -f ./bin/reldocpath ]; then
         RELDOCPATH="./bin/reldocpath"
     fi
-    csspath="text:"$($RELDOCPATH $html css/site.css)
+    csspath=$($RELDOCPATH $html css/site.css)
 
     echo "Rendering $html"
     $MKPAGE \
 	"title=text:mkpage: An experimental template and markdown processor" \
         "nav=$nav" \
         "content=$content" \
-        "csspath=$csspath" \
+        "csspath=text:$csspath" \
         page.tmpl > $html
 }
 
