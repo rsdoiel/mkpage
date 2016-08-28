@@ -161,6 +161,28 @@ returned as &ldquo;text/markdown&rdquo;.</p>
 <li>-v, -version - show <em>mkpage</em> version number</li>
 <li>-l, -license - show <em>mkpage</em> license information</li>
 </ul>
+
+<h2>Helper utilities</h2>
+
+<p><em>mkpage</em> comes with some helper utilities that make scripting a deconstructed
+content management system from Bash easier</p>
+
+<h3>reldocpath</h3>
+
+<p><em>reldocpath</em> is intended to easy the calculation of relative
+asset paths (e.g. common css files, images) from a common base path.</p>
+
+<h4>Example</h4>
+
+<p>You&rsquo;re assembling document <em>course/week/01/readings.html</em> and need to calculate the path to <em>css</em> from the
+same working directory then you could use <em>reldocpath</em> to get the result</p>
+
+<pre><code class="language-shell">    DOC_PATH=&quot;course/week/01/readings.html&quot;
+    CSS_PATH=&quot;css/site.css&quot;
+    RELATIVE_CSS_PATH=$(reldocpath $DOC_PATH $CSS_PATH)
+    # the expected resoult would be ../../../css/site.css
+    echo $RELATIVE_CSS_PATH
+</code></pre>
 </section>
     <nav><ul>
 <li><a href="/">home</a></li>

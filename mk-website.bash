@@ -10,40 +10,32 @@ function softwareCheck() {
     done
 }
 
-function RelativePath() {
-    # R is our target result path, 
-    # e.g. css/site.css with appropriately prefixed "../"
-    R="$1"
-    # D is the directory of the filepath we're calculating from, 
-    # e.g. lesson1/part2/index.html becomes lesson1/part2
-    D=$(dirname $2)
-    while [ "$D" != "" ] && [ "$D" != "." ]; do
-        R="../$R"
-        D=$(dirname $D)
-    done
-    echo "$R"
-}
-:
 function MakePage () {
     nav="$1"
     content="$2"
     html="$3"
-    # Always use the latest compiled mkpage
-    APP=$(which mkpage)
+    # Always use the latest compiled mkpage and reldocpath
+    MKPAGE=$(which mkpage)
     if [ -f ./bin/mkpage ]; then
-        APP="./bin/mkpage"
+        MKPAGE="./bin/mkpage"
     fi
+    RELDOCPATH=$(which reldocpath)
+    if [ -f ./bin/reldocpath ]; then
+        RELDOCPATH="./bin/reldocpath"
+    fi
+    csspath="text:"$($RELDOCPATH $html css/site.css)
 
     echo "Rendering $html"
-    $APP \
+    $MKPAGE \
 	"title=text:mkpage: An experimental template and markdown processor" \
         "nav=$nav" \
         "content=$content" \
+        "csspath=$csspath" \
         page.tmpl > $html
 }
 
 echo "Checking necessary software is installed"
-softwareCheck mkpage
+softwareCheck mkpage reldocpath
 echo "Generating website index.html"
 MakePage nav.md README.md index.html
 echo "Generating install.html"

@@ -160,4 +160,27 @@ returned as "text/markdown".
 + -v, -version - show *mkpage* version number
 + -l, -license - show *mkpage* license information
 
+## Helper utilities
+
+*mkpage* comes with some helper utilities that make scripting a deconstructed
+content management system from Bash easier
+
+### reldocpath
+
+*reldocpath* is intended to easy the calculation of relative
+asset paths (e.g. common css files, images) from a common base path.  
+
+#### Example
+
+You're assembling document *course/week/01/readings.html* and need to calculate the path to *css* from the
+same working directory then you could use *reldocpath* to get the result
+
+```shell
+    DOC_PATH="course/week/01/readings.html"
+    CSS_PATH="css/site.css"
+    RELATIVE_CSS_PATH=$(reldocpath $DOC_PATH $CSS_PATH)
+    # the expected resoult would be ../../../css/site.css
+    echo $RELATIVE_CSS_PATH
+```
+
 
