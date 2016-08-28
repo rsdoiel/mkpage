@@ -5,7 +5,7 @@
 RELEASE_NAME=mkpage
 echo "NOTE: this can take a while..."
 for PROGNAME in mkpage reldocpath; do
-    echo "Building dist/linix-amd64/$PROGNAME"
+    echo "Building dist/linux-amd64/$PROGNAME"
   env CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o dist/linux-amd64/$PROGNAME cmds/$PROGNAME/$PROGNAME.go
     echo "Building dist/maxosx-amd64/$PROGNAME"
   env CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o dist/macosx-amd64/$PROGNAME cmds/$PROGNAME/$PROGNAME.go
