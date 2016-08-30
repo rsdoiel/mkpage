@@ -1,5 +1,5 @@
 
-This is experimental..., things are sure to change
+    An experiment, a deconstructed content manage system, things are sure to change ...
 
 # mkpage
 
@@ -29,7 +29,7 @@ a URL. Here's a basic demonstration starting with the template.
     {{.signature}}
 ```
 
-To render the template above (i.e. myformletter.tmpl) is expecting values from various data sources.
+To render the template above (i.e. weather_form_letter.tmpl) is expecting values from various data sources.
 This break down is as follows.
 
 + "now" and "name" are explicit strings
@@ -43,27 +43,40 @@ Here is how we would express the key/value pairs on the command line.
         "name=text:Little Frieda" \
         "weather=http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&lon=144.74977715100056&FcstType=json" \
         signature=testdata/signature.txt \
-        testdata/myformletter.tmpl
+        testdata/weather_form_letter.tmpl
 ```
 
 Notice the two explicit strings are prefixed with "text:" (other possible formats are "markdown:", "json:").
 Values without a prefix are assumed to be file paths. We see that in testdata/signature.txt.  Likewise the 
 weather data is coming from a URL. *mkpage* distinguishes that by the prefixes "http://" and "https://". 
-Since a HTTP response contains headers describing the content type (e.g.  "Content-Type: text/markdown") we 
+Since an HTTP response contains headers describing the content type (e.g.  "Content-Type: text/markdown") we 
 do not require any other prefix. Likewise a filename's extension can give us an inference of the data format 
-it contains. ".json" is a JSON document, ".md" is a Markdown document and everything else is just plain text.
+it contains. ".json" is a JSON document, ".md" is a Markdown document and everything else is treated as plain text.
 
 
 Since we are leveraging Go's [text/template](https://golang.org/pkg/text/template/) the template itself
 can be more than a simple substitution. It can contain conditional expressions, ranges for data and even
-include blocks from other templates.
+include blocks from other templates included on the command line of *mkpage*.
 
 
 
-## Templates
+## Template basics
 
 *mkpage* template engine is the Go [text/template](https://golang.org/pkg/text/template/) package. 
-Other template systems could be implemented but I'm keeping the experiment simple at this point.
+That's a good place to look for official answers but I've included a simple overview to ease you
+into Go's template system.
+
+### Basic template element
+
+A basic replacement happens by wrapping a content variable in two curly braces. Variables begin
+with a dot.
+
+```go
+    Hello {{ .name }},
+```
+
+Would replace `{{ .name }}` with the value passed into the template as "name".
+
 
 ### Conditional elements
 
@@ -139,6 +152,7 @@ In this example the output would look like
 It also supports three data sources
 
 + an explicit string (prefixed with a hint, e.g. "text:", "markdown:", "json:")
+    + the prefix is case sensitive so "Text:" is not the same as "text:"
 + a filepath and filename
 + a URL
 
@@ -153,11 +167,42 @@ function is envoked whenever markdown content is suggested. That means for strin
 "markdown:" hint prefix, files ending in ".md" file extension or URL content with the content type
 returned as "text/markdown".
 
+The blackfriday implementation includes many enhancement to the original 
+[Markdown](https://daringfireball.net/projects/markdown/). As example blackfirday's implemetation 
+includes a basic table output.
 
-## Options
 
-+ -h, -help - get command line help
-+ -v, -version - show *mkpage* version number
-+ -l, -license - show *mkpage* license information
+## Companion utilities
+
+*mkpage* comes with some helper utilities that make scripting a deconstructed
+content management system from Bash easier.
+
+### reldocpath
+
+*reldocpath* is intended to simplify the calculation of relative
+asset paths (e.g. common css files, images, feeds) when working from
+a common project directory.
+
+#### Example
+
+You know the path from the source document to target document from the project root folder.
+
++ Source is *course/week/01/readings.html*  
++ Target is *css/site.css*.
+
+In Bash this would look like--
+
+```shell
+    # We know the paths relative to the project directory
+    DOC_PATH="course/week/01/readings.html"
+    CSS_PATH="css/site.css"
+    echo $(reldocpath $DOC_PATH $CSS_PATH)
+```
+
+the output would look like
+
+```shell
+    ../../../css/site.css
+```
 
 

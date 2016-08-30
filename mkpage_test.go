@@ -135,3 +135,23 @@ Weather: {{.weather.data.text}}
 	checkForString(out, "Hi there!")
 	checkForString(out, "<ul>")
 }
+
+func TestRelativeDocPath(t *testing.T) {
+	pathOK := func(t *testing.T, expected, found string) {
+		if strings.Compare(expected, found) != 0 {
+			t.Errorf("expected %q, found %q", expected, found)
+		}
+	}
+	target := "css/sites.css"
+	src := "index.html"
+	pathOK(t, target, RelativeDocPath(src, target))
+
+	src = "module/index.html"
+	pathOK(t, "../css/sites.css", RelativeDocPath(src, target))
+
+	src = "modules/chapter-01/"
+	pathOK(t, "../../css/sites.css", RelativeDocPath(src, target))
+
+	src = "modules/chapter-01/index.html"
+	pathOK(t, "../../css/sites.css", RelativeDocPath(src, target))
+}

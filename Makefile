@@ -5,8 +5,10 @@ build:
 	gofmt -w mkpage.go
 	gofmt -w mkpage_test.go
 	gofmt -w cmds/mkpage/mkpage.go
+	gofmt -w cmds/reldocpath/reldocpath.go
 	go build
 	go build -o bin/mkpage cmds/mkpage/mkpage.go
+	go build -o bin/reldocpath cmds/reldocpath/reldocpath.go
 
 test:
 	go test
@@ -23,6 +25,7 @@ clean:
 
 install:
 	env GOBIN=$(HOME)/bin go install cmds/mkpage/mkpage.go
+	env GOBIN=$(HOME)/bin go install cmds/reldocpath/reldocpath.go
 
 release:
 	./mk-release.bash
