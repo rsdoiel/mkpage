@@ -161,3 +161,8 @@ returned as "text/markdown".
 + -l, -license - show *mkpage* license information
 
 
+## References
+
++ [Markdown](http://daringfireball.net/projects/markdown/) as specified by John Grubber (the person who created Markdown)
++ [Mastering Markdown](https://guides.github.com/features/mastering-markdown/) Github Guide
++ [blackfriday]() markdown processor
