@@ -8,7 +8,8 @@
     <header>
         <h1>mkpage: An experimental template and markdown processor</h1>
     </header>
-    <section><p>This is experimental&hellip;, things are sure to change</p>
+    <section><pre><code>An experiment, a deconstructed content manage system, things are sure to change ...
+</code></pre>
 
 <h1>mkpage</h1>
 
@@ -37,7 +38,7 @@ a URL. Here&rsquo;s a basic demonstration starting with the template.</p>
     {{.signature}}
 </code></pre>
 
-<p>To render the template above (i.e. myformletter.tmpl) is expecting values from various data sources.
+<p>To render the template above (i.e. weather_form_letter.tmpl) is expecting values from various data sources.
 This break down is as follows.</p>
 
 <ul>
@@ -52,24 +53,35 @@ This break down is as follows.</p>
         &quot;name=text:Little Frieda&quot; \
         &quot;weather=http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&amp;lon=144.74977715100056&amp;FcstType=json&quot; \
         signature=testdata/signature.txt \
-        testdata/myformletter.tmpl
+        testdata/weather_form_letter.tmpl
 </code></pre>
 
 <p>Notice the two explicit strings are prefixed with &ldquo;text:&rdquo; (other possible formats are &ldquo;markdown:&ldquo;, &ldquo;json:&ldquo;).
 Values without a prefix are assumed to be file paths. We see that in testdata/signature.txt.  Likewise the
 weather data is coming from a URL. <em>mkpage</em> distinguishes that by the prefixes &ldquo;http://&rdquo; and &ldquo;https://&ldquo;.
-Since a HTTP response contains headers describing the content type (e.g.  &ldquo;Content-Type: text/markdown&rdquo;) we
+Since an HTTP response contains headers describing the content type (e.g.  &ldquo;Content-Type: text/markdown&rdquo;) we
 do not require any other prefix. Likewise a filename&rsquo;s extension can give us an inference of the data format
-it contains. &ldquo;.json&rdquo; is a JSON document, &ldquo;.md&rdquo; is a Markdown document and everything else is just plain text.</p>
+it contains. &ldquo;.json&rdquo; is a JSON document, &ldquo;.md&rdquo; is a Markdown document and everything else is treated as plain text.</p>
 
 <p>Since we are leveraging Go&rsquo;s <a href="https://golang.org/pkg/text/template/">text/template</a> the template itself
 can be more than a simple substitution. It can contain conditional expressions, ranges for data and even
-include blocks from other templates.</p>
+include blocks from other templates included on the command line of <em>mkpage</em>.</p>
 
-<h2>Templates</h2>
+<h2>Template basics</h2>
 
 <p><em>mkpage</em> template engine is the Go <a href="https://golang.org/pkg/text/template/">text/template</a> package.
-Other template systems could be implemented but I&rsquo;m keeping the experiment simple at this point.</p>
+That&rsquo;s a good place to look for official answers but I&rsquo;ve included a simple overview to ease you
+into Go&rsquo;s template system.</p>
+
+<h3>Basic template element</h3>
+
+<p>A basic replacement happens by wrapping a content variable in two curly braces. Variables begin
+with a dot.</p>
+
+<pre><code class="language-go">    Hello {{ .name }},
+</code></pre>
+
+<p>Would replace <code>{{ .name }}</code> with the value passed into the template as &ldquo;name&rdquo;.</p>
 
 <h3>Conditional elements</h3>
 
@@ -139,7 +151,11 @@ or even be defined in the main template file itself).</p>
 <p>It also supports three data sources</p>
 
 <ul>
-<li>an explicit string (prefixed with a hint, e.g. &ldquo;text:&ldquo;, &ldquo;markdown:&ldquo;, &ldquo;json:&ldquo;)</li>
+<li>an explicit string (prefixed with a hint, e.g. &ldquo;text:&ldquo;, &ldquo;markdown:&ldquo;, &ldquo;json:&ldquo;)
+
+<ul>
+<li>the prefix is case sensitive so &ldquo;Text:&rdquo; is not the same as &ldquo;text:&rdquo;</li>
+</ul></li>
 <li>a filepath and filename</li>
 <li>a URL</li>
 </ul>
@@ -154,14 +170,31 @@ function is envoked whenever markdown content is suggested. That means for strin
 &ldquo;markdown:&rdquo; hint prefix, files ending in &ldquo;.md&rdquo; file extension or URL content with the content type
 returned as &ldquo;text/markdown&rdquo;.</p>
 
-<h2>Options</h2>
+<p>The blackfriday implementation includes many enhancement to the original
+<a href="https://daringfireball.net/projects/markdown/">Markdown</a>. As example blackfirday&rsquo;s implemetation
+includes a basic table output.</p>
+
+<h2>Companion utilities</h2>
+
+<p><em>mkpage</em> comes with some helper utilities that make scripting a deconstructed
+content management system from Bash easier.</p>
+
+<h3>reldocpath</h3>
+
+<p><em>reldocpath</em> is intended to simplify the calculation of relative
+asset paths (e.g. common css files, images, feeds) when working from
+a common project directory.</p>
+
+<h4>Example</h4>
+
+<p>You know the path from the source document to target document from the project root folder.</p>
 
 <ul>
-<li>-h, -help - get command line help</li>
-<li>-v, -version - show <em>mkpage</em> version number</li>
-<li>-l, -license - show <em>mkpage</em> license information</li>
+<li>Source is <em>course/week/01/readings.html</em><br /></li>
+<li>Target is <em>css/site.css</em>.</li>
 </ul>
 
+<<<<<<< HEAD
 <h2>References</h2>
 
 <ul>
@@ -169,6 +202,20 @@ returned as &ldquo;text/markdown&rdquo;.</p>
 <li><a href="https://guides.github.com/features/mastering-markdown/">Mastering Markdown</a> Github Guide</li>
 <li>[blackfriday]() markdown processor</li>
 </ul>
+=======
+<p>In Bash this would look like&ndash;</p>
+
+<pre><code class="language-shell">    # We know the paths relative to the project directory
+    DOC_PATH=&quot;course/week/01/readings.html&quot;
+    CSS_PATH=&quot;css/site.css&quot;
+    echo $(reldocpath $DOC_PATH $CSS_PATH)
+</code></pre>
+
+<p>the output would look like</p>
+
+<pre><code class="language-shell">    ../../../css/site.css
+</code></pre>
+>>>>>>> 57abad292c9c493de1e75a996e1ee078ba37f017
 </section>
     <nav><ul>
 <li><a href="/">home</a></li>
