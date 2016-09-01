@@ -244,7 +244,7 @@ provides a *index* function to address those types of property names.
                 {"family-name": "Frieda", "other-name": "Little"},
                 {"family-name": "Sam", "other-name": "Mojo"},
                 {"family-name": "Flanders", "other-name": "Jack"}
-                ]
+            ]
         }
     ]
 ```
