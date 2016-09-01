@@ -266,7 +266,7 @@ Iterating over this list in a template
     </ul>
 ```
 
-The *index* function can be used to build a part too
+The *index* function can be used to build a nested path too
 
 ```
     {{index "top-level" "middle-level" "bottom-level" .someData}}
