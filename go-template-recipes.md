@@ -254,14 +254,16 @@ Iterating over this list in a template
 ```html
     <ul>
         {{with .data -}}
-            <li>{{with (index "article-title" .)}}Article: {{ . }}{{end -}}
-                {{with (index "journal-title" .)}} Journal: {{ . }}{{end -}}
-                {{range $i, $author := (index "author-list" .)}}
+        <li>
+           {{with (index "article-title" .)}}Article: {{ . }}{{end -}}
+           {{with (index "journal-title" .)}} Journal: {{ . }}{{end -}}
+           {{with (index "author-list" .)}}<br />
+           Authors: {{range $i, $author := (index "author-list" .)}}
                     {{if gt $i 0}}; {{end-}}
                     {{index "family-name" $author}}, {{index "other-name" $author}}
                 {{end}}
-
-            </li>
+           {{end}}
+        </li>
         {{- end}}
     </ul>
 ```

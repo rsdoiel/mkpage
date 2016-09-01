@@ -266,14 +266,16 @@ provides a <em>index</em> function to address those types of property names.</p>
 
 <pre><code class="language-html">    &lt;ul&gt;
         {{with .data -}}
-            &lt;li&gt;{{with (index &quot;article-title&quot; .)}}Article: {{ . }}{{end -}}
-                {{with (index &quot;journal-title&quot; .)}} Journal: {{ . }}{{end -}}
-                {{range $i, $author := (index &quot;author-list&quot; .)}}
+        &lt;li&gt;
+           {{with (index &quot;article-title&quot; .)}}Article: {{ . }}{{end -}}
+           {{with (index &quot;journal-title&quot; .)}} Journal: {{ . }}{{end -}}
+           {{with (index &quot;author-list&quot; .)}}&lt;br /&gt;
+           Authors: {{range $i, $author := (index &quot;author-list&quot; .)}}
                     {{if gt $i 0}}; {{end-}}
                     {{index &quot;family-name&quot; $author}}, {{index &quot;other-name&quot; $author}}
                 {{end}}
-
-            &lt;/li&gt;
+           {{end}}
+        &lt;/li&gt;
         {{- end}}
     &lt;/ul&gt;
 </code></pre>
