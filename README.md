@@ -1,5 +1,5 @@
 
-    An experiment, a deconstructed content manage system, things are sure to change ...
+    An experiment, a deconstructed content manage system, something is sure to change
 
 # mkpage
 
@@ -9,9 +9,11 @@ Golang [text/template](https://golang.org/pkg/text/template/).  The key side of 
 template element names that will be replaced in the render version of the document. If a key was cllaed
 "pageContent" the template element would look like `{{ .pageContent }}`. The value of "pageContent" would
 replace `{{ .pageContent }}`. Go text/templates elements can do more than that but the is the core idea.
-On the value side of the key/value pair you have strings of one of three formats - plain text, markdown
-and JSON.  These three formatted strings can be explicit strings, data from a file or content received from
-a URL. Here's a basic demonstration starting with the template.
+On the value side of the key/value pair you is alsp a string. But the value describes both a data source and
+as well as having a specific type of content.  Data sources can be one of three types -
+- literal text, a filename or URL. The data source can be of one of three types - plain text, markdown
+or JSON.
+
 
 ```template
     Date: {{.now}}
@@ -46,12 +48,12 @@ Here is how we would express the key/value pairs on the command line.
         testdata/weather_form_letter.tmpl
 ```
 
-Notice the two explicit strings are prefixed with "text:" (other possible formats are "markdown:", "json:").
+Notice the two literal strings are prefixed with "text:" (other possible formats are "markdown:", "json:").
 Values without a prefix are assumed to be file paths. We see that in testdata/signature.txt.  Likewise the 
-weather data is coming from a URL. *mkpage* distinguishes that by the prefixes "http://" and "https://". 
+weather data is coming from a URL. *mkpage* distinguishes URLs by prefixes "http://" and "https://". 
 Since an HTTP response contains headers describing the content type (e.g.  "Content-Type: text/markdown") we 
-do not require any other prefix. Likewise a filename's extension can give us an inference of the data format 
-it contains. ".json" is a JSON document, ".md" is a Markdown document and everything else is treated as plain text.
+do not require any other prefix. Likewise a filename's extension can give us an inference of the data format.
+JSON content ends in ".json", Markdown in ".md" and everything else is treated as plain text.
 
 
 Since we are leveraging Go's [text/template](https://golang.org/pkg/text/template/) the template itself

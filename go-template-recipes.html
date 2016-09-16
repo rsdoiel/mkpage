@@ -23,12 +23,20 @@ static content generators like <a href="http://gohugo.io">Hugo</a>. Hugo extends
 capabilities that rival or surpose older static content generators like <a href="https://jekyllrb.com/">Jekyll</a>
 and <a href="http://jade-lang.com/">Jade</a>.</p>
 
-<p><em>mkpage</em> uses Go v1.6&rsquo;s template as is. It does not provide any exentions.  <em>mkpage</em> is meant to be a
-trivially easy system for producing simple content from plain text, markdown text, and JSON. The intent
-was of <em>mkpage</em> is to provide a very limited set of features so that it remains both easy to use
-as well as potentially scriptable in the Bash shell.</p>
+<p><em>mkpage</em> uses Go v1.7&rsquo;s template package as is. No bells or whistles.  That isn&rsquo;t necessarily a bad thing.
+<em>mkpage</em> is meant to be a an easy system for producing <em>simple content</em> from plain text, markdown
+text, and JSON. The limit set of features is itself a feature of <em>mkpage</em>.  Other systems like <a href="https://gohugo.io">Hugo</a>
+are what you want if your have more complicated needs.</p>
 
-<h2>only three data formats are supported</h2>
+<p>While vanilla Go templates are not as richly featured they are suitable for a wide variety of content
+from webpages, to XML feed document to BibTeX files. This recipe list demonstrates some of Go&rsquo;s
+template capabilities as well as how to leverage the simple capabilities of <em>mkpage</em> to solve
+common data rendering problems. In this set of tutorials you&rsquo;ll walk through both examples of
+how to use <em>mkpage</em> as well as write simple Go templates.</p>
+
+<h2>The Recipes</h2>
+
+<h3>only three data formats are supported</h3>
 
 <p><em>mkpage</em> supports three formats of text</p>
 
@@ -38,7 +46,7 @@ as well as potentially scriptable in the Bash shell.</p>
 <li>application/json</li>
 </ul>
 
-<h2>only three data sources are supported</h2>
+<h3>only three data sources are supported</h3>
 
 <p><em>mkpage</em> supports three data sources</p>
 
@@ -48,9 +56,9 @@ as well as potentially scriptable in the Bash shell.</p>
 <li>URLs as data sources (prefixed with http:// and https:// as appropriate)</li>
 </ul>
 
-<h2>Examples</h2>
+<h3>Examples</h3>
 
-<h3>explicit stings, a get well card</h3>
+<h4>explicit stings, a get well card</h4>
 
 <p>In this example we want to add a name to a simple get well message.</p>
 
@@ -81,7 +89,7 @@ as well as potentially scriptable in the Bash shell.</p>
     Mojo Sam
 </code></pre>
 
-<h4>Explanation</h4>
+<h5>Explanation</h5>
 
 <p>The key &ldquo;name&rdquo; has a string value of &ldquo;Little Frieda&rdquo;.  The template indicates this needs to be included
 after the word &ldquo;Dear&rdquo;. The key &ldquo;name&rdquo; is proceeded by a period or dot.  The substitution happens between
@@ -89,7 +97,7 @@ the opening &ldquo;{{&rdquo; and closing &ldquo;}}&rdquo;.  Notice the &ldquo;-&
 engine to not allow spacas after the value and the next non-space character (i.e. the comma of the
 opening line).</p>
 
-<h3>JSON data, a key/value blob report</h3>
+<h4>JSON data, a key/value blob report</h4>
 
 <p>In this example we construct a JSON object as part of the key/value pairs on the command line and
 pass it through the blob.tmpl template that displays they pairs.</p>
@@ -114,15 +122,15 @@ pass it through the blob.tmpl template that displays they pairs.</p>
 
 </code></pre>
 
-<h4>Explanation</h4>
+<h5>Explanation</h5>
 
 <p>We use the range function to iterate over the key/value pairs of our JSON object. Additionally
 we assign those values to the template variables called &ldquo;$key&rdquo; and &ldquo;$val&rdquo;. These are then used
 to format our output. Also notice the trailing values &ldquo;-&rdquo; which supresses and extra new line.</p>
 
-<h2>Files are data source</h2>
+<h3>Files are data source</h3>
 
-<h3>Wraping a Markdown document in HTML</h3>
+<h4>Wraping a Markdown document in HTML</h4>
 
 <p>In this example we want to embed a &ldquo;story&rdquo; in a simple HTML document. The <em>story</em> is
 written in Markdown format. Here&rsquo;s the simple template</p>
@@ -141,16 +149,16 @@ written in Markdown format. Here&rsquo;s the simple template</p>
 <pre><code class="language-shell">    mkpage &quot;story=my-story.md&quot; simple-page.tmpl &gt; my-story.html
 </code></pre>
 
-<h4>Explanation</h4>
+<h5>Explanation</h5>
 
 <p>On the command line <em>story</em> is assumed to point to a file named &ldquo;my-story.md&rdquo;. The reason a file
 is assumed is because there is no hint prefix or URL prefix at the start of the value. Because the
 file ends in the file extension &ldquo;.md&rdquo; it is assume to be a Markdown file and processed accordingly
 before being assemble in the template.</p>
 
-<h2>URL as data source</h2>
+<h3>URL as data source</h3>
 
-<h3>JSON data, a weather forecast</h3>
+<h4>JSON data, a weather forecast</h4>
 
 <p>In this example we get the current weather forecast for Guam.  The source of the weather information
 is <a href="http://noaa.gov">NOAA</a>&rsquo;s <a href="http://weather.gov">National Weather Services</a> website.  By including the
