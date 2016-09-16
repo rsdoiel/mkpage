@@ -1,10 +1,13 @@
 
 # Ideas and questions
 
-+ Add JSON decoding for text strings as well as local files
 + Recipe book for Go temlates
     + Basics of create a template
     + Idomatic template solutions
+    + Leveraging API sources
+            + ORCID Profile to CV Web Page use case
+            + ORCID Profile to Pubs List in BibTeX and Web Page use case
+            + ORCID Pubs list as RSS Feed
     + Should some open source/cc0 Jekyll and Hugo themes be ported to CSS and basic Go templates?
 + Additional utilities
     + relpath
@@ -20,4 +23,9 @@
         + make a list of subdirections
         + unslug the names
         + associate with appropriate relative URL
-    + Should these utilities have simple names or share a prefix?
+        + How to you autogenerate but support re-ordering without hardcoding directory sort orders
+            + do you supply some sort order function?
++ Should their be any integration of *mkpage* with a Bleve Index and search service?
+    + How much metadata can I get from path and document contents (without resorting to Front Matter)?
+    + Would this be enough to populate a BibFrame record?
+

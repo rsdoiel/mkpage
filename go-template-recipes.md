@@ -15,13 +15,21 @@ static content generators like [Hugo](http://gohugo.io). Hugo extends Go's templ
 capabilities that rival or surpose older static content generators like [Jekyll](https://jekyllrb.com/) 
 and [Jade](http://jade-lang.com/).
 
-*mkpage* uses Go v1.6's template as is. It does not provide any exentions.  *mkpage* is meant to be a 
-trivially easy system for producing simple content from plain text, markdown text, and JSON. The intent
-was of *mkpage* is to provide a very limited set of features so that it remains both easy to use
-as well as potentially scriptable in the Bash shell. 
+*mkpage* uses Go v1.7's template package as is. No bells or whistles.  That isn't necessarily a bad thing.
+*mkpage* is meant to be a an easy system for producing _simple content_ from plain text, markdown 
+text, and JSON. The limit set of features is itself a feature of *mkpage*.  Other systems like [Hugo](https://gohugo.io)
+are what you want if your have more complicated needs.
+
+While vanilla Go templates are not as richly featured they are suitable for a wide variety of content
+from webpages, to XML feed document to BibTeX files. This recipe list demonstrates some of Go's
+template capabilities as well as how to leverage the simple capabilities of *mkpage* to solve
+common data rendering problems. In this set of tutorials you'll walk through both examples of
+how to use *mkpage* as well as write simple Go templates.
 
 
-## only three data formats are supported
+## The Recipes
+
+### only three data formats are supported
 
 *mkpage* supports three formats of text
 
@@ -30,7 +38,7 @@ as well as potentially scriptable in the Bash shell.
 + application/json
 
 
-## only three data sources are supported
+### only three data sources are supported
 
 *mkpage* supports three data sources 
 
@@ -38,9 +46,9 @@ as well as potentially scriptable in the Bash shell.
 + files (the default data source)
 + URLs as data sources (prefixed with http:// and https:// as appropriate)
 
-## Examples
+### Examples
 
-### explicit stings, a get well card
+#### explicit stings, a get well card
 
 In this example we want to add a name to a simple get well message.
 
@@ -74,7 +82,7 @@ The output would look like
     Mojo Sam
 ```
 
-#### Explanation
+##### Explanation
 
 The key "name" has a string value of "Little Frieda".  The template indicates this needs to be included 
 after the word "Dear". The key "name" is proceeded by a period or dot.  The substitution happens between 
@@ -82,7 +90,7 @@ the opening "{{" and closing "}}".  Notice the "-" before the closing "}}". This
 engine to not allow spacas after the value and the next non-space character (i.e. the comma of the 
 opening line).
 
-### JSON data, a key/value blob report
+#### JSON data, a key/value blob report
 
 In this example we construct a JSON object as part of the key/value pairs on the command line and
 pass it through the blob.tmpl template that displays they pairs.
@@ -110,15 +118,15 @@ Results in text like
 
 ```
 
-#### Explanation
+##### Explanation
 
 We use the range function to iterate over the key/value pairs of our JSON object. Additionally
 we assign those values to the template variables called "$key" and "$val". These are then used
 to format our output. Also notice the trailing values "-" which supresses and extra new line.
 
-## Files are data source
+### Files are data source
 
-### Wraping a Markdown document in HTML
+#### Wraping a Markdown document in HTML
 
 In this example we want to embed a "story" in a simple HTML document. The *story* is
 written in Markdown format. Here's the simple template
@@ -139,7 +147,7 @@ The command line would look something like
     mkpage "story=my-story.md" simple-page.tmpl > my-story.html
 ```
 
-#### Explanation
+##### Explanation
 
 On the command line *story* is assumed to point to a file named "my-story.md". The reason a file
 is assumed is because there is no hint prefix or URL prefix at the start of the value. Because the
@@ -147,9 +155,9 @@ file ends in the file extension ".md" it is assume to be a Markdown file and pro
 before being assemble in the template.
 
 
-## URL as data source
+### URL as data source
 
-### JSON data, a weather forecast
+#### JSON data, a weather forecast
 
 In this example we get the current weather forecast for Guam.  The source of the weather information
 is [NOAA](http://noaa.gov)'s [National Weather Services](http://weather.gov) website.  By including the
