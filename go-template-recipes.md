@@ -15,7 +15,7 @@ static content generators like [Hugo](http://gohugo.io). Hugo extends Go's templ
 capabilities that rival or surpose older static content generators like [Jekyll](https://jekyllrb.com/) 
 and [Jade](http://jade-lang.com/).
 
-*mkpage* uses Go v1.6's template as is. It does not provide any exentions.  *mkpage* is meant to be a 
+*mkpage* uses Go v1.7.1's template as is. It does not provide any exentions.  *mkpage* is meant to be a 
 trivially easy system for producing simple content from plain text, markdown text, and JSON. The intent
 was of *mkpage* is to provide a very limited set of features so that it remains both easy to use
 as well as potentially scriptable in the Bash shell. 
