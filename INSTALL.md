@@ -14,10 +14,9 @@ Compiled versions are available for Mac OS X (amd64 processor), Linux (amd64), W
 
 1. Go to [github.com/caltechlibrary/mkpage/releases/latest](https://github.com/caltechlibrary/mkpage/releases/latest)
 2. Click on the green "mkpage-binary-release.zip" link and download
-3. Open a finder window and find the downloaded file and unzip it (e.g. mkpage-binary-release.zip)
-4. Look in the unziped folder and find dist/macosx-amd64/mkpage
-5. Drag (or copy) the *mkpage* to a "bin" directory in your path
-6. Open and "Terminal" and run `mkpage -h`
+3. Open a terminal and type `cd ~/Downloads/mkpage-binary-releasedist/macosx-amd64`
+4. Copy the *mkpage* to a "bin" directory in your path.  For example, type `sudo cp mkpage /usr/local/bin`
+5. Test by typing `mkpage -h`
 
 ## Windows
 
@@ -25,8 +24,9 @@ Compiled versions are available for Mac OS X (amd64 processor), Linux (amd64), W
 2. Click on the green "mkpage-binary-release.zip" link and download
 3. Open the file manager find the downloaded file and unzip it (e.g. mkpage-binary-release.zip)
 4. Look in the unziped folder and find dist/windows-amd64/mkpage.exe
-5. Drag (or copy) the *mkpage.exe* to a "bin" directory in your path
-6. Open Bash and and run `mkpage -h`
+5. Drag (or copy) the *mkpage.exe* to a "bin" directory in your path (a good option is C\Users\username\bin)
+6. Open Bash and and test by typing `mkpage -h`
+7. If it doesn't work type `echo $PATH` and copy *mkpage.exe* to one of the directories listed
 
 ## Linux
 

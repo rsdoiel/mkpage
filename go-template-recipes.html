@@ -13,8 +13,8 @@
 <ul>
 <li><a href="/">Home</a></li>
 <li><a href="index.html">README</a></li>
-<li><a href="install.html">Install</a></li>
 <li><a href="go-template-recipes.html">Go template recipes</a></li>
+<li><a href="install.html">INSTALL</a></li>
 <li><a href="license.html">LICENSE</a></li>
 <li><a href="https://github.com/caltechlibrary/mkpage">Github</a></li>
 </ul>
@@ -241,6 +241,48 @@ information obtained from the JSON response.</p>
         + Scattered showers and thunderstorms.  Mostly cloudy, with a high near 89. Chance of precipitation is 40%.
         + Scattered showers and thunderstorms.  Mostly cloudy, with a low around 79. Chance of precipitation is 40%.
         + Partly sunny, with a high near 89.
+</code></pre>
+
+<h2>JSON with Dashes in property names</h2>
+
+<p>Some JSON APIs come with objects containing property names with dashes in them.  This is valid JSON
+but throws a monkey wrench into addressing them with Go template&rsquo;s usual dot notation. Go&rsquo;s templates
+provides a <em>index</em> function to address those types of property names.</p>
+
+<pre><code class="language-JSON">    [
+        {
+            &quot;journal-title&quot;:&quot;Favorite adventures&quot;, 
+            &quot;article-title&quot;: &quot;Zamborra and Beyond&quot;,
+            &quot;author-list&quot;:[
+                {&quot;family-name&quot;: &quot;Frieda&quot;, &quot;other-name&quot;: &quot;Little&quot;},
+                {&quot;family-name&quot;: &quot;Sam&quot;, &quot;other-name&quot;: &quot;Mojo&quot;},
+                {&quot;family-name&quot;: &quot;Flanders&quot;, &quot;other-name&quot;: &quot;Jack&quot;}
+            ]
+        }
+    ]
+</code></pre>
+
+<p>Iterating over this list in a template</p>
+
+<pre><code class="language-html">    &lt;ul&gt;
+        {{with .data -}}
+        &lt;li&gt;
+           {{with (index &quot;article-title&quot; .)}}Article: {{ . }}{{end -}}
+           {{with (index &quot;journal-title&quot; .)}} Journal: {{ . }}{{end -}}
+           {{with (index &quot;author-list&quot; .)}}&lt;br /&gt;
+           Authors: {{range $i, $author := (index &quot;author-list&quot; .)}}
+                    {{if gt $i 0}}; {{end-}}
+                    {{index &quot;family-name&quot; $author}}, {{index &quot;other-name&quot; $author}}
+                {{end}}
+           {{end}}
+        &lt;/li&gt;
+        {{- end}}
+    &lt;/ul&gt;
+</code></pre>
+
+<p>The <em>index</em> function can be used to build a nested path too</p>
+
+<pre><code>    {{index &quot;top-level&quot; &quot;middle-level&quot; &quot;bottom-level&quot; .someData}}
 </code></pre>
 
 </section>

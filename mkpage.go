@@ -35,7 +35,7 @@ import (
 
 const (
 	// Version of the mkpage package.
-	Version = "v0.0.6"
+	Version = "v0.0.7"
 
 	// Prefix for explicit string types
 
@@ -60,7 +60,7 @@ const (
       height: 100%;
       margin: 10%;
       padding: 0;
-      font-size: 12px;
+      font-size: calc(1em+1vw);
       font-family: sans-serif;
     }
 

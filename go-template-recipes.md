@@ -229,3 +229,50 @@ The resulting page should look something like
         + Partly sunny, with a high near 89.
 ```
 
+## JSON with Dashes in property names
+
+Some JSON APIs come with objects containing property names with dashes in them.  This is valid JSON
+but throws a monkey wrench into addressing them with Go template's usual dot notation. Go's templates
+provides a *index* function to address those types of property names.
+
+```JSON
+    [
+        {
+            "journal-title":"Favorite adventures", 
+            "article-title": "Zamborra and Beyond",
+            "author-list":[
+                {"family-name": "Frieda", "other-name": "Little"},
+                {"family-name": "Sam", "other-name": "Mojo"},
+                {"family-name": "Flanders", "other-name": "Jack"}
+            ]
+        }
+    ]
+```
+
+Iterating over this list in a template
+
+```html
+    <ul>
+        {{with .data -}}
+        <li>
+           {{with (index "article-title" .)}}Article: {{ . }}{{end -}}
+           {{with (index "journal-title" .)}} Journal: {{ . }}{{end -}}
+           {{with (index "author-list" .)}}<br />
+           Authors: {{range $i, $author := (index "author-list" .)}}
+                    {{if gt $i 0}}; {{end-}}
+                    {{index "family-name" $author}}, {{index "other-name" $author}}
+                {{end}}
+           {{end}}
+        </li>
+        {{- end}}
+    </ul>
+```
+
+The *index* function can be used to build a nested path too
+
+```
+    {{index "top-level" "middle-level" "bottom-level" .someData}}
+```
+
+
+
