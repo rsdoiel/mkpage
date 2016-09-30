@@ -1,24 +1,12 @@
 
 # Go text/template recipes
 
-*mkpage* template engine is Go's [text/template](https://golang.org/pkg/text/template/). Go's templates
-provide a flexible and simple [DSL](https://en.wikipedia.org/wiki/Domain-specific_language) describing
-how to assemble a document based on a data structure passed to it.  *mkpage* uses a list of key/value
-pairs on the command line to populate the data structure the template package expects.  This includes
-support for JSON formatted text from strings, files and URL response. It also support transforming
-markdown content into HTML before assembling the final template.
+*mkpage* template engine is Go's [text/template](https://golang.org/pkg/text/template/). Go's templates provide a flexible and simple [DSL](https://en.wikipedia.org/wiki/Domain-specific_language) describing how to assemble a document based on a data structure passed to it.  *mkpage* uses a list of key/value pairs on the command line to populate the data structure the template package expects.  This includes support for JSON formatted text from strings, files and URL response. It also support transforming markdown content into HTML before assembling the final template.
 
 
-While Go's template package is not complicated to use it doesn't come with allot of examples or tutorials.
-Most articles you find on Go's template packages either focus on web server code or are for sophisticated
-static content generators like [Hugo](http://gohugo.io). Hugo extends Go's template DSL providing 
-capabilities that rival or surpose older static content generators like [Jekyll](https://jekyllrb.com/) 
-and [Jade](http://jade-lang.com/).
+While Go's template package is not complicated to use it doesn't come with allot of examples or tutorials.  Most articles you find on Go's template packages either focus on web server code or are for sophisticated static content generators like [Hugo](http://gohugo.io). Hugo extends Go's template DSL providing capabilities that rival or surpose older static content generators like [Jekyll](https://jekyllrb.com/) and [Jade](http://jade-lang.com/).
 
-*mkpage* uses Go v1.6's template as is. It does not provide any exentions.  *mkpage* is meant to be a 
-trivially easy system for producing simple content from plain text, markdown text, and JSON. The intent
-was of *mkpage* is to provide a very limited set of features so that it remains both easy to use
-as well as potentially scriptable in the Bash shell. 
+*mkpage* uses Go v1.7.1's template as is. It does not provide any exentions.  *mkpage* is meant to be a trivially easy system for producing simple content from plain text, markdown text, and JSON. The intent was of *mkpage* is to provide a very limited set of features so that it remains both easy to use as well as potentially scriptable in the Bash shell. 
 
 
 ## only three data formats are supported
@@ -76,16 +64,11 @@ The output would look like
 
 #### Explanation
 
-The key "name" has a string value of "Little Frieda".  The template indicates this needs to be included 
-after the word "Dear". The key "name" is proceeded by a period or dot.  The substitution happens between 
-the opening "{{" and closing "}}".  Notice the "-" before the closing "}}". This tells the template 
-engine to not allow spacas after the value and the next non-space character (i.e. the comma of the 
-opening line).
+The key "name" has a string value of "Little Frieda".  The template indicates this needs to be included after the word "Dear". The key "name" is proceeded by a period or dot.  The substitution happens between the opening "{{" and closing "}}".  Notice the "-" before the closing "}}". This tells the template engine to not allow spacas after the value and the next non-space character (i.e. the comma of the opening line).
 
 ### JSON data, a key/value blob report
 
-In this example we construct a JSON object as part of the key/value pairs on the command line and
-pass it through the blob.tmpl template that displays they pairs.
+In this example we construct a JSON object as part of the key/value pairs on the command line and pass it through the blob.tmpl template that displays they pairs.
 
 The command envokation looks like
 
@@ -112,16 +95,13 @@ Results in text like
 
 #### Explanation
 
-We use the range function to iterate over the key/value pairs of our JSON object. Additionally
-we assign those values to the template variables called "$key" and "$val". These are then used
-to format our output. Also notice the trailing values "-" which supresses and extra new line.
+We use the range function to iterate over the key/value pairs of our JSON object. Additionally we assign those values to the template variables called "$key" and "$val". These are then used to format our output. Also notice the trailing values "-" which supresses and extra new line.
 
 ## Files are data source
 
 ### Wraping a Markdown document in HTML
 
-In this example we want to embed a "story" in a simple HTML document. The *story* is
-written in Markdown format. Here's the simple template
+In this example we want to embed a "story" in a simple HTML document. The *story* is written in Markdown format. Here's the simple template
 
 ```go
     <!DOCTYPE html>
@@ -141,25 +121,18 @@ The command line would look something like
 
 #### Explanation
 
-On the command line *story* is assumed to point to a file named "my-story.md". The reason a file
-is assumed is because there is no hint prefix or URL prefix at the start of the value. Because the
-file ends in the file extension ".md" it is assume to be a Markdown file and processed accordingly
-before being assemble in the template.
+On the command line *story* is assumed to point to a file named "my-story.md". The reason a file is assumed is because there is no hint prefix or URL prefix at the start of the value. Because the file ends in the file extension ".md" it is assume to be a Markdown file and processed accordingly before being assemble in the template.
 
 
 ## URL as data source
 
 ### JSON data, a weather forecast
 
-In this example we get the current weather forecast for Guam.  The source of the weather information
-is [NOAA](http://noaa.gov)'s [National Weather Services](http://weather.gov) website.  By including the
-parameter "FcstType=json" at the end of the URL you get a JSON version of the weather forecast rather 
-than the HTML or XML alternatives.
+In this example we get the current weather forecast for Guam.  The source of the weather information is [NOAA](http://noaa.gov)'s [National Weather Services](http://weather.gov) website.  By including the parameter "FcstType=json" at the end of the URL you get a JSON version of the weather forecast rather than the HTML or XML alternatives.
 
 + data source: http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&lon=144.74977715100056&FcstType=json
 
-Our template will be call **forecast.tmpl**. It will be used to produce a Markdown file of weather related
-information obtained from the JSON response.
+Our template will be call **forecast.tmpl**. It will be used to produce a Markdown file of weather related information obtained from the JSON response.
 
 ```go
     {{with $co := .forecast.currentobservation}}
@@ -231,9 +204,7 @@ The resulting page should look something like
 
 ## JSON with Dashes in property names
 
-Some JSON APIs come with objects containing property names with dashes in them.  This is valid JSON
-but throws a monkey wrench into addressing them with Go template's usual dot notation. Go's templates
-provides a *index* function to address those types of property names.
+Some JSON APIs come with objects containing property names with dashes in them.  This is valid JSON but throws a monkey wrench into addressing them with Go template's usual dot notation. Go's templates provides a *index* function to address those types of property names.
 
 ```JSON
     [
