@@ -37,7 +37,7 @@ var (
 	showTemplate bool
 )
 
-func usage(fp *os.File, appName string) {
+func usage(fp *os.File, appName, version string) {
 	fmt.Fprintf(fp, `
  USAGE: %s [OPTION] [KEY/VALUE DATA PAIRS] TEMPLATE_FILENAME [TEMPLATE_FILENAMES]
 
@@ -89,9 +89,8 @@ func usage(fp *os.File, appName string) {
 
       https://golang.org/pkg/text/template/
 
- Version %s
-
-`, mkpage.Version)
+%s %s
+`, appName, version)
 }
 
 func license(fp *os.File, appName string) {
@@ -134,11 +133,11 @@ func main() {
 	flag.Parse()
 
 	if showHelp == true {
-		usage(os.Stdout, appName)
+		usage(os.Stdout, appName, mkpage.Version)
 		os.Exit(0)
 	}
 	if showVersion == true {
-		fmt.Printf(" Version %s\n", mkpage.Version)
+		fmt.Printf("%n %s\n", appName, mkpage.Version)
 		os.Exit(0)
 	}
 	if showLicense == true {
