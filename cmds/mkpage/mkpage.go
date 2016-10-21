@@ -137,7 +137,7 @@ func main() {
 		os.Exit(0)
 	}
 	if showVersion == true {
-		fmt.Printf("%n %s\n", appName, mkpage.Version)
+		fmt.Printf("%s %s\n", appName, mkpage.Version)
 		os.Exit(0)
 	}
 	if showLicense == true {
