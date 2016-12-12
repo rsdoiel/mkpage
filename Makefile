@@ -8,6 +8,10 @@ build:
 	go build
 	go build -o bin/mkpage cmds/mkpage/mkpage.go
 
+lint:
+	golint mkpage.go
+	golint cmds/mkpage/mkpage.go
+
 test:
 	go test
 

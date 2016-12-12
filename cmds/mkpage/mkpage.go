@@ -26,38 +26,31 @@ import (
 	"strings"
 	"text/template"
 
-	// My package
+	// Caltech Library packages
+	"github.com/caltechlibrary/cli"
 	"github.com/caltechlibrary/mkpage"
+	"github.com/caltechlibrary/tmplfn"
 )
 
 var (
-	showHelp     bool
-	showVersion  bool
-	showLicense  bool
-	showTemplate bool
-)
+	usage = `USAGE: %s [OPTION] [KEY/VALUE DATA PAIRS] TEMPLATE_FILENAME [TEMPLATE_FILENAMES]`
 
-func usage(fp *os.File, appName string) {
-	fmt.Fprintf(fp, `
- USAGE: %s [OPTION] [KEY/VALUE DATA PAIRS] TEMPLATE_FILENAME [TEMPLATE_FILENAMES]
+	description = `
+SYNOPSIS
 
- Using the key value pairs populate the template(s) and render to stdout.
+Using the key/value pairs populate the template(s) and render to stdout.
 
- OPTIONS
+CONFIGURATION
 
-`, appName)
+You can set a local default template path by using environment variables.
 
-	flag.VisitAll(func(f *flag.Flag) {
-		if len(f.Name) > 1 {
-			fmt.Printf("    -%s, -%s\t%s\n", f.Name[0:1], f.Name, f.Usage)
-		}
-	})
++ MKPAGE_TEMPLATES - is the colon delimited list of template paths
+`
 
-	fmt.Fprintf(fp, `
+	examples = `
+EXAMPLE
 
- EXAMPLE
-
- Template
+Template
 
     Date: {{- .now}}
 
@@ -71,58 +64,49 @@ func usage(fp *os.File, appName string) {
 
 	{{.signature}}
 
- Render the template above (i.e. myformletter.template) would be accomplished from the following
- data sources--
+Render the template above (i.e. myformletter.template) would be accomplished from the following
+data sources--
 
  + "now" and "name" are strings
  + "weatherForcast" comes from a URL
  + "license" comes from a file in our local disc
 
- That would be expressed on the command line as follows
+That would be expressed on the command line as follows
 
-	mkpage "now=text:$(date)" "name=text:Little Frieda" \
+	%s "now=text:$(date)" "name=text:Little Frieda" \
 		"weather=http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&lon=144.74977715100056&FcstType=json" \
 		signature=testdata/signature.txt \
 		testdata/myformletter.template
 
- Golang's text/template docs can be found at 
+Golang's text/template docs can be found at 
 
       https://golang.org/pkg/text/template/
+`
 
- Version %s
+	// Standard Options
+	showHelp    bool
+	showVersion bool
+	showLicense bool
 
-`, mkpage.Version)
-}
-
-func license(fp *os.File, appName string) {
-	fmt.Fprintf(fp, `
-%s
-
-Copyright (c) 2016, Caltech
-All rights not granted herein are expressly reserved by Caltech.
-
-Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-
-1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-
-2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-
-3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-`, appName)
-}
+	// Application Options
+	templateFNames string
+	showTemplate   bool
+)
 
 func init() {
+	// Standard Options
 	flag.BoolVar(&showHelp, "h", false, "show help")
 	flag.BoolVar(&showHelp, "help", false, "show help")
 	flag.BoolVar(&showVersion, "v", false, "show version")
 	flag.BoolVar(&showVersion, "version", false, "show version")
 	flag.BoolVar(&showLicense, "l", false, "show license")
 	flag.BoolVar(&showLicense, "license", false, "show license")
-	flag.BoolVar(&showTemplate, "t", false, "show the default template")
-	flag.BoolVar(&showTemplate, "template", false, "show the default template")
+
+	// Application specific options
+	flag.BoolVar(&showTemplate, "s", false, "display the default template")
+	flag.BoolVar(&showTemplate, "show-template", false, "display the default template")
+	flag.StringVar(&templateFNames, "t", "", "colon delimited list of templates to use")
+	flag.StringVar(&templateFNames, "templates", "", "colon delimited list of templates to use")
 }
 
 func main() {
@@ -132,28 +116,49 @@ func main() {
 
 	appName := path.Base(os.Args[0])
 	flag.Parse()
+	args := flag.Args()
 
+	cfg := cli.New(appName, "MKPAGE", fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version), mkpage.Version)
+	cfg.UsageText = fmt.Sprintf(usage, appName)
+	cfg.DescriptionText = fmt.Sprintf(description)
+	cfg.OptionsText = "OPTIONS\n"
+	cfg.ExampleText = fmt.Sprintf(examples, appName)
+
+	// Process flags and update the environment as needed.
 	if showHelp == true {
-		usage(os.Stdout, appName)
-		os.Exit(0)
-	}
-	if showVersion == true {
-		fmt.Printf(" Version %s\n", mkpage.Version)
+		fmt.Println(cfg.Usage())
 		os.Exit(0)
 	}
 	if showLicense == true {
-		license(os.Stdout, appName)
+		fmt.Println(cfg.License())
+		os.Exit(0)
+	}
+	if showVersion == true {
+		fmt.Println(cfg.Version())
 		os.Exit(0)
 	}
 
 	if showTemplate == true {
-		fmt.Fprintf(os.Stdout, "%s\n", mkpage.DefaultTemplateSource)
+		fmt.Println(mkpage.DefaultTemplateSource)
 		os.Exit(0)
 	}
 
-	var templateSources []string
+	var (
+		// This holds the template sources
+		templateSources []string
+		// NOTE: Now we assemble everything with this template variable.
+		tmpl *template.Template
+	)
+
+	// Make sure we have a configured command to run
+	templateFNames = cfg.MergeEnv("templates", templateFNames)
+	if len(templateFNames) > 0 {
+		for _, fname := range strings.Split(templateFNames, ":") {
+			templateSources = append(templateSources, fname)
+		}
+	}
+
 	data := make(map[string]string)
-	args := flag.Args()
 	for i, arg := range args {
 		if strings.Contains(arg, "=") == true {
 			// Update data map
@@ -169,20 +174,22 @@ func main() {
 		}
 	}
 
-	// NOTE: Now we assemble everything with the template.
-	var (
-		tmpl *template.Template
-	)
-
+	// Assemble the template(s)
 	if len(templateSources) == 0 {
-		tmpl, err = template.New("default.tmpl").Parse(mkpage.DefaultTemplateSource)
+		tmpl, err = template.New("default.tmpl").Funcs(tmplfn.Join(tmplfn.TimeMap, tmplfn.PageMap)).Parse(mkpage.DefaultTemplateSource)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Template parsing failed, %s\n", err)
+			os.Exit(1)
+		}
 	} else {
-		tmpl, err = template.ParseFiles(templateSources...)
+		//NOTE: The first template gets to hold the template functions.
+		tmpl, err = template.New(templateSources[0]).Funcs(tmplfn.Join(tmplfn.TimeMap, tmplfn.PageMap)).ParseFiles(templateSources...)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Template parsing failed, %s\n", err)
+			os.Exit(1)
+		}
 	}
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Template parsing failed, %s\n", err)
-		os.Exit(1)
-	}
+	// Make the page
 	if err := mkpage.MakePage(os.Stdout, tmpl, data); err != nil {
 		fmt.Fprintf(os.Stderr, "%s\n", err)
 		os.Exit(1)
