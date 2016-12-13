@@ -11,4 +11,4 @@ for PROGNAME in mkpage; do
   env CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o dist/windows-amd64/$PROGNAME.exe cmds/$PROGNAME/$PROGNAME.go
 done
 
-zip -r "$RELEASE_NAME-binary-release.zip" README.md INSTALL.md LICENSE dist/*
+zip -r "$RELEASE_NAME-release.zip" README.md INSTALL.md LICENSE dist/*
