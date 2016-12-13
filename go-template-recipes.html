@@ -256,6 +256,63 @@
 <pre><code>    {{index &quot;top-level&quot; &quot;middle-level&quot; &quot;bottom-level&quot; .someData}}
 </code></pre>
 
+<h2>Including sub-templates</h2>
+
+<p>In complex pages it is nice to be able to include sub templates. In this example
+We have a signature file and post script files as subtemplates.</p>
+
+<ul>
+<li>letter.tmpl</li>
+</ul>
+
+<pre><code>    Dear {{ .ToName }},
+
+    Hope all is well.  I will be with you shortly though not necessarily
+    on the same plane of existance.
+
+    {{template &quot;signature.tmpl&quot; .}}
+
+    {{template &quot;postscript.tmpl&quot; .}}
+</code></pre>
+
+<ul>
+<li>signature.tmpl</li>
+</ul>
+
+<pre><code>    Sincerly,
+
+    {{ .Name }}, somewhere next door to reality
+
+</code></pre>
+
+<ul>
+<li>postscript.tmpl</li>
+</ul>
+
+<pre><code>    (P.S. What is comming at you is coming from you, {{rfc3339 &quot;now&quot;}})
+</code></pre>
+
+<ul>
+<li>Putting it all together</li>
+</ul>
+
+<pre><code>    mkpage &quot;ToName=text:Mojo Sam&quot; &quot;Name=text:Jack Flanders&quot; letter.tmpl signature.tmpl postscript.tmpl
+</code></pre>
+
+<p>This should output somthing like</p>
+
+<pre><code>    Dear Mojo Sam,
+
+    Hope all is well.  I will be with you shortly though not necessarily
+    on the same plane of existance.
+
+    Sincerly,
+
+    Jack Flanders, somewhere next door to reality
+
+    (P.S. What is comming at you is coming from you, 2016-12-12T16:17:14-08:00)
+</code></pre>
+
 </section>
 
 <footer>
