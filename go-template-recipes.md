@@ -248,9 +248,9 @@ The *index* function can be used to build a nested path too
 ## Including sub-templates
 
 In complex pages it is nice to be able to include sub templates. In this example
-We have a signature file and post script files as subtemplates.
+We have a _signature.tmpl_ and _postscript.tmpl_ files as sub templates to _letter.tmpl_.
 
-### letter.tmpl
+#### letter.tmpl
 
 ```
     Dear {{ .ToName }},
@@ -263,7 +263,7 @@ We have a signature file and post script files as subtemplates.
     {{template "postscript.tmpl" .}}
 ```
 
-### signature.tmpl
+#### signature.tmpl
 
 ```
     Sincerly,
@@ -272,13 +272,13 @@ We have a signature file and post script files as subtemplates.
 
 ```   
 
-### postscript.tmpl
+#### postscript.tmpl
 
 ```
     (P.S. What is comming at you is coming from you, {{rfc3339 "now"}})
 ```
 
-### Putting it all together
+#### Putting it all together
 
 ```
     mkpage "ToName=text:Mojo Sam" "Name=text:Jack Flanders" letter.tmpl signature.tmpl postscript.tmpl

@@ -259,9 +259,9 @@
 <h2>Including sub-templates</h2>
 
 <p>In complex pages it is nice to be able to include sub templates. In this example
-We have a signature file and post script files as subtemplates.</p>
+We have a <em>signature.tmpl</em> and <em>postscript.tmpl</em> files as sub templates to <em>letter.tmpl</em>.</p>
 
-<h3>letter.tmpl</h3>
+<h4>letter.tmpl</h4>
 
 <pre><code>    Dear {{ .ToName }},
 
@@ -273,7 +273,7 @@ We have a signature file and post script files as subtemplates.</p>
     {{template &quot;postscript.tmpl&quot; .}}
 </code></pre>
 
-<h3>signature.tmpl</h3>
+<h4>signature.tmpl</h4>
 
 <pre><code>    Sincerly,
 
@@ -281,12 +281,12 @@ We have a signature file and post script files as subtemplates.</p>
 
 </code></pre>
 
-<h3>postscript.tmpl</h3>
+<h4>postscript.tmpl</h4>
 
 <pre><code>    (P.S. What is comming at you is coming from you, {{rfc3339 &quot;now&quot;}})
 </code></pre>
 
-<h3>Putting it all together</h3>
+<h4>Putting it all together</h4>
 
 <pre><code>    mkpage &quot;ToName=text:Mojo Sam&quot; &quot;Name=text:Jack Flanders&quot; letter.tmpl signature.tmpl postscript.tmpl
 </code></pre>
