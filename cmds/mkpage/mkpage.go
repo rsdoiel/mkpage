@@ -29,6 +29,7 @@ import (
 	// My package
 	"github.com/rsdoiel/cli"
 	"github.com/rsdoiel/mkpage"
+	"github.com/rsdoiel/tmplfn"
 )
 
 var (
@@ -151,9 +152,9 @@ func main() {
 		err  error
 	)
 	if len(templateSources) == 0 {
-		tmpl, err = template.New("default.tmpl").Parse(mkpage.DefaultTemplateSource)
+		tmpl, err = template.New("default.tmpl").Funcs(tmplfn.Join(tmplfn.TimeMap, tmplfn.PageMap)).Parse(mkpage.DefaultTemplateSource)
 	} else {
-		tmpl, err = template.ParseFiles(templateSources...)
+		tmpl, err = template.New(path.Base(templateSources[0])).Funcs(tmplfn.Join(tmplfn.TimeMap, tmplfn.PageMap)).ParseFiles(templateSources...)
 	}
 
 	if err != nil {

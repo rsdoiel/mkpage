@@ -1,0 +1,11 @@
+
+
+{{- with .ToName}}Hello {{ . -}},{{- else}}Hello,{{end}}
+
+This is an example of a letter.
+
+Sincerly,
+
+{{ template "signature.tmpl" . }}
+
+{{ template "postscript.tmpl" . }}
