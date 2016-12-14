@@ -29,8 +29,8 @@ done
 
 # copy the rest of the distribution items
 for ITEM in README.md INSTALL.md LICENSE scripts templates examples; do
-  if [ -f "$ITEM" ]; then
-    cp -vR "$ITEM" dist/
+  if [ -f $ITEM ] || [ -d $ITEM ]; then
+    cp -vR $ITEM dist/
   fi
 done
 
