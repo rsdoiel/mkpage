@@ -28,7 +28,7 @@ for ITEM in etc/*-example; do
 done
 
 # copy the rest of the distribution items
-for ITEM in README.md INSTALL.md LICENSE scripts templates; do
+for ITEM in README.md INSTALL.md LICENSE scripts templates examples; do
   if [ -f "$ITEM" ]; then
     cp -vR "$ITEM" dist/
   fi
