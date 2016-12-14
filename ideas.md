@@ -10,6 +10,13 @@
             + ORCID Pubs list as RSS Feed
     + Should some open source/cc0 Jekyll and Hugo themes be ported to CSS and basic Go templates?
 + Additional utilities
+    + idxpage
+        + given a markdown file and Bleve index file name add markdown/html file to index
+    + title
+        + given a markdown file, return the first "#" value
+        + Have an option to support picking out the nth "#"
+    + byline
+        + given a markdown file, pluckout a byline based in a prefix or regexp string
     + relpath
         + given two paths with the same base directory
         + generate a relative path from one to another
