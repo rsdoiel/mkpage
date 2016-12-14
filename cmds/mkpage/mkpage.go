@@ -175,16 +175,16 @@ func main() {
 		}
 	}
 
+	tmplFuncs := tmplfn.Join(tmplfn.TimeMap, tmplfn.PageMap)
 	// Assemble the template(s)
 	if len(templateSources) == 0 {
-		tmpl, err = template.New("default.tmpl").Funcs(tmplfn.Join(tmplfn.TimeMap, tmplfn.PageMap)).Parse(mkpage.DefaultTemplateSource)
+		tmpl, err = template.New("default.tmpl").Funcs(tmplFuncs).Parse(mkpage.DefaultTemplateSource)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Template parsing failed, %s\n", err)
 			os.Exit(1)
 		}
 	} else {
-		//NOTE: The first template gets to hold the template functions, it needs to have its name set without prefixed subdirectories.
-		tmpl, err = template.New(path.Base(templateSources[0])).Funcs(tmplfn.Join(tmplfn.TimeMap, tmplfn.PageMap)).ParseFiles(templateSources...)
+		tmpl, err = tmplfn.Assemble(tmplFuncs, templateSources...)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Template parsing failed, %s\n", err)
 			os.Exit(1)
