@@ -62,7 +62,7 @@ how to use <em>mkpage</em> as well as write simple Go templates.</p>
 
 <p>In this example we want to add a name to a simple get well message.</p>
 
-<p>Our template is called <strong>get-well.tmpl</strong>. It looks like</p>
+<p>Our template is called <em><a href="examples/get-well.tmpl">get-well.tmpl</a></em>. It looks like</p>
 
 <pre><code class="language-go">    Dear {{ .name -}},
 
@@ -104,10 +104,10 @@ pass it through the blob.tmpl template that displays they pairs.</p>
 
 <p>The command envokation looks like</p>
 
-<pre><code class="language-shell">    mkpage 'blob=json:{&quot;one&quot;:1,&quot;two&quot;:2}'  blob.tmpl
+<pre><code class="language-shell">    mkpage 'blob=json:{&quot;one&quot;:1,&quot;two&quot;:2}' blob.tmpl
 </code></pre>
 
-<p>The template is a simple range construct</p>
+<p>The template is a simple range construct (e.g. <a href="examples/blob.tmpl">blob.tmpl</a>).</p>
 
 <pre><code class="language-go">    {{range $key,$val := .blob }}
         Key: {{ $key }} Value: {{ $val -}}
@@ -133,7 +133,7 @@ to format our output. Also notice the trailing values &ldquo;-&rdquo; which supr
 <h4>Wraping a Markdown document in HTML</h4>
 
 <p>In this example we want to embed a &ldquo;story&rdquo; in a simple HTML document. The <em>story</em> is
-written in Markdown format. Here&rsquo;s the simple template</p>
+written in Markdown format. Here&rsquo;s the simple template (i.e. <a href="examples/simple-page.tmpl">simple-page.tmpl</a>)</p>
 
 <pre><code class="language-go">    &lt;!DOCTYPE html&gt;
     &lt;html&gt;
@@ -169,7 +169,7 @@ than the HTML or XML alternatives.</p>
 <li>data source: <a href="http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&amp;lon=144.74977715100056&amp;FcstType=json">http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&amp;lon=144.74977715100056&amp;FcstType=json</a></li>
 </ul>
 
-<p>Our template will be call <strong>forecast.tmpl</strong>. It will be used to produce a Markdown file of weather related
+<p>Our template will be call <em><a href="examples/forecast.tmpl">forecast.tmpl</a></em>. It will be used to produce a Markdown file of weather related
 information obtained from the JSON response.</p>
 
 <pre><code class="language-go">    {{with $co := .forecast.currentobservation}}
@@ -198,7 +198,7 @@ information obtained from the JSON response.</p>
 
 <p>The command line for <em>mkpage</em> would look like</p>
 
-<pre><code class="language-shell">    mkpage &quot;forecast=http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&amp;lon=144.74977715100056&amp;FcstType=json&quot; testdata/forecast.tmpl
+<pre><code class="language-shell">    mkpage &quot;forecast=http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&amp;lon=144.74977715100056&amp;FcstType=json&quot; forecast.tmpl
 </code></pre>
 
 <p>The resulting page should look something like</p>
@@ -235,6 +235,56 @@ information obtained from the JSON response.</p>
         + Scattered showers and thunderstorms.  Mostly cloudy, with a high near 89. Chance of precipitation is 40%.
         + Scattered showers and thunderstorms.  Mostly cloudy, with a low around 79. Chance of precipitation is 40%.
         + Partly sunny, with a high near 89.
+</code></pre>
+
+<h3>Multiple templates</h3>
+
+<p>It is come in more complex website to separate elements into their own templates and pull them together with a master one.
+In this example will use three tempaltes - <a href="examples/letter.tmpl">letter.tmpl</a> (the master template),
+<a href="examples/signature.tmpl">signature.tmpl</a> and <a href="examples/postscript.tmpl">postscript.tmpl</a>.</p>
+
+<h4>letter.tmpl</h4>
+
+<pre><code class="language-template">    {{- with .ToName}}Hello {{ . -}},{{- else}}Hello,{{end}}
+    
+    This is an example of a letter.
+    
+    Sincerly,
+    
+    {{ template &quot;signature.tmpl&quot; . }}
+    
+    {{ template &quot;postscript.tmpl&quot; . }}
+</code></pre>
+
+<h4>signature.tmpl</h4>
+
+<pre><code class="language-template">    {{with .Name}}{{- . -}}{{else}}Anonymous{{end}}
+</code></pre>
+
+<h4>postscript.tmpl</h4>
+
+<pre><code class="language-template">    (P. S. {{with .ToName}}{{- . }}, {{end -}} what is coming at is coming from you)
+</code></pre>
+
+<h4>Putting it together</h4>
+
+<pre><code class="language-shell">    mkpage &quot;ToName=text:Mojo Sam&quot; &quot;Name=text:Jack Flanders&quot; \
+        examples/letter.tmpl examples/signature.tmpl examples/postscript.tmpl
+</code></pre>
+
+<h4>This output</h4>
+
+<p>Should be something like&ndash;</p>
+
+<pre><code>    Hello Mojo Sam,
+    
+    This is an example of a letter.
+    
+    Sincerly,
+    
+    Jack Flanders
+    
+    (P. S. Mojo Sam, what is coming at is coming from you)
 </code></pre>
 </section>
     <nav><ul>

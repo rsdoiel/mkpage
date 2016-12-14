@@ -52,7 +52,7 @@ how to use *mkpage* as well as write simple Go templates.
 
 In this example we want to add a name to a simple get well message.
 
-Our template is called **get-well.tmpl**. It looks like 
+Our template is called *[get-well.tmpl](examples/get-well.tmpl)*. It looks like 
 
 ```go
     Dear {{ .name -}},
@@ -93,15 +93,15 @@ opening line).
 #### JSON data, a key/value blob report
 
 In this example we construct a JSON object as part of the key/value pairs on the command line and
-pass it through the blob.tmpl template that displays they pairs.
+pass it through the blob.tmpl template that displays they pairs. 
 
 The command envokation looks like
 
 ```shell
-    mkpage 'blob=json:{"one":1,"two":2}'  blob.tmpl
+    mkpage 'blob=json:{"one":1,"two":2}' blob.tmpl
 ```
 
-The template is a simple range construct
+The template is a simple range construct (e.g. [blob.tmpl](examples/blob.tmpl)).
 
 ```go
     {{range $key,$val := .blob }}
@@ -129,7 +129,7 @@ to format our output. Also notice the trailing values "-" which supresses and ex
 #### Wraping a Markdown document in HTML
 
 In this example we want to embed a "story" in a simple HTML document. The *story* is
-written in Markdown format. Here's the simple template
+written in Markdown format. Here's the simple template (i.e. [simple-page.tmpl](examples/simple-page.tmpl))
 
 ```go
     <!DOCTYPE html>
@@ -166,7 +166,7 @@ than the HTML or XML alternatives.
 
 + data source: http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&lon=144.74977715100056&FcstType=json
 
-Our template will be call **forecast.tmpl**. It will be used to produce a Markdown file of weather related
+Our template will be call *[forecast.tmpl](examples/forecast.tmpl)*. It will be used to produce a Markdown file of weather related
 information obtained from the JSON response.
 
 ```go
@@ -197,7 +197,7 @@ information obtained from the JSON response.
 The command line for *mkpage* would look like
 
 ```shell
-    mkpage "forecast=http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&lon=144.74977715100056&FcstType=json" testdata/forecast.tmpl
+    mkpage "forecast=http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&lon=144.74977715100056&FcstType=json" forecast.tmpl
 ```
 
 The resulting page should look something like 
@@ -237,3 +237,57 @@ The resulting page should look something like
         + Partly sunny, with a high near 89.
 ```
 
+### Multiple templates
+
+It is come in more complex website to separate elements into their own templates and pull them together with a master one.
+In this example will use three tempaltes - [letter.tmpl](examples/letter.tmpl) (the master template), 
+[signature.tmpl](examples/signature.tmpl) and [postscript.tmpl](examples/postscript.tmpl).
+
+#### letter.tmpl
+
+```template
+    {{- with .ToName}}Hello {{ . -}},{{- else}}Hello,{{end}}
+    
+    This is an example of a letter.
+    
+    Sincerly,
+    
+    {{ template "signature.tmpl" . }}
+    
+    {{ template "postscript.tmpl" . }}
+```
+
+#### signature.tmpl
+
+```template
+    {{with .Name}}{{- . -}}{{else}}Anonymous{{end}}
+```
+
+#### postscript.tmpl
+
+```template
+    (P. S. {{with .ToName}}{{- . }}, {{end -}} what is coming at is coming from you)
+```
+
+#### Putting it together
+
+```shell
+    mkpage "ToName=text:Mojo Sam" "Name=text:Jack Flanders" \
+        examples/letter.tmpl examples/signature.tmpl examples/postscript.tmpl
+```
+
+#### This output
+
+Should be something like--
+
+```
+    Hello Mojo Sam,
+    
+    This is an example of a letter.
+    
+    Sincerly,
+    
+    Jack Flanders
+    
+    (P. S. Mojo Sam, what is coming at is coming from you)
+```
