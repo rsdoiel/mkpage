@@ -20,7 +20,7 @@ save:
 clean:
 	if [ -d bin ]; then rm -fR bin; fi
 	if [ -d dist ]; then rm -fR dist; fi
-	if [ -f mkpage-binary-release.zip ]; then rm -f mkpage-binary-release.zip; fi
+	if [ -f mkpage-release.zip ]; then rm -f mkpage-release.zip; fi
 
 install:
 	env GOBIN=$(HOME)/bin go install cmds/mkpage/mkpage.go
