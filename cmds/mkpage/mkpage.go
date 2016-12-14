@@ -183,25 +183,7 @@ func main() {
 			os.Exit(1)
 		}
 	} else {
-		//NOTE: The first template gets to hold the template functions.
-		/*
-				src, err := ioutil.ReadFile(templateSources[0])
-				if err != nil {
-					fmt.Fprintf(os.Stderr, "Can't read the first template %s, %s\n", templateSources[0], err)
-					os.Exit(1)
-				}
-				tmpl, err = template.New(templateSources[0]).Funcs(tmplfn.Join(tmplfn.TimeMap, tmplfn.PageMap)).Parse(string(src))
-				//.ParseFiles(templateSources...)
-				if err != nil {
-					fmt.Fprintf(os.Stderr, "Template parsing failed, %s\n", err)
-					os.Exit(1)
-				}
-			tmpl, err = template.New(templateSources[0]).Funcs(tmplfn.Join(tmplfn.TimeMap, tmplfn.PageMap)).ParseFiles(templateSources...)
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "Template parsing failed, %s\n", err)
-				os.Exit(1)
-			}
-		*/
+		//NOTE: The first template gets to hold the template functions, it needs to have its name set without prefixed subdirectories.
 		tmpl, err = template.New(path.Base(templateSources[0])).Funcs(tmplfn.Join(tmplfn.TimeMap, tmplfn.PageMap)).ParseFiles(templateSources...)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Template parsing failed, %s\n", err)
