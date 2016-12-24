@@ -6,7 +6,7 @@ PROJECT = mkpage
 
 VERSION = $(shell grep -m1 "Version = " $(PROJECT).go | cut -d\" -f 2)
 
-BRANCH = $(shell git branch | grep "* " | cut -d\  -f 2)
+BRANCH = $(shell git branch | grep "* " | cut -d\   -f 2)
 
 build:
 	gofmt -w mkpage.go
@@ -20,7 +20,7 @@ test:
 	go test
 
 save:
-	git commit -am "quick save"
+	git commit -am "Quick Save"
 	git push origin $(BRANCH)
 
 clean:
