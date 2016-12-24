@@ -2,9 +2,17 @@
 #
 # Make releases for Linux/amd64, Linux/ARM6 and Linux/ARM7 (Raspberry Pi), Windows, and Mac OX X (darwin)
 #
-RELEASE_NAME=mkpage
+PROJECT=mkpage
+
+VERSION=$(grep -m1 "Version = " $PROJECT.go | cut -d\" -f 2)
+
+PROG_LIST="mkpage reldocpath"
+
+RELEASE_NAME=$PROJECT-$VERSION
+
+echo "Preparing $RELEASE_NAME"
 echo "NOTE: this can take a while..."
-for PROGNAME in mkpage reldocpath; do
+for PROGNAME in $PROG_LIST; do
   echo "Building dist/linux-amd64/$PROGNAME"
   env CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o dist/linux-amd64/$PROGNAME cmds/$PROGNAME/$PROGNAME.go
   echo "Building dist/maxosx-amd64/$PROGNAME"
@@ -17,6 +25,7 @@ for PROGNAME in mkpage reldocpath; do
   env CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o dist/windows-amd64/$PROGNAME.exe cmds/$PROGNAME/$PROGNAME.go
 done
 
+echo "Copy files to dist/"
 # copy etc/*-example to the distribution folder
 for ITEM in etc/*-example; do
   if [ -f "$ITEM" ]; then
