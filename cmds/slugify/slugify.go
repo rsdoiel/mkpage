@@ -74,8 +74,8 @@ func init() {
 	// Application Options
 	flag.StringVar(&overrides, "s", "", "JSON representation of substitution")
 	flag.StringVar(&overrides, "substitutions", "", "JSON representation of substitutions")
-	flag.BoolVar(&mixedCase, "m", false, "allow mixed case")
-	flag.BoolVar(&mixedCase, "mixed-case", false, "allow mixed case")
+	flag.BoolVar(&mixedCase, "m", true, "allow mixed case, defats to true")
+	flag.BoolVar(&mixedCase, "mixed-case", true, "allow mixed case, defaults to true")
 }
 
 func main() {
