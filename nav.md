@@ -1,6 +1,7 @@
 
 + [home](/)
 + [mkpage](./)
++ [mkslides](mkslides.html)
 + [Go template recipes](go-template-recipes.html)
 + [LICENSE](license.html)
 + [Install](install.html)
