@@ -53,6 +53,11 @@ Output should look something like
 
 Now you should see a set of slides for your presentation.
 
+## Demos
+
++ [demo of three slides](demo/toc-three-slides.html)
++ [presentation on mkslides](demo/toc-presentation.html)
+
 ## windows issues
 
 *mkslides* has had very limited Windows testing.  *mkslides.exe* 

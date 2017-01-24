@@ -48,10 +48,13 @@ echo "Generating mkslides.html"
 MakePage nav.md mkslides.md mkslides.html
 
 echo "Generating docs presentation"
-if [ -f bin/mkslides ]; then
-    ./bin/mkslides presentation.md
+cd demo
+if [ -f ../bin/mkslides ]; then
+    ../bin/mkslides presentation.md
+    ../bin/mkslides three-slides.md
 else
     mkslides presentation.md
+    mkslides three-slides.md
 fi
 
 
