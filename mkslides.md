@@ -1,7 +1,4 @@
 
-    This project has merged with https://github.com/rsdoiel/mkpage
-    as of January 23, 2017
-
 # mkslides
 
 Converts a Markdown file into a sequence of HTML5 slides.
