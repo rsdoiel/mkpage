@@ -179,6 +179,11 @@ includes a basic table output.
 *mkpage* comes with some helper utilities that make scripting a deconstructed
 content management system from Bash easier.
 
+### mkslides
+
+*mkslides* generates a set of HTML5 slides from a single Markdown file. It uses
+the same template engine as *mkpage*
+
 ### reldocpath
 
 *reldocpath* is intended to simplify the calculation of relative
@@ -205,6 +210,23 @@ the output would look like
 
 ```shell
     ../../../css/site.css
+```
+
+### slugify
+
+*slugify* takes one or more command line args (e.g. a phrase like "Hello World") and return
+an updated version that is more friendly for filenames and URLS (e.g. "Hello-World").
+
+#### Example
+
+```shell
+    slugify My thoughts on functional programming
+```
+
+Would yield
+
+```
+    My-thourghs-on-functional-programming
 ```
 
 
