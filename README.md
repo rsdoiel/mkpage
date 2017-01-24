@@ -226,7 +226,7 @@ an updated version that is more friendly for filenames and URLS (e.g. "Hello-Wor
 Would yield
 
 ```
-    My-thourghs-on-functional-programming
+    My-thoughts-on-functional-programming
 ```
 
 
