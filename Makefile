@@ -48,6 +48,9 @@ test:
 	go test
 	cd mkslides && go test
 
+status:
+	git status
+
 save:
 	git commit -am "Quick Save"
 	git push origin $(BRANCH)
