@@ -99,9 +99,9 @@ release: dist/linux-amd64 dist/windows-amd64 dist/macosx-amd64 dist/raspbian-arm
 	cp -v README.md dist/
 	cp -v LICENSE dist/
 	cp -v INSTALL.md dist/
-	cp -v presnetation.md dist/
 	cp -v mkslides.md dist/
 	cp -v etc/*-example dist/etc/
+	cp -vR demo dist/
 	cp -vR scripts dist/
 	cp -vR templates dist/
 	cp -vR examples dist/
