@@ -45,6 +45,7 @@ To make a set of slides
 Output should look something like
 
 ```shell
+    Wrote 00-three-slides.html
     Wrote 01-three-slides.html
     Wrote 02-three-slides.html
     Wrote toc-three-slides.html

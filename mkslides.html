@@ -19,10 +19,45 @@
 <li>Control Layout and display with HTML5 and CSS</li>
 </ul>
 
-<h2>Releases and cross compilation</h2>
+<h2>Example</h2>
 
-<p>The script <a href="./mk-release.sh">mk-release.sh</a> cross compiles <em>mkslides</em> for Windows, Max OS X, Linux (amd64) and Raspberry Pi (Raspbian/ARM6 and ARM7).
-It places all the resulting executable programs in the <em>dist</em> folders.</p>
+<p>A simple markdown producing three slides (assumed you named your file
+three-slides.md)</p>
+
+<pre><code class="language-markdown">    # Title Page
+
+    ## By M.E. Person
+
+    --
+
+    # Second Page slide
+
+    + one
+        + subone
+        + subtwo
+    + two
+    + three
+
+    --
+
+    # Finale Page
+
+    This is the end.
+</code></pre>
+
+<p>To make a set of slides</p>
+
+<pre><code class="language-shell">    mkslides three-slides.md
+</code></pre>
+
+<p>Output should look something like</p>
+
+<pre><code class="language-shell">    Wrote 01-three-slides.html
+    Wrote 02-three-slides.html
+    Wrote toc-three-slides.html
+</code></pre>
+
+<p>Now you should see a set of slides for your presentation.</p>
 
 <h2>windows issues</h2>
 
