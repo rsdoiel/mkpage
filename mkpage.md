@@ -1,16 +1,20 @@
-USAGE: mkpage [OPTION] [KEY/VALUE DATA PAIRS] TEMPLATE_FILENAME [TEMPLATE_FILENAMES]
+# USAGE
 
-SYNOPSIS
+    mkpage [OPTION] [KEY/VALUE DATA PAIRS] TEMPLATE_FILENAME [TEMPLATE_FILENAMES]
+
+## SYNOPSIS
 
 Using the key/value pairs populate the template(s) and render to stdout.
 
-CONFIGURATION
+## CONFIGURATION
 
 You can set a local default template path by using environment variables.
 
 + MKPAGE_TEMPLATES - is the colon delimited list of template paths
 
-OPTIONS
+## OPTIONS
+
+```
 	-h	show help
 	-help	show help
 	-l	show license
@@ -21,11 +25,13 @@ OPTIONS
 	-templates	colon delimited list of templates to use
 	-v	show version
 	-version	show version
+```
 
-EXAMPLE
+## EXAMPLE
 
 Template
 
+```
     Date: {{- .now}}
 
     Hello {{.name -}},
@@ -37,6 +43,7 @@ Template
     Thank you
 
 	{{.signature}}
+```
 
 Render the template above (i.e. myformletter.template) would be accomplished from the following
 data sources--
@@ -47,15 +54,16 @@ data sources--
 
 That would be expressed on the command line as follows
 
+```shell
 	mkpage "now=text:$(date)" "name=text:Little Frieda" \
 		"weather=http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&lon=144.74977715100056&FcstType=json" \
 		signature=testdata/signature.txt \
 		testdata/myformletter.template
+```
 
 Golang's text/template docs can be found at 
 
+```
       https://golang.org/pkg/text/template/
+```
 
-
-
-mkpage v0.0.12-alpha1
