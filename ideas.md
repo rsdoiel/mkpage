@@ -36,3 +36,14 @@
     + How much metadata can I get from path and document contents (without resorting to Front Matter)?
     + Would this be enough to populate a BibFrame record?
 
+## Someday, Maybe ideas
+
++ autotag
+    + automatically collect tag words from Markdown documents
+        + tags can be identified by quotes, *emphasis*, _underscores_ and link labels
+    + should render a JSON structure for building tag clouds and tag indexes
++ wssearch/wsindex
+    + Indexer could be from JSON blobs that conform to a subset of schema.org definitions
+    + A generic search engine could implemented by reading indexes and accepting a map of search fields/constraints (mirroed in the supported schema)
+
+    
