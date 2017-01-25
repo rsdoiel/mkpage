@@ -50,3 +50,5 @@ echo "Generating reldocpath.html"
 MakePage nav.md reldocpath.md reldocpath.html
 echo "Generating slugify.html"
 MakePage nav.md slugify.md slugify.html
+echo "Generating mkpage.html"
+MakePage nav.md mkpage.md mkpage.html
