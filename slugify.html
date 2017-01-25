@@ -27,28 +27,37 @@
 </nav>
 
 <section>
-<p>USAGE: slugify [OPTIONS] STRING_TO_SLUGIFY</p>
+<h1>USAGE</h1>
 
-<p>SYNOPSIS</p>
-
-<p>%!c(string=slugify)hanges a human readable string into a path or URL friendly
-string. E.g. &ldquo;Hello World&rdquo; becomes &ldquo;hello-world&rdquo;</p>
-
-<p>OPTIONS
-    -h  display help
-    -l  display license
-    -m  allow mixed case, defats to true
-    -mixed-case allow mixed case, defaults to true
-    -s  JSON representation of substitution
-    -substitutions  JSON representation of substitutions
-    -v  display version</p>
-
-<p>EXAMPLE</p>
-
-<pre><code>slugify &quot;Hello World my friend&quot;
+<pre><code>slugify [OPTIONS] STRING_TO_SLUGIFY
 </code></pre>
 
-<p>slugify v0.0.12-alpha1</p>
+<h2>SYNOPSIS</h2>
+
+<p>slugify changes a human readable string into a path or URL friendly
+string. E.g. &ldquo;Hello World&rdquo; becomes &ldquo;hello-world&rdquo;</p>
+
+<h2>OPTIONS</h2>
+
+<pre><code>	-h	display help
+	-l	display license
+	-m	allow mixed case, defats to true
+	-mixed-case	allow mixed case, defaults to true
+	-s	JSON representation of substitution
+	-substitutions	JSON representation of substitutions
+	-v	display version
+</code></pre>
+
+<h2>EXAMPLE</h2>
+
+<pre><code>    slugify &quot;Hello World my friend&quot;
+
+</code></pre>
+
+<p>returns</p>
+
+<pre><code>	Hello-World-my-friend
+</code></pre>
 
 </section>
 

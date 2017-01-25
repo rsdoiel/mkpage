@@ -37,7 +37,7 @@ var (
 	description = `
 SYNOPSIS
 
-% changes a human readable string into a path or URL friendly
+%s changes a human readable string into a path or URL friendly
 string. E.g. "Hello World" becomes "hello-world"
 `
 
@@ -45,6 +45,10 @@ string. E.g. "Hello World" becomes "hello-world"
 EXAMPLE
 
     %s "Hello World my friend"
+
+returns
+
+	Hello-World-my-friend
 `
 
 	// Standard Options

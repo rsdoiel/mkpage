@@ -1,11 +1,15 @@
-USAGE: slugify [OPTIONS] STRING_TO_SLUGIFY
+# USAGE
 
-SYNOPSIS
+    slugify [OPTIONS] STRING_TO_SLUGIFY
 
-%!c(string=slugify)hanges a human readable string into a path or URL friendly
+## SYNOPSIS
+
+slugify changes a human readable string into a path or URL friendly
 string. E.g. "Hello World" becomes "hello-world"
 
-OPTIONS
+## OPTIONS
+
+```
 	-h	display help
 	-l	display license
 	-m	allow mixed case, defats to true
@@ -13,11 +17,17 @@ OPTIONS
 	-s	JSON representation of substitution
 	-substitutions	JSON representation of substitutions
 	-v	display version
+```
 
-EXAMPLE
+## EXAMPLE
 
+```
     slugify "Hello World my friend"
 
+```
+returns
 
+```
+	Hello-World-my-friend
+```
 
-slugify v0.0.12-alpha1
