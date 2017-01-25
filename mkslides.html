@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Caltech Library's Digital Library Development Sandbox</title>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="/css/site.css">
+</head>
+<body>
+<header>
+<a href="http://library.caltech.edu"><img src="assets/liblogo.gif" alt="Caltech Library logo"></a>
+</header>
+<nav>
+<ul>
+<li><a href="/">Home</a></li>
+<li><a href="index.html">README</a></li>
+<li><a href="go-template-recipes.html">Go template recipes</a></li>
+<li><a href="install.html">INSTALL</a></li>
+<li><a href="license.html">LICENSE</a></li>
+<li><a href="https://github.com/caltechlibrary/mkpage">Github</a></li>
+</ul>
+
+</nav>
+
+<section>
+<h1>mkslides</h1>
+
+<p>Convert a Markdown file into a sequence of HTML5 slides.</p>
+
+<ul>
+<li>Use Markdown to write your presentation in one file</li>
+<li>Separate slides by &ldquo;&ndash;&rdquo; and a new line (e.g. \n versus \r\n)</li>
+<li>Apply the simple default template or use your own</li>
+<li>Control Layout and display with HTML5 and CSS</li>
+</ul>
+
+<p>Here&rsquo;s an example of a three slide presentation</p>
+
+<pre><code>    Welcome to [mkslides](../)
+    by R. S. Doiel, &lt;rsdoiel@caltech.edu&gt;
+
+    --
+
+    # mkslides
+
+    mkslides can generate multiple HTML5 pages from
+    one markdown file.  It splits the markdown file
+    on each &quot;--&quot; 
+
+    --
+
+    Thank you
+
+    Hope you enjoy [mkslides](https://github.com/caltechlbrary/mkslides)
+
+</code></pre>
+
+<p>If you save this <a href="example/presentation.md">file</a> as presentation.md it would
+generate the following webpages</p>
+
+<ul>
+<li><a href="example/00-presentation.html">00-presentation01.html</a></li>
+<li><a href="example/01-presentation.html">01-presentation02.html</a></li>
+<li><a href="example/02-presentation.html">02-presentation03.html</a></li>
+</ul>
+
+<h2>Releases and cross compilation</h2>
+
+<p>The script <a href="./mk-release.sh">mk-release.sh</a> cross compiles <em>mkslides</em> for Windows, Max OS X, Linux (amd64) and Raspberry Pi (Raspbian/ARM6 and ARM7).
+It places all the resulting executable programs in the <em>dist</em> folders. See <a href="install.html">INSTALL.md</a> for instructions.</p>
+
+<h2>windows issues</h2>
+
+<p><em>mkslides</em> has very limited Windows testing done.  <em>mkslides.exe</em>
+presumes the Unix style new line only and not the old DOS/Windows CR/LF type endings.</p>
+
+</section>
+
+<footer>
+<span><h1><A href="http://caltech.edu">Caltech</a></h1></span>
+<span>&copy; 2015 - 2016 <a href="http://library.caltech.edu/CLS_Copyright.htm">Caltech library</a></span>
+<address>1200 E California Blvd, Mail Code 1-32, Pasadena, CA 91125-3200</address> 
+<span>Phone: <a href="tel:+1-626-395-3405">(626)395-3405</a></span>
+<span><a href="mailto:library@caltech.edu">Email Us</a></span>
+<a class="cl-hide" href="sitemap.xml">Site Map</a>
+</footer>
+</body>
+</html>

@@ -44,3 +44,5 @@ echo "Generating go-template-recipes.html"
 MakePage nav.md go-template-recipes.md go-template-recipes.html
 echo "Generating license.html"
 MakePage nav.md "markdown:$(cat LICENSE)" license.html
+echo "Generating mkslides.html"
+MakePage nav.md mkslides.md mkslides.html
