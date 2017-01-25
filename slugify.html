@@ -8,28 +8,29 @@
     <header>
         <h1>mkpage: An experimental template and markdown processor</h1>
     </header>
-    <section><p>USAGE: slugify [OPTIONS] STRING_TO_SLUGIFY</p>
+    <section><h1>USAGE</h1>
 
-<p>SYNOPSIS</p>
+<pre><code>slugify [OPTIONS] STRING_TO_SLUGIFY
+</code></pre>
 
-<p>%!c(string=slugify)hanges a human readable string into a path or URL friendly
+<h2>SYNOPSIS</h2>
+
+<p>slugify changes a human readable string into a path or URL friendly
 string. E.g. &ldquo;Hello World&rdquo; becomes &ldquo;hello-world&rdquo;</p>
 
-<pre><code>-h  display help
--l  display license
--m  allow mixed case, defats to true
--mixed-case allow mixed case, defaults to true
--s  JSON representation of substitution
--substitutions  JSON representation of substitutions
--v  display version
+<pre><code class="language-shell">	-h	display help
+	-l	display license
+	-m	allow mixed case, defats to true
+	-mixed-case	allow mixed case, defaults to true
+	-s	JSON representation of substitution
+	-substitutions	JSON representation of substitutions
+	-v	display version
 </code></pre>
 
-<p>EXAMPLE</p>
+<h2>EXAMPLE</h2>
 
-<pre><code>slugify &quot;Hello World my friend&quot;
+<pre><code class="language-shell">    slugify &quot;Hello World my friend&quot;
 </code></pre>
-
-<p>slugify v0.0.11</p>
 </section>
     <nav><ul>
 <li><a href="/">home</a></li>

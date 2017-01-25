@@ -8,33 +8,36 @@
     <header>
         <h1>mkpage: An experimental template and markdown processor</h1>
     </header>
-    <section><p>USAGE: reldocpath SOURCE_DOC_PATH TARGET_DOC_PATH</p>
+    <section><h1>USAGE</h1>
 
-<p>SYNOPSIS</p>
+<pre><code>reldocpath SOURCE_DOC_PATH TARGET_DOC_PATH 
+</code></pre>
+
+<h2>SYNOPSIS</h2>
 
 <p>Given a source document path, a target document path calculate and
 the implied common base path calculate the relative path for target.</p>
 
-<p>OPTIONS</p>
+<h2>OPTIONS</h2>
 
-<pre><code>-h  display help
--help   display help
--l  display license
--license    display license
--v  display version
--version    display version
+<pre><code class="language-shell">	-h	display help
+	-help	display help
+	-l	display license
+	-license	display license
+	-v	display version
+	-version	display version
 </code></pre>
 
-<p>EXAMPLE:</p>
+<h2>EXAMPLE</h2>
 
 <p>Given</p>
 
-<pre><code>reldocpath chapter-01/lesson-03.html css/site.css
+<pre><code class="language-shell">    reldocpath chapter-01/lesson-03.html css/site.css
 </code></pre>
 
 <p>would output</p>
 
-<pre><code>.../css/site.css
+<pre><code class="language-shell">    .../css/site.css
 </code></pre>
 
 <p>reldocpath v0.0.11</p>
