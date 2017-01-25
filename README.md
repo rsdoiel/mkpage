@@ -234,4 +234,4 @@ Would yield
 
 + [Markdown](http://daringfireball.net/projects/markdown/) as specified by John Grubber (the person who created Markdown)
 + [Mastering Markdown](https://guides.github.com/features/mastering-markdown/) Github Guide
-+ [blackfriday]() markdown processor
++ [blackfriday](https://github.com/russross/blackfriday) markdown processor
