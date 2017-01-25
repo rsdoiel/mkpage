@@ -46,6 +46,10 @@ echo "Generating license.html"
 MakePage nav.md "markdown:$(cat LICENSE)" license.html
 echo "Generating mkslides.html"
 MakePage nav.md mkslides.md mkslides.html
+echo "Generating reldocpath.html"
+MakePage nav.md reldocpath.md reldocpath.html
+echo "Generating slugify.html"
+MakePage nav.md slugify.md slugify.html
 
 echo "Generating docs presentation"
 cd demo

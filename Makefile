@@ -101,6 +101,8 @@ release: dist/linux-amd64 dist/windows-amd64 dist/macosx-amd64 dist/raspbian-arm
 	cp -v LICENSE dist/
 	cp -v INSTALL.md dist/
 	cp -v mkslides.md dist/
+	cp -v reldocpath.md dist/
+	cp -v slugify.md dist/
 	cp -vR demo dist/
 	cp -vR examples dist/
 	zip -r $(PROJECT)-$(VERSION)-release.zip dist/*
