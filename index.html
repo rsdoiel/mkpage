@@ -178,6 +178,59 @@ returned as &ldquo;text/markdown&rdquo;.</p>
 <li>-t, -template - show <em>mkpage</em>&rsquo;s default template</li>
 </ul>
 
+<h2>Companion utilities</h2>
+
+<p><em>mkpage</em> comes with some helper utilities that make scripting a deconstructed
+content management system from Bash easier.</p>
+
+<h3>mkslides</h3>
+
+<p><em>mkslides</em> generates a set of HTML5 slides from a single Markdown file. It uses
+the same template engine as <em>mkpage</em></p>
+
+<h3>reldocpath</h3>
+
+<p><em>reldocpath</em> is intended to simplify the calculation of relative
+asset paths (e.g. common css files, images, feeds) when working from
+a common project directory.</p>
+
+<h4>Example</h4>
+
+<p>You know the path from the source document to target document from the project root folder.</p>
+
+<ul>
+<li>Source is <em>course/week/01/readings.html</em><br /></li>
+<li>Target is <em>css/site.css</em>.</li>
+</ul>
+
+<p>In Bash this would look like&ndash;</p>
+
+<pre><code class="language-shell">    # We know the paths relative to the project directory
+    DOC_PATH=&quot;course/week/01/readings.html&quot;
+    CSS_PATH=&quot;css/site.css&quot;
+    echo $(reldocpath $DOC_PATH $CSS_PATH)
+</code></pre>
+
+<p>the output would look like</p>
+
+<pre><code class="language-shell">    ../../../css/site.css
+</code></pre>
+
+<h3>slugify</h3>
+
+<p><em>slugify</em> takes one or more command line args (e.g. a phrase like &ldquo;Hello World&rdquo;) and return
+an updated version that is more friendly for filenames and URLS (e.g. &ldquo;Hello-World&rdquo;).</p>
+
+<h4>Example</h4>
+
+<pre><code class="language-shell">    slugify My thoughts on functional programming
+</code></pre>
+
+<p>Would yield</p>
+
+<pre><code>    My-thoughts-on-functional-programming
+</code></pre>
+
 </section>
 
 <footer>
