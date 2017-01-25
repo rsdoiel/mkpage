@@ -3,7 +3,7 @@
 //
 // @author R. S. Doiel, <rsdoiel@caltech.edu>
 //
-// Copyright (c) 2016, Caltech
+// Copyright (c) 2017, Caltech
 // All rights not granted herein are expressly reserved by Caltech.
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -122,7 +122,6 @@ func main() {
 	cfg := cli.New(appName, "MKPAGE", fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version), mkpage.Version)
 	cfg.UsageText = fmt.Sprintf(usage, appName)
 	cfg.DescriptionText = fmt.Sprintf(description)
-	cfg.OptionsText = "OPTIONS\n"
 	cfg.ExampleText = fmt.Sprintf(examples, appName)
 
 	// Process flags and update the environment as needed.

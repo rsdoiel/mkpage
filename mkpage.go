@@ -25,6 +25,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"path"
 	"strings"
 	"text/template"
@@ -435,4 +436,29 @@ func MakePageString(tmpl *template.Template, keyValues map[string]string) (strin
 	wr := io.Writer(&buf)
 	err := MakePage(wr, tmpl, keyValues)
 	return buf.String(), err
+}
+
+// RelativeDocPath calculate the relative path from source to target based on
+// implied common base.
+//
+// Example:
+//
+//     docPath := "docs/chapter-01/lesson-02.html"
+//     cssPath := "css/site.css"
+//     fmt.Printf("<link href=%q>\n", MakeRelativePath(docPath, cssPath))
+//
+// Output:
+//
+//     <link href="../../css/site.css">
+//
+func RelativeDocPath(source, target string) string {
+	var result []string
+
+	sep := string(os.PathSeparator)
+	dname, _ := path.Split(source)
+	for i := 0; i < strings.Count(dname, sep); i++ {
+		result = append(result, "..")
+	}
+	result = append(result, target)
+	return strings.Join(result, sep)
 }
