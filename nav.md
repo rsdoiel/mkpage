@@ -5,7 +5,7 @@
 + [mkslides](mkslides.html)
 + [reldocpath](reldocpath.html)
 + [sitemapper](sitemapper.html)
-+ [slugify](slugify.md)
++ [slugify](slugify.html)
 + [Go template recipes](go-template-recipes.html)
 + [INSTALL](install.html)
 + [LICENSE](license.html)
