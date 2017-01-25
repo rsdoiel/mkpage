@@ -1,28 +1,34 @@
-USAGE: reldocpath SOURCE_DOC_PATH TARGET_DOC_PATH 
+# USAGE
 
-SYNOPSIS
+    reldocpath SOURCE_DOC_PATH TARGET_DOC_PATH 
+
+## SYNOPSIS
 
 Given a source document path, a target document path calculate and
 the implied common base path calculate the relative path for target.
 
-OPTIONS
+## OPTIONS
+
+```
 	-h	display help
 	-help	display help
 	-l	display license
 	-license	display license
 	-v	display version
 	-version	display version
+```
 
-EXAMPLE:
+## EXAMPLE
 
 Given
 
+```
     reldocpath chapter-01/lesson-03.html css/site.css
+```
 
 would output
 
+```
     .../css/site.css
+```
 
-
-
-reldocpath v0.0.12-alpha1
