@@ -41,7 +41,7 @@ import (
 
 	// My packages
 	"github.com/rsdoiel/cli"
-	"github.com/rsdoiel/mkpage/mkslides"
+	"github.com/rsdoiel/mkpage"
 )
 
 var (
@@ -67,7 +67,7 @@ each side by a "---".
 	cssPath           string
 	jsPath            string
 	templateFName     string
-	templateSource    = mkslides.DefaultTemplateSource
+	templateSource    = mkpage.DefaultSlideTemplateSource
 )
 
 func init() {
@@ -90,7 +90,7 @@ func main() {
 	appName := path.Base(os.Args[0])
 	flag.Parse()
 
-	cfg := cli.New(appName, "MKPAGE", fmt.Sprintf(mkslides.LicenseText, appName, mkslides.Version), mkslides.Version)
+	cfg := cli.New(appName, "MKPAGE", fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version), mkpage.Version)
 	cfg.UsageText = fmt.Sprintf(usage, appName)
 	cfg.DescriptionText = fmt.Sprintf(description, appName)
 	//cfg.ExampleText = examples
@@ -143,10 +143,10 @@ func main() {
 	}
 
 	// Build the slides
-	slides := mkslides.MarkdownToSlides(fname, presentationTitle, cssPath, jsPath, src)
+	slides := mkpage.MarkdownToSlides(fname, presentationTitle, cssPath, jsPath, src)
 	// Render the slides
 	for i, slide := range slides {
-		err := mkslides.MakeSlideFile(tmpl, slide)
+		err := mkpage.MakeSlideFile(tmpl, slide)
 		if err == nil {
 			// Note: Give some feed back when slide written successful
 			fmt.Fprintf(os.Stdout, "Wrote %02d-%s.html\n", slide.CurNo, slide.FName)
@@ -156,12 +156,12 @@ func main() {
 		}
 	}
 	// Render the TOC slide
-	slide, err := mkslides.SlidesToTOCSlide(slides)
+	slide, err := mkpage.SlidesToTOCSlide(slides)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Can't create a table of contents slide", err)
 		os.Exit(1)
 	}
-	err = mkslides.MakeTOCSlideFile(tmpl, slide)
+	err = mkpage.MakeTOCSlideFile(tmpl, slide)
 	if err == nil {
 		// Note: Give some feed back when slide written successful
 		fmt.Fprintf(os.Stdout, "Wrote toc-%s.html\n", slide.FName)

@@ -19,7 +19,7 @@ bin/reldocpath: cmds/reldocpath/reldocpath.go
 bin/slugify: cmds/slugify/slugify.go
 	go build -o bin/slugify cmds/slugify/slugify.go
 
-bin/mkslides: mkslides/mkslides.go cmds/mkslides/mkslides.go
+bin/mkslides: mkpage.go cmds/mkslides/mkslides.go
 	go build -o bin/mkslides cmds/mkslides/mkslides.go
 
 lint:
@@ -46,7 +46,6 @@ format:
 
 test:
 	go test
-	cd mkslides && go test
 
 status:
 	git status
