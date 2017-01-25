@@ -1,9 +1,10 @@
 
 + [Home](/)
 + [README](index.html)
-+ [mkpage](mkpage.md)
-+ [mkslides](mkslides.md)
-+ [reldocpath](reldocpath.md)
++ [mkpage](mkpage.html)
++ [mkslides](mkslides.html)
++ [reldocpath](reldocpath.html)
++ [sitemapper](sitemapper.html)
 + [slugify](slugify.md)
 + [Go template recipes](go-template-recipes.html)
 + [INSTALL](install.html)

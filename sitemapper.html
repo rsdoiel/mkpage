@@ -27,34 +27,35 @@
 </nav>
 
 <section>
-<p>USAGE: reldocpath SOURCE_DOC_PATH TARGET_DOC_PATH</p>
+<h1>USAGE</h1>
 
-<p>SYNOPSIS</p>
-
-<p>Given a source document path, a target document path calculate and
-the implied common base path calculate the relative path for target.</p>
-
-<p>OPTIONS
-    -h  display help
-    -help   display help
-    -l  display license
-    -license    display license
-    -v  display version
-    -version    display version</p>
-
-<p>EXAMPLE:</p>
-
-<p>Given</p>
-
-<pre><code>reldocpath chapter-01/lesson-03.html css/site.css
+<pre><code>sitemapper [OPTIONS] HTDOCS_PATH MAP_FILENAME PUBLIC_BASE_URL
 </code></pre>
 
-<p>would output</p>
+<h2>OVERVIEW</h2>
 
-<pre><code>.../css/site.css
+<p>sitemapper generates a sitemap for the website.</p>
+
+<h2>OPTIONS</h2>
+
+<pre><code>	-e	A colon delimited list of path parts to exclude from sitemap
+	-exclude	A colon delimited list of path parts to exclude from sitemap
+	-h	display help
+	-help	display help
+	-l	display license
+	-license	display license
+	-u	Set the change frequencely value, e.g. daily, weekly, monthly
+	-update-frequency	Set the change frequencely value, e.g. daily, weekly, monthly
+	-v	display version
+	-version	display version
 </code></pre>
 
-<p>reldocpath v0.0.12-alpha1</p>
+<h2>EXAMPLE</h2>
+
+<pre><code>    sitemapper htdocs htdocs/sitemap.xml http://eprints.example.edu
+</code></pre>
+
+<p>Renders out a new sitemap at htdocs/sitemap.xml</p>
 
 </section>
 

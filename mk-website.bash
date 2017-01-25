@@ -52,3 +52,5 @@ echo "Generating slugify.html"
 MakePage nav.md slugify.md slugify.html
 echo "Generating mkpage.html"
 MakePage nav.md mkpage.md mkpage.html
+echo "Generating sitemapper.html"
+MakePage nav.md sitemapper.md sitemapper.html
