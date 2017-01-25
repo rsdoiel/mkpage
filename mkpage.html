@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Caltech Library's Digital Library Development Sandbox</title>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="/css/site.css">
+</head>
+<body>
+<header>
+<a href="http://library.caltech.edu"><img src="assets/liblogo.gif" alt="Caltech Library logo"></a>
+</header>
+<nav>
+<ul>
+<li><a href="/">Home</a></li>
+<li><a href="index.html">README</a></li>
+<li><a href="mkpage.md">mkpage</a></li>
+<li><a href="mkslides.md">mkslides</a></li>
+<li><a href="reldocpath.md">reldocpath</a></li>
+<li><a href="slugify.md">slugify</a></li>
+<li><a href="go-template-recipes.html">Go template recipes</a></li>
+<li><a href="install.html">INSTALL</a></li>
+<li><a href="license.html">LICENSE</a></li>
+<li><a href="https://github.com/caltechlibrary/mkpage">Github</a></li>
+</ul>
+
+</nav>
+
+<section>
+<p>USAGE: mkpage [OPTION] [KEY/VALUE DATA PAIRS] TEMPLATE_FILENAME [TEMPLATE_FILENAMES]</p>
+
+<p>SYNOPSIS</p>
+
+<p>Using the key/value pairs populate the template(s) and render to stdout.</p>
+
+<p>CONFIGURATION</p>
+
+<p>You can set a local default template path by using environment variables.</p>
+
+<ul>
+<li>MKPAGE_TEMPLATES - is the colon delimited list of template paths</li>
+</ul>
+
+<p>OPTIONS
+    -h  show help
+    -help   show help
+    -l  show license
+    -license    show license
+    -s  display the default template
+    -show-template  display the default template
+    -t  colon delimited list of templates to use
+    -templates  colon delimited list of templates to use
+    -v  show version
+    -version    show version</p>
+
+<p>EXAMPLE</p>
+
+<p>Template</p>
+
+<pre><code>Date: {{- .now}}
+
+Hello {{.name -}},
+
+The current weather is
+
+{{.weather}}
+
+Thank you
+
+{{.signature}}
+</code></pre>
+
+<p>Render the template above (i.e. myformletter.template) would be accomplished from the following
+data sources&ndash;</p>
+
+<ul>
+<li>&ldquo;now&rdquo; and &ldquo;name&rdquo; are strings</li>
+<li>&ldquo;weatherForcast&rdquo; comes from a URL</li>
+<li>&ldquo;license&rdquo; comes from a file in our local disc</li>
+</ul>
+
+<p>That would be expressed on the command line as follows</p>
+
+<pre><code>mkpage &quot;now=text:$(date)&quot; &quot;name=text:Little Frieda&quot; \
+    &quot;weather=http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&amp;lon=144.74977715100056&amp;FcstType=json&quot; \
+    signature=testdata/signature.txt \
+    testdata/myformletter.template
+</code></pre>
+
+<p>Golang&rsquo;s text/template docs can be found at</p>
+
+<pre><code>  https://golang.org/pkg/text/template/
+</code></pre>
+
+<p>mkpage v0.0.12-alpha1</p>
+
+</section>
+
+<footer>
+<span><h1><A href="http://caltech.edu">Caltech</a></h1></span>
+<span>&copy; 2015 - 2016 <a href="http://library.caltech.edu/CLS_Copyright.htm">Caltech library</a></span>
+<address>1200 E California Blvd, Mail Code 1-32, Pasadena, CA 91125-3200</address> 
+<span>Phone: <a href="tel:+1-626-395-3405">(626)395-3405</a></span>
+<span><a href="mailto:library@caltech.edu">Email Us</a></span>
+<a class="cl-hide" href="sitemap.xml">Site Map</a>
+</footer>
+</body>
+</html>
