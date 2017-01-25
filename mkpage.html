@@ -27,13 +27,16 @@
 </nav>
 
 <section>
-<p>USAGE: mkpage [OPTION] [KEY/VALUE DATA PAIRS] TEMPLATE_FILENAME [TEMPLATE_FILENAMES]</p>
+<h1>USAGE</h1>
 
-<p>SYNOPSIS</p>
+<pre><code>mkpage [OPTION] [KEY/VALUE DATA PAIRS] TEMPLATE_FILENAME [TEMPLATE_FILENAMES]
+</code></pre>
+
+<h2>SYNOPSIS</h2>
 
 <p>Using the key/value pairs populate the template(s) and render to stdout.</p>
 
-<p>CONFIGURATION</p>
+<h2>CONFIGURATION</h2>
 
 <p>You can set a local default template path by using environment variables.</p>
 
@@ -41,33 +44,35 @@
 <li>MKPAGE_TEMPLATES - is the colon delimited list of template paths</li>
 </ul>
 
-<p>OPTIONS
-    -h  show help
-    -help   show help
-    -l  show license
-    -license    show license
-    -s  display the default template
-    -show-template  display the default template
-    -t  colon delimited list of templates to use
-    -templates  colon delimited list of templates to use
-    -v  show version
-    -version    show version</p>
+<h2>OPTIONS</h2>
 
-<p>EXAMPLE</p>
+<pre><code>	-h	show help
+	-help	show help
+	-l	show license
+	-license	show license
+	-s	display the default template
+	-show-template	display the default template
+	-t	colon delimited list of templates to use
+	-templates	colon delimited list of templates to use
+	-v	show version
+	-version	show version
+</code></pre>
+
+<h2>EXAMPLE</h2>
 
 <p>Template</p>
 
-<pre><code>Date: {{- .now}}
+<pre><code>    Date: {{- .now}}
 
-Hello {{.name -}},
+    Hello {{.name -}},
+    
+    The current weather is
 
-The current weather is
+    {{.weather}}
 
-{{.weather}}
+    Thank you
 
-Thank you
-
-{{.signature}}
+	{{.signature}}
 </code></pre>
 
 <p>Render the template above (i.e. myformletter.template) would be accomplished from the following
@@ -81,18 +86,16 @@ data sources&ndash;</p>
 
 <p>That would be expressed on the command line as follows</p>
 
-<pre><code>mkpage &quot;now=text:$(date)&quot; &quot;name=text:Little Frieda&quot; \
-    &quot;weather=http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&amp;lon=144.74977715100056&amp;FcstType=json&quot; \
-    signature=testdata/signature.txt \
-    testdata/myformletter.template
+<pre><code class="language-shell">	mkpage &quot;now=text:$(date)&quot; &quot;name=text:Little Frieda&quot; \
+		&quot;weather=http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&amp;lon=144.74977715100056&amp;FcstType=json&quot; \
+		signature=testdata/signature.txt \
+		testdata/myformletter.template
 </code></pre>
 
 <p>Golang&rsquo;s text/template docs can be found at</p>
 
-<pre><code>  https://golang.org/pkg/text/template/
+<pre><code>      https://golang.org/pkg/text/template/
 </code></pre>
-
-<p>mkpage v0.0.12-alpha1</p>
 
 </section>
 
