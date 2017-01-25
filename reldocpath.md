@@ -34,4 +34,3 @@ would output
 ```
 
 
-reldocpath v0.0.11

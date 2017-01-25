@@ -24,3 +24,8 @@ string. E.g. "Hello World" becomes "hello-world"
     slugify "Hello World my friend"
 ```
 
+becomes
+
+```
+    Hello-World-my-friend
+```
