@@ -83,7 +83,7 @@ func main() {
 	flag.Parse()
 
 	// Configuration and command line interation
-	cfg := cli.New(appName, "", fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version), mkpage.Version)
+	cfg := cli.New(appName, "MKPAGE", fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version), mkpage.Version)
 	cfg.UsageText = fmt.Sprintf(usage, appName)
 	cfg.DescriptionText = fmt.Sprintf(description, appName)
 	cfg.ExampleText = fmt.Sprintf(examples, appName)

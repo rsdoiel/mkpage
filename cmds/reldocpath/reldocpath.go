@@ -4,7 +4,7 @@
 //
 // @author R. S. Doiel, <rsdoiel@gmail.com>
 //
-// Copyright (c) 2016, R. S. Doiel
+// Copyright (c) 2017, R. S. Doiel
 // All rights not granted herein are expressly reserved by R. S. Doiel.
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -75,7 +75,6 @@ func main() {
 	cfg := cli.New(appName, "MKPAGES", fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version), mkpage.Version)
 	cfg.UsageText = fmt.Sprintf(usage, appName)
 	cfg.DescriptionText = description
-	cfg.OptionsText = "OPTIONS\n"
 	cfg.ExampleText = fmt.Sprintf(examples, appName)
 
 	if showHelp == true {
