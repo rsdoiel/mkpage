@@ -162,3 +162,59 @@ returned as "text/markdown".
 + -t, -template - show *mkpage*'s default template
 
 
+## Companion utilities
+
+*mkpage* comes with some helper utilities that make scripting a deconstructed
+content management system from Bash easier.
+
+### mkslides
+
+*mkslides* generates a set of HTML5 slides from a single Markdown file. It uses
+the same template engine as *mkpage*
+
+### reldocpath
+
+*reldocpath* is intended to simplify the calculation of relative
+asset paths (e.g. common css files, images, feeds) when working from
+a common project directory.
+
+#### Example
+
+You know the path from the source document to target document from the project root folder.
+
++ Source is *course/week/01/readings.html*  
++ Target is *css/site.css*.
+
+In Bash this would look like--
+
+```shell
+    # We know the paths relative to the project directory
+    DOC_PATH="course/week/01/readings.html"
+    CSS_PATH="css/site.css"
+    echo $(reldocpath $DOC_PATH $CSS_PATH)
+```
+
+the output would look like
+
+```shell
+    ../../../css/site.css
+```
+
+
+### slugify
+
+*slugify* takes one or more command line args (e.g. a phrase like "Hello World") and return
+an updated version that is more friendly for filenames and URLS (e.g. "Hello-World").
+
+#### Example
+
+```shell
+    slugify My thoughts on functional programming
+```
+
+Would yield
+
+```
+    My-thoughts-on-functional-programming
+```
+
