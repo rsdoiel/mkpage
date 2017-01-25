@@ -46,7 +46,6 @@ format:
 
 test:
 	go test
-	cd mkslides && go test
 
 status:
 	git status

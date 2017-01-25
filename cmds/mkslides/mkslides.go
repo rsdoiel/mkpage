@@ -4,7 +4,7 @@
 //
 // @author R. S. Doiel, <rsdoiel@caltech.edu>
 //
-// Copyright (c) 2016, Caltech
+// Copyright (c) 2017, Caltech
 // All rights not granted herein are expressly reserved by Caltech.
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,7 +30,7 @@ import (
 
 	// Caltech Library packages
 	"github.com/caltechlibrary/cli"
-	"github.com/caltechlibrary/mkslides"
+	"github.com/caltechlibrary/mkpage"
 	"github.com/caltechlibrary/tmplfn"
 )
 
@@ -99,7 +99,7 @@ var (
 	presentationTitle string
 	showTemplate      bool
 	templateFNames    string
-	templateSource    = mkslides.DefaultTemplateSource
+	templateSource    = mkpage.DefaultSlideTemplateSource
 )
 
 func init() {
@@ -132,7 +132,7 @@ func main() {
 	args := flag.Args()
 
 	// Configure app
-	cfg := cli.New(appName, "MKSLIDES", fmt.Sprintf(mkslides.LicenseText, appName, mkslides.Version), mkslides.Version)
+	cfg := cli.New(appName, "MKSLIDES", fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version), mkpage.Version)
 	cfg.UsageText = fmt.Sprintf(usage, appName)
 	cfg.DescriptionText = fmt.Sprintf(description, appName)
 	cfg.OptionsText = "OPTIONS\n"
@@ -153,7 +153,7 @@ func main() {
 	}
 
 	if showTemplate == true {
-		fmt.Println(mkslides.DefaultTemplateSource)
+		fmt.Println(mkpage.DefaultSlideTemplateSource)
 		os.Exit(0)
 	}
 
@@ -206,10 +206,10 @@ func main() {
 	}
 
 	// Build the slides
-	slides := mkslides.MarkdownToSlides(mdFName, presentationTitle, cssPath, jsPath, mdSrc)
+	slides := mkpage.MarkdownToSlides(mdFName, presentationTitle, cssPath, jsPath, mdSrc)
 	// Render the slides
 	for i, slide := range slides {
-		err := mkslides.MakeSlideFile(tmpl, slide)
+		err := mkpage.MakeSlideFile(tmpl, slide)
 		if err == nil {
 			// Note: Give some feed back when slide written successful
 			fmt.Fprintf(os.Stdout, "Wrote %02d-%s.html\n", slide.CurNo, strings.TrimSuffix(path.Base(slide.FName), path.Ext(slide.FName)))
