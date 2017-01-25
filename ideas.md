@@ -38,6 +38,7 @@
 
 ## Someday, Maybe ideas
 
++ merge sitemapper code into mkpage repo
 + autotag
     + automatically collect tag words from Markdown documents
         + tags can be identified by quotes, *emphasis*, _underscores_ and link labels
@@ -46,4 +47,3 @@
     + Indexer could be from JSON blobs that conform to a subset of schema.org definitions
     + A generic search engine could implemented by reading indexes and accepting a map of search fields/constraints (mirroed in the supported schema)
 
-    
