@@ -2,6 +2,7 @@
 + [home](/)
 + [mkpage](./)
 + [mkslides](mkslides.html)
++ [sitemapper](sitemapper.html)
 + [reldocpath](reldocpath.html)
 + [slugify](slugify.html)
 + [Go template recipes](go-template-recipes.html)
