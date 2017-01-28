@@ -28,8 +28,8 @@ import (
 	"strings"
 
 	// Caltech Library packages
-	"github.com/caltechlibrary/cli"
-	"github.com/caltechlibrary/mkpage"
+	"github.com/rsdoiel/cli"
+	"github.com/rsdoiel/mkpage"
 )
 
 type locInfo struct {
