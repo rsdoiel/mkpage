@@ -151,6 +151,9 @@ func main() {
 	htdocs := cli.CheckOption(args[0], "Missing htdocs", true)
 	sitemapPath := cli.CheckOption(args[1], "Missing sitemap filename/path", true)
 	siteURL := cli.CheckOption(args[2], "Missing site URL", true)
+	if strings.HasSuffix(siteURL, "/") == true {
+		siteURL = strings.TrimSuffix(siteURL, "/")
+	}
 
 	// Optional
 	if changefreq == "" {
@@ -166,7 +169,7 @@ func main() {
 			//NOTE: You can skip the eror pages, and excluded directories in the sitemap
 			if strings.HasPrefix(fname, "50") == false && strings.HasPrefix(p, "40") == false && excludeDirs.Exclude(p) == false {
 				finfo := new(locInfo)
-				finfo.Loc = path.Join(siteURL, strings.TrimPrefix(p, htdocs))
+				finfo.Loc = fmt.Sprintf("%s/%s", siteURL, strings.TrimPrefix(p, htdocs))
 				yr, mn, dy := info.ModTime().Date()
 				finfo.LastMod = fmt.Sprintf("%d-%0.2d-%0.2d", yr, mn, dy)
 				log.Printf("Adding %s\n", finfo.Loc)
