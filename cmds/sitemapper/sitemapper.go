@@ -176,7 +176,7 @@ func main() {
 				if strings.HasPrefix(p, "/") == true {
 					finfo.Loc = fmt.Sprintf("%s%s", siteURL, p)
 				} else {
-					finfo.Loc = fmt.Sprintf("%s/%s", siteURL, p, htdocs)
+					finfo.Loc = fmt.Sprintf("%s/%s", siteURL, p)
 				}
 				yr, mn, dy := info.ModTime().Date()
 				finfo.LastMod = fmt.Sprintf("%d-%0.2d-%0.2d", yr, mn, dy)
