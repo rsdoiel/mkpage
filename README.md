@@ -1,10 +1,21 @@
 
-    An experiment, a deconstructed content manage system, something is sure to change
+    Your deconstructed web content system, something is sure to change
 
-# mkpage
+# mkpage project
 
-An experimental template engine with an embedded markdown processor.  *mkpage* (pronounced "make page") is 
-a simple command line tool which accepts key value pairs and applies them to a 
+*mkpage* (pronounced "make page") colletion of command line utilities written as a 
+[Go](https://golang.org) package. These utilities provide an 
+experimental deconstructed content management systems for the websites. Rather than
+run systems like Wordpress and Drupal you can assemble your own by combining the
+tools in *mkpage* with common Unix utilities to render your website. This means
+that Bash scripts can easily create simple to complex websites from content 
+written in Markdown. Versioning your site works easily with source code control systems
+such as git or svn.
+
+## It stared with *mkpage*
+
+*mkpage* utility is an experimental template engine with an embedded markdown processor.  
+It is a simple command line tool which accepts key value pairs and applies them to a 
 Golang [text/template](https://golang.org/pkg/text/template/).  The key side of a pair corresponds to the 
 template element names that will be replaced in the render version of the document. If a key was cllaed
 "pageContent" the template element would look like `{{ .pageContent }}`. The value of "pageContent" would

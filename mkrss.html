@@ -10,32 +10,30 @@
     </header>
     <section><h1>USAGE</h1>
 
-<pre><code>slugify [OPTIONS] STRING_TO_SLUGIFY
+<pre><code>mkrss [OPTION] HTDOCS BLOG_PATH RSS_FILENAME BASE_URL
 </code></pre>
 
 <h2>SYNOPSIS</h2>
 
-<p>slugify changes a human readable string into a path or URL friendly
-string. E.g. &ldquo;Hello World&rdquo; becomes &ldquo;hello-world&rdquo;</p>
+<p>mkrss walks the file system to generate a RSS2 file. It assumes that the directory
+for BLOG_PATH is is the base directory conforming to
+BLOG_PATH/YYYY/MM/DD/ARTICLE_HTML where YYYY/MM/DD (Year, Month, Day)
+corresponds to the publication date of ARTICLE_HTML.</p>
 
-<pre><code class="language-shell">	-h	display help
+<pre><code>	-c	If non-zero, limit the number of articles in the RSS file
+	-e	A colon delimited list of path exclusions
+	-h	display help
 	-l	display license
-	-m	allow mixed case, defats to true
-	-mixed-case	allow mixed case, defaults to true
-	-s	JSON representation of substitution
-	-substitutions	JSON representation of substitutions
 	-v	display version
 </code></pre>
 
 <h2>EXAMPLE</h2>
 
-<pre><code class="language-shell">    slugify &quot;Hello World my friend&quot;
+<pre><code class="language-shell">    mkrss htdocs htdocs/myblog htdocs/blog.rss http://blog.example.org
 </code></pre>
 
-<p>becomes</p>
-
-<pre><code>    Hello-World-my-friend
-</code></pre>
+<p>This would build an RSS 2 file in htdocs/blog.rss from the articles in
+htdocs/myblog/YYYY/MM/DD.</p>
 </section>
     <nav><ul>
 <li><a href="/">home</a></li>

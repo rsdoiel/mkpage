@@ -1,20 +1,31 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>mkpage: An experimental template and markdown processor</title>
+    <title>mkpage: An experimental deconstructed content system, something is sure to change</title>
     <link href="css/site.css" rel="stylesheet" />
 <head>
 <body>
     <header>
-        <h1>mkpage: An experimental template and markdown processor</h1>
+        <h1>mkpage: An experimental deconstructed content system, something is sure to change</h1>
     </header>
-    <section><pre><code>An experiment, a deconstructed content manage system, something is sure to change
+    <section><pre><code>An experimental deconstructed content system, something is sure to change
 </code></pre>
 
-<h1>mkpage</h1>
+<h1>mkpage project</h1>
 
-<p>An experimental template engine with an embedded markdown processor.  <em>mkpage</em> (pronounced &ldquo;make page&rdquo;) is
-a simple command line tool which accepts key value pairs and applies them to a
+<p><em>mkpage</em> (pronounced &ldquo;make page&rdquo;) colletion of command line utilities written as a
+<a href="https://golang.org">Go</a> package. These utilities provide an
+experimental deconstructed content management systems for the websites. Rather than
+run systems like Wordpress and Drupal you can assemble your own by combining the
+tools in <em>mkpage</em> with common Unix utilities to render your website. This means
+that Bash scripts can easily create simple to complex websites from content
+written in Markdown. Versioning your site works easily with source code control systems
+such as git or svn.</p>
+
+<h2>It stared with <em>mkpage</em></h2>
+
+<p><em>mkpage</em> utility is an experimental template engine with an embedded markdown processor.<br />
+It is a simple command line tool which accepts key value pairs and applies them to a
 Golang <a href="https://golang.org/pkg/text/template/">text/template</a>.  The key side of a pair corresponds to the
 template element names that will be replaced in the render version of the document. If a key was cllaed
 &ldquo;pageContent&rdquo; the template element would look like <code>{{ .pageContent }}</code>. The value of &ldquo;pageContent&rdquo; would
@@ -241,6 +252,7 @@ an updated version that is more friendly for filenames and URLS (e.g. &ldquo;Hel
 <li><a href="./">mkpage</a></li>
 <li><a href="mkslides.html">mkslides</a></li>
 <li><a href="sitemapper.html">sitemapper</a></li>
+<li><a href="mkrss.html">mkrss</a></li>
 <li><a href="reldocpath.html">reldocpath</a></li>
 <li><a href="slugify.html">slugify</a></li>
 <li><a href="go-template-recipes.html">Go template recipes</a></li>

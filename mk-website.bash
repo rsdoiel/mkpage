@@ -27,7 +27,7 @@ function MakePage () {
 
     echo "Rendering $html"
     $MKPAGE \
-	"title=text:mkpage: An experimental template and markdown processor" \
+	"title=text:mkpage: An experimental deconstructed content system, something is sure to change" \
         "nav=$nav" \
         "content=$content" \
         "csspath=text:$csspath" \
@@ -52,6 +52,8 @@ echo "Generating reldocpath.html"
 MakePage nav.md reldocpath.md reldocpath.html
 echo "Generating slugify.html"
 MakePage nav.md slugify.md slugify.html
+echo "Generating mkrss.html"
+MakePage nav.md mkrss.md mkrss.html
 
 echo "Generating docs presentation"
 cd demo

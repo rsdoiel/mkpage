@@ -69,14 +69,14 @@ func init() {
 
 	// App specific options
 	flag.StringVar(&excludeList, "e", "", "A colon delimited list of path exclusions")
-	falg.IntVar(&articleLimit, "c", 0, "If non-zero, limit the number of articles in the RSS file")
+	flag.IntVar(&articleLimit, "c", 0, "If non-zero, limit the number of articles in the RSS file")
 }
 
 func main() {
 	appName := path.Base(os.Args[0])
 	flag.Parse()
 
-	cfg := cli.New(appName, appName, fmt.Sprintf(cli.LicenseText, appName, mkpage.Version), mkpage.Version)
+	cfg := cli.New(appName, appName, fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version), mkpage.Version)
 	cfg.UsageText = fmt.Sprintf(usage, appName)
 	cfg.DescriptionText = fmt.Sprintf(description, appName)
 	cfg.ExampleText = fmt.Sprintf(examples, appName)

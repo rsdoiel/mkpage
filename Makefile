@@ -26,7 +26,7 @@ bin/sitemapper: mkpage.go cmds/sitemapper/sitemapper.go
 	go build -o bin/sitemapper cmds/sitemapper/sitemapper.go
 
 bin/mkrss: mkpage.go cmds/mkrss/mkrss.go
-	go build -o bin/mkrss cmds/mkpage/mkpage.go
+	go build -o bin/mkrss cmds/mkrss/mkrss.go
 
 lint:
 	golint mkpage.go
