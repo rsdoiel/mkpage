@@ -8,7 +8,7 @@ VERSION = $(shell grep -m1 "Version = " $(PROJECT).go | cut -d\" -f 2)
 
 BRANCH = $(shell git branch | grep "* " | cut -d\   -f 2)
 
-build: bin/mkpage bin/reldocpath bin/slugify bin/mkslides bin/sitemapper
+build: bin/mkpage bin/reldocpath bin/slugify bin/mkslides bin/sitemapper bin/mkrss
 
 bin/mkpage: mkpage.go cmds/mkpage/mkpage.go
 	go build -o bin/mkpage cmds/mkpage/mkpage.go
@@ -25,6 +25,9 @@ bin/mkslides: mkpage.go cmds/mkslides/mkslides.go
 bin/sitemapper: mkpage.go cmds/sitemapper/sitemapper.go
 	go build -o bin/sitemapper cmds/sitemapper/sitemapper.go
 
+bin/mkrss: mkpage.go cmds/mkrss/mkrss.go
+	go build -o bin/mkrss cmds/mkpage/mkpage.go
+
 lint:
 	golint mkpage.go
 	golint mkpage_test.go
@@ -33,6 +36,7 @@ lint:
 	golint cmds/slugify/slugify.go
 	golint cmds/mkslides/mkslides.go
 	golint cmds/sitemapper/sitemapper.go
+	golint cmds/mkrss/mkrss.go
 
 format:
 	goimports -w mkpage.go
@@ -42,6 +46,7 @@ format:
 	goimports -w cmds/slugify/slugify.go
 	goimports -w cmds/mkslides/mkslides.go
 	goimports -w cmds/sitemapper/sitemapper.go
+	goimports -w cmds/mkrss/mkrss.go
 	gofmt -w mkpage.go
 	gofmt -w mkpage_test.go
 	gofmt -w cmds/mkpage/mkpage.go
@@ -49,6 +54,7 @@ format:
 	gofmt -w cmds/slugify/slugify.go
 	gofmt -w cmds/mkslides/mkslides.go
 	gofmt -w cmds/sitemapper/sitemapper.go
+	gofmt -w cmds/mkrss/mkrss.go
 
 test:
 	go test
@@ -71,6 +77,7 @@ install:
 	env GOBIN=$(HOME)/bin go install cmds/slugify/slugify.go
 	env GOBIN=$(HOME)/bin go install cmds/mkslides/mkslides.go
 	env GOBIN=$(HOME)/bin go install cmds/sitemapper/sitemapper.go
+	env GOBIN=$(HOME)/bin go install cmds/mkrss/mkrss.go
 
 
 dist/linux-amd64:
@@ -79,6 +86,7 @@ dist/linux-amd64:
 	env CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o dist/linux-amd64/slugify cmds/slugify/slugify.go
 	env CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o dist/linux-amd64/mkslides cmds/mkslides/mkslides.go
 	env CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o dist/linux-amd64/sitemapper cmds/sitemapper/sitemapper.go
+	env CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o dist/linux-amd64/mkrss cmds/mkrss/mkrss.go
 
 dist/windows-amd64:
 	env CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o dist/windows-amd64/mkpage.exe cmds/mkpage/mkpage.go
@@ -86,6 +94,7 @@ dist/windows-amd64:
 	env CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o dist/windows-amd64/slugify.exe cmds/slugify/slugify.go
 	env CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o dist/windows-amd64/mkslides.exe cmds/mkslides/mkslides.go
 	env CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o dist/windows-amd64/sitemapper.exe cmds/sitemapper/sitemapper.go
+	env CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o dist/windows-amd64/mkrss.exe cmds/mkrss/mkrss.go
 
 dist/macosx-amd64:
 	env CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o dist/macosx-amd64/mkpage cmds/mkpage/mkpage.go
@@ -93,6 +102,7 @@ dist/macosx-amd64:
 	env CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o dist/macosx-amd64/slugify cmds/slugify/slugify.go
 	env CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o dist/macosx-amd64/mkslides cmds/mkslides/mkslides.go
 	env CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o dist/macosx-amd64/sitemapper cmds/sitemapper/sitemapper.go
+	env CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o dist/macosx-amd64/mkrss cmds/mkrss/mkrss.go
 
 dist/raspbian-arm7:
 	env CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=7 go build -o dist/raspbian-arm7/mkpage cmds/mkpage/mkpage.go
@@ -100,6 +110,7 @@ dist/raspbian-arm7:
 	env CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=7 go build -o dist/raspbian-arm7/slugify cmds/slugify/slugify.go
 	env CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=7 go build -o dist/raspbian-arm7/mkslides cmds/mkslides/mkslides.go
 	env CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=7 go build -o dist/raspbian-arm7/sitemapper cmds/sitemapper/sitemapper.go
+	env CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=7 go build -o dist/raspbian-arm7/mkrss cmds/mkrss/mkrss.go
 
 dist/raspbian-arm6:
 	env CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=6 go build -o dist/raspbian-arm6/mkpage cmds/mkpage/mkpage.go
@@ -107,6 +118,7 @@ dist/raspbian-arm6:
 	env CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=6 go build -o dist/raspbian-arm6/slugify cmds/slugify/slugify.go
 	env CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=6 go build -o dist/raspbian-arm6/mkslides cmds/mkslides/mkslides.go
 	env CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=6 go build -o dist/raspbian-arm6/sitemapper cmds/sitemapper/sitemapper.go
+	env CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=6 go build -o dist/raspbian-arm6/mkrss cmds/mkrss/mkrss.go
 
 release: dist/linux-amd64 dist/windows-amd64 dist/macosx-amd64 dist/raspbian-arm7 dist/raspbian-arm6
 	cp -v README.md dist/
