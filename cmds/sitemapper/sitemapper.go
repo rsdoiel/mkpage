@@ -24,7 +24,6 @@ import (
 	"log"
 	"os"
 	"path"
-	"path/filepath"
 	"strings"
 
 	// Caltech Library packages
@@ -100,25 +99,6 @@ func init() {
 	flag.StringVar(&excludeList, "exclude", "", "A colon delimited list of path parts to exclude from sitemap")
 }
 
-type ExcludeList []string
-
-// Set returns the len of the new DirList array based on spliting the passed in string
-func (dirList ExcludeList) Set(s string) int {
-	dirList = strings.Split(s, ":")
-	return len(dirList)
-}
-
-// Exclude returns true if a fname fragment is included in set of dirList
-func (dirList ExcludeList) Exclude(p string) bool {
-	for _, item := range dirList {
-		if len(item) > 0 && len(p) > 0 && strings.Contains(p, item) == true {
-			log.Printf("Skipping %q", p)
-			return true
-		}
-	}
-	return false
-}
-
 func main() {
 	appName := path.Base(os.Args[0])
 	flag.Parse()
@@ -163,31 +143,35 @@ func main() {
 		changefreq = "daily"
 	}
 
-	excludeDirs := ExcludeList(strings.Split(excludeList, ":"))
+	excludeDirs := mkpage.ExcludeList(strings.Split(excludeList, ":"))
 
-	log.Printf("Starting map of %s\n", htdocs)
-	filepath.Walk(htdocs, func(p string, info os.FileInfo, err error) error {
-		if strings.HasSuffix(p, ".html") {
-			fname := path.Base(p)
-			//NOTE: You can skip the eror pages, and excluded directories in the sitemap
-			if strings.HasPrefix(fname, "50") == false && strings.HasPrefix(p, "40") == false && excludeDirs.Exclude(p) == false {
-				finfo := new(locInfo)
-				p = strings.TrimPrefix(p, htdocs)
-				if strings.HasPrefix(p, "/") == true {
-					finfo.Loc = fmt.Sprintf("%s%s", siteURL, p)
-				} else {
-					finfo.Loc = fmt.Sprintf("%s/%s", siteURL, p)
-				}
-				yr, mn, dy := info.ModTime().Date()
-				finfo.LastMod = fmt.Sprintf("%d-%0.2d-%0.2d", yr, mn, dy)
-				log.Printf("Adding %s\n", finfo.Loc)
-				locList = append(locList, finfo)
-			}
+	log.Printf("Starting sitemap for %s\n", htdocs)
+	err := mkpage.Walk(htdocs, func(p string, info os.FileInfo) bool {
+		//NOTE: You can skip the eror pages, and excluded directories in the sitemap
+		fname := path.Base(p)
+		if strings.HasSuffix(p, ".html") &&
+			strings.HasPrefix(fname, "50") == false &&
+			strings.HasPrefix(fname, "40") == false &&
+			excludeDirs.IsExcluded(p) == false {
+			return true
 		}
+		return false
+	}, func(p string, info os.FileInfo) error {
+		finfo := new(locInfo)
+		p = strings.TrimPrefix(p, htdocs)
+		if strings.HasPrefix(p, "/") == true {
+			finfo.Loc = fmt.Sprintf("%s%s", siteURL, p)
+		} else {
+			finfo.Loc = fmt.Sprintf("%s/%s", siteURL, p)
+		}
+		yr, mn, dy := info.ModTime().Date()
+		finfo.LastMod = fmt.Sprintf("%d-%0.2d-%0.2d", yr, mn, dy)
+		log.Printf("Adding %s\n", finfo.Loc)
+		locList = append(locList, finfo)
 		return nil
 	})
-	fmt.Printf("Writing %s\n", args[1])
-	fp, err := os.OpenFile(args[1], os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0664)
+	fmt.Printf("Writing %s\n", sitemapPath)
+	fp, err := os.OpenFile(sitemapPath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0664)
 	if err != nil {
 		log.Fatalf("Can't create %s, %s\n", sitemapPath, err)
 	}

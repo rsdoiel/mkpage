@@ -19,14 +19,21 @@
 package main
 
 import (
+	"encoding/xml"
 	"flag"
 	"fmt"
+	"io/ioutil"
+	"net/url"
 	"os"
 	"path"
+	"regexp"
+	"strings"
+	"time"
 
 	// My packages
 	"github.com/rsdoiel/cli"
 	"github.com/rsdoiel/mkpage"
+	"github.com/rsdoiel/rss2"
 )
 
 var (
@@ -36,28 +43,43 @@ var (
 	showVersion bool
 
 	// App specific options
-	excludeList  string
-	articleLimit int
+	excludeList        string
+	articleLimit       int
+	channelLanguage    string
+	channelTitle       string
+	channelDescription string
+	channelLink        string
+	channelGenerator   string
+	channelPubDate     string
+	channelBuildDate   string
+	channelCopyright   string
+	channelCategory    string
 
 	// Usage and docs
-	usage = `USAGE: %s [OPTION] HTDOCS BLOG_PATH RSS_FILENAME BASE_URL`
+	usage = `USAGE: %s [OPTION] HTDOCS [RSS_FILENAME]`
 
 	description = `
 SYNOPSIS
 
 %s walks the file system to generate a RSS2 file. It assumes that the directory
-for BLOG_PATH is is the base directory conforming to 
-BLOG_PATH/YYYY/MM/DD/ARTICLE_HTML where YYYY/MM/DD (Year, Month, Day) 
+for HTDOCS is is the base directory containing subdirectories in the form of
+/YYYY/MM/DD/ARTICLE_HTML where YYYY/MM/DD (Year, Month, Day) 
 corresponds to the publication date of ARTICLE_HTML.
 `
 
 	examples = `
 EXAMPLE
 
-    %s htdocs htdocs/myblog htdocs/blog.rss http://blog.example.org
+If our htdocs folder is our document root and out blog is 
+htdocs/myblog.
 
-This would build an RSS 2 file in htdocs/blog.rss from the articles in
-htdocs/myblog/YYYY/MM/DD.
+    %s -channel-title="This Great Beyond" \
+	   -channel-description="Blog to save the world" \
+	   -channel-link="http://blog.example.org" \
+	   htdocs htdocs/rss.xml 
+
+This would build an RSS 2 file in htdocs/rss.xml from the 
+articles in htdocs/myblog/YYYY/MM/DD.
 `
 )
 
@@ -70,6 +92,15 @@ func init() {
 	// App specific options
 	flag.StringVar(&excludeList, "e", "", "A colon delimited list of path exclusions")
 	flag.IntVar(&articleLimit, "c", 0, "If non-zero, limit the number of articles in the RSS file")
+	flag.StringVar(&channelLanguage, "channel-language", "", "Language, e.g. en-ca")
+	flag.StringVar(&channelTitle, "channel-title", "", "Title of channel")
+	flag.StringVar(&channelDescription, "channel-description", "", "Description of channel")
+	flag.StringVar(&channelLink, "channel-link", "", "link to channel")
+	flag.StringVar(&channelGenerator, "channel-generator", "", "Name of RSS generator")
+	flag.StringVar(&channelPubDate, "channel-pubdate", "", "Pub Date for channel")
+	flag.StringVar(&channelBuildDate, "channel-builddate", "", "Build Date for channel")
+	flag.StringVar(&channelCopyright, "channel-copyright", "", "Copyright for channel")
+	flag.StringVar(&channelCategory, "channel-category", "", "category for channel")
 }
 
 func main() {
@@ -96,17 +127,103 @@ func main() {
 		os.Exit(0)
 	}
 
-	// Now get the command line args
-	if len(args) != 4 {
-		fmt.Fprintf(os.Stderr, "Expecting four parameters, try %s -help for details\n", appName)
+	if len(channelTitle) == 0 {
+		channelTitle = `A website`
+	}
+	if len(channelDescription) == 0 {
+		channelDescription = `A collection of web pages`
+	}
+	if len(channelLink) == 0 {
+		channelLink = `http://localhost:8000`
+	}
+
+	// Setup the Channel metadata for feed.
+	feed := new(rss2.RSS2)
+	feed.Version = "2.0"
+	feed.Title = channelTitle
+	feed.Description = channelDescription
+	feed.Link = channelLink
+	if len(channelLanguage) > 0 {
+		feed.Language = channelLanguage
+	}
+	if len(channelCopyright) > 0 {
+		feed.Copyright = channelCopyright
+	}
+	if len(channelCategory) > 0 {
+		feed.Category = channelCategory
+	}
+	if len(channelGenerator) == 0 {
+		feed.Generator = cfg.Version()
+	} else {
+		feed.Generator = channelGenerator
+	}
+	now := time.Now()
+	if len(channelPubDate) == 0 {
+		feed.PubDate = now.Format(time.RFC822)
+	} else {
+		feed.PubDate = channelPubDate
+	}
+	if len(channelBuildDate) == 0 {
+		feed.LastBuildDate = now.Format(time.RFC822)
+	} else {
+		feed.LastBuildDate = channelBuildDate
+	}
+
+	// Process command line parameters
+	htdocs := "."
+	rssPath := ""
+	if len(args) > 0 {
+		htdocs = args[0]
+	}
+	if len(args) > 1 {
+		rssPath = args[1]
+	}
+
+	validBlogPath := regexp.MustCompile("/[0-9][0-9][0-9][0-9]/[0-9][0-9]/[0-9][0-9]/")
+	err := mkpage.Walk(htdocs, func(p string, info os.FileInfo) bool {
+		fname := path.Base(p)
+		if validBlogPath.MatchString(p) == true &&
+			strings.HasSuffix(fname, ".html") == true &&
+			strings.HasPrefix(fname, "40") == false &&
+			strings.HasPrefix(fname, "50") == false {
+			return true
+		}
+		return false
+	}, func(p string, info os.FileInfo) error {
+		pname := strings.TrimPrefix(p, htdocs)
+		if strings.HasPrefix(pname, "/") {
+			pname = strings.TrimPrefix(pname, "/")
+		}
+		articleURL := fmt.Sprintf("%s/%s", channelLink, pname)
+		u, err := url.Parse(articleURL)
+		if err != nil {
+			return err
+		}
+		title := mkpage.Unslugify(strings.TrimSuffix(path.Base(u.Path), ".html"))
+		item := new(rss2.Item)
+		item.Title = title
+		item.Link = articleURL
+		//FIXME: Need to pull the description from the Markdown version
+		feed.ItemList = append(feed.ItemList, *item)
+		return nil
+	})
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%s\n", err)
 		os.Exit(1)
 	}
 
-	// Required Params
-	htdocs := args[0]
-	blogPath := args[1]
-	rssPath := args[2]
-	siteURL := args[3]
-	fmt.Printf("DEBUG %s, %s, %s, %s\n", htdocs, blogPath, rssPath, siteURL)
-
+	// Marshal RSS2 and render output
+	src, err := xml.MarshalIndent(feed, "", "    ")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%s\n", err)
+		os.Exit(1)
+	}
+	if len(rssPath) > 0 {
+		if err := ioutil.WriteFile(rssPath, src, 0664); err != nil {
+			fmt.Fprintf(os.Stderr, "%s\n", err)
+			os.Exit(1)
+		}
+		os.Exit(0)
+	}
+	fmt.Fprintf(os.Stdout, "%s\n", src)
 }

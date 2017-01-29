@@ -27,6 +27,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"path/filepath"
 	"strings"
 	"text/template"
 
@@ -487,4 +488,44 @@ func MakeTOCSlideFile(tmpl *template.Template, slide *Slide) error {
 		return fmt.Errorf("%s", sname, err)
 	}
 	return nil
+}
+
+// Unslugify take a slugified style filename and return a unslugified string
+func Unslugify(s string) string {
+	return strings.Replace(strings.Replace(strings.Replace(s, " - ", "&dash;", -1), "-", " ", -1), "&dash;", " - ", -1)
+}
+
+//
+// Functionality shared between sitemapper and mkrss
+//
+type ExcludeList []string
+
+// Set returns the len of the new DirList array based on spliting the passed in string
+func (dirList ExcludeList) Set(s string) int {
+	dirList = strings.Split(s, ":")
+	return len(dirList)
+}
+
+// Exclude returns true if p contains an part of an excluded path
+func (dirList ExcludeList) IsExcluded(p string) bool {
+	for _, item := range dirList {
+		if len(item) > 0 && len(p) > 0 && strings.Contains(p, item) == true {
+			return true
+		}
+	}
+	return false
+}
+
+func Walk(startPath string, filterFn func(p string, info os.FileInfo) bool, outputFn func(s string, info os.FileInfo) error) error {
+	err := filepath.Walk(startPath, func(p string, info os.FileInfo, err error) error {
+		// Are we interested in this path?
+		if filterFn(p, info) == true {
+			// Yes, so send to output function.
+			if err := outputFn(p, info); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+	return err
 }
