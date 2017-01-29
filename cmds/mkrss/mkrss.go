@@ -1,4 +1,3 @@
-//
 // mkrss.go is a command line tool for generating an RSS file from a blog
 // directory structure in the form of PATH_TO_BLOG/YYYY/MM/DD/BLOG_ARTICLES.html
 //
@@ -97,8 +96,8 @@ func init() {
 	flag.StringVar(&channelDescription, "channel-description", "", "Description of channel")
 	flag.StringVar(&channelLink, "channel-link", "", "link to channel")
 	flag.StringVar(&channelGenerator, "channel-generator", "", "Name of RSS generator")
-	flag.StringVar(&channelPubDate, "channel-pubdate", "", "Pub Date for channel")
-	flag.StringVar(&channelBuildDate, "channel-builddate", "", "Build Date for channel")
+	flag.StringVar(&channelPubDate, "channel-pubdate", "", "Pub Date for channel (e.g. 2006-01-02 15:04:05 -0700)")
+	flag.StringVar(&channelBuildDate, "channel-builddate", "", "Build Date for channel (e.g. 2006-01-02 15:04:05 -0700)")
 	flag.StringVar(&channelCopyright, "channel-copyright", "", "Copyright for channel")
 	flag.StringVar(&channelCategory, "channel-category", "", "category for channel")
 }
@@ -159,14 +158,28 @@ func main() {
 	}
 	now := time.Now()
 	if len(channelPubDate) == 0 {
-		feed.PubDate = now.Format(time.RFC822)
+		// RSS spec shows RTF 1123 dates
+		//feed.PubDate = now.Format(time.RFC822Z)
+		feed.PubDate = now.Format(time.RFC1123)
 	} else {
-		feed.PubDate = channelPubDate
+		dt, err := mkpage.NormalizeDate(channelPubDate)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Can't parse %q, %s\n", channelPubDate, err)
+			os.Exit(1)
+		}
+		feed.PubDate = dt.Format(time.RFC1123)
 	}
 	if len(channelBuildDate) == 0 {
-		feed.LastBuildDate = now.Format(time.RFC822)
+		// RSS spec shows RTF 1123 dates
+		//feed.LastBuildDate = now.Format(time.RFC822Z)
+		feed.LastBuildDate = now.Format(time.RFC1123)
 	} else {
-		feed.LastBuildDate = channelBuildDate
+		dt, err := mkpage.NormalizeDate(channelBuildDate)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Can't parse %q, %s\n", channelBuildDate, err)
+			os.Exit(1)
+		}
+		feed.LastBuildDate = dt.Format(time.RFC1123)
 	}
 
 	// Process command line parameters
@@ -218,12 +231,14 @@ func main() {
 		fmt.Fprintf(os.Stderr, "%s\n", err)
 		os.Exit(1)
 	}
+	txt := fmt.Sprintf(`<?xml version="1.0"?>
+%s`, src)
 	if len(rssPath) > 0 {
-		if err := ioutil.WriteFile(rssPath, src, 0664); err != nil {
+		if err := ioutil.WriteFile(rssPath, []byte(txt), 0664); err != nil {
 			fmt.Fprintf(os.Stderr, "%s\n", err)
 			os.Exit(1)
 		}
 		os.Exit(0)
 	}
-	fmt.Fprintf(os.Stdout, "%s\n", src)
+	fmt.Fprintf(os.Stdout, "%s\n", txt)
 }

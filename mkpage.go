@@ -30,6 +30,7 @@ import (
 	"path/filepath"
 	"strings"
 	"text/template"
+	"time"
 
 	// 3rd Party Packages
 	"github.com/russross/blackfriday"
@@ -493,6 +494,23 @@ func MakeTOCSlideFile(tmpl *template.Template, slide *Slide) error {
 // Unslugify take a slugified style filename and return a unslugified string
 func Unslugify(s string) string {
 	return strings.Replace(strings.Replace(strings.Replace(s, " - ", "&dash;", -1), "-", " ", -1), "&dash;", " - ", -1)
+}
+
+// NormalizeDate takes a MySQL like date string and returns a time.Time or error
+func NormalizeDate(s string) (time.Time, error) {
+	switch len(s) {
+	case len(`2006-01-02 15:04:05 -0700`):
+		dt, err := time.Parse(`2006-01-02 15:04:05 -0700`, s)
+		return dt, err
+	case len(`2006-01-02 15:04:05`):
+		dt, err := time.Parse(`2006-01-02 15:04:05`, s)
+		return dt, err
+	case len(`2006-01-02`):
+		dt, err := time.Parse(`2006-01-02`, s)
+		return dt, err
+	default:
+		return time.Time{}, fmt.Errorf("Can't format %s, expected format like 2006-01-02 15:04:05 -0700", s)
+	}
 }
 
 //
