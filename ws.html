@@ -28,111 +28,63 @@
 </nav>
 
 <section>
-<h1>ws</h1>
+<h1>USAGE</h1>
 
-<h2>A nimble web server</h2>
-
-<p><em>ws</em> is a prototyping platform for web based services and websites.</p>
-
-<h3><em>ws</em> has a minimal feature set</h3>
-
-<ul>
-<li>A simple static file webserver
-
-<ul>
-<li>quick startup</li>
-<li>activity logged to the console</li>
-<li>supports http2 out of the box</li>
-</ul></li>
-<li>A project setup option called <em>init</em></li>
-</ul>
-
-<h2>Configuration</h2>
-
-<p>You can configure <em>ws</em> with command line options or environment variables.
-Try <code>ws -help</code> for a list of command line options.</p>
-
-<h3>Environment variables</h3>
-
-<ul>
-<li>MKPAGE_URL the URL to listen for by <em>ws</em>
-
-<ul>
-<li>default is <a href="http://localhost:8000">http://localhost:8000</a></li>
-</ul></li>
-<li>MKPAGE_DOCROOT the directory of your static content you need to serve
-
-<ul>
-<li>the default is ./htdocs</li>
-</ul></li>
-<li>MKPAGE_SSL_KEY the path the the SSL key file (e.g. etc/ssl/site.key)
-
-<ul>
-<li>default is empty, only checked if your MKPAGE_URL is starts with https://</li>
-</ul></li>
-<li>MKPAGE_SSL_CERT the path the the SSL cert file (e.g. etc/ssl/site.crt)
-
-<ul>
-<li>default is empty, only checked if your MKPAGE_URL is starts with https://</li>
-</ul></li>
-</ul>
-
-<h3>Command line options</h3>
-
-<ul>
-<li>-url overrides MKPAGE_URL</li>
-<li>-docs overrides MKPAGE_DOCROOT</li>
-<li>-ssl-key overrides MKPAGE_SSL_KEY</li>
-<li>-ssl-pem overrides MKPAGE_SSL_PEM</li>
-<li>-init triggers the initialization process and creates a setup.bash file</li>
-<li>-h, -help displays the help documentation</li>
-<li>-v, -version display the version of the command</li>
-<li>-l, -license displays license information</li>
-</ul>
-
-<p>Running <em>ws</em> without environment variables or command line options is an easy way
-to server your current working directory&rsquo;s content out as <a href="http://localhost:8000">http://localhost:8000</a>.</p>
-
-<p>Need to quickly build out a website from Markdown files or other JSON resources?
-Take a look at <a href="https://caltechlibrary.github.io/mkpage">mkpage</a>.</p>
-
-<h2>Installation</h2>
-
-<p><em>ws</em> is available as precompile binaries for Linux, Mac OS X, and Windows 10 on Intel.
-Additional binaries are provided for Raspbian on ARM6 adn ARM7.  Follow the <a href="install.html">INSTALL.md</a>
-instructions to download and install the pre-compiled binaries.</p>
-
-<p>If you have Golang installed then <em>ws</em> can be installed with the <em>go get</em> command.</p>
-
-<pre><code>    go get github.com/caltechlibrary/ws/...
+<pre><code>ws [OPTIONS] [DOCROOT]
 </code></pre>
 
-<h2>Compiling from source</h2>
+<h2>SYNOPSIS</h2>
 
-<p>Required</p>
+<pre><code>a nimble web server
+</code></pre>
+
+<p>ws is a command line utility for developing and testing static websites.
+It uses Go&rsquo;s standard http libraries and can supports both http 1 and 2
+out of the box.  It is intended as a minimal wrapper for Go&rsquo;s standard
+http libraries supporting http/https versions 1 and 2 out of the box.</p>
+
+<h2>CONFIGURATION</h2>
+
+<p>ws can be configurated through environment settings. The following are
+supported.</p>
 
 <ul>
-<li><a href="http://golang.org">Golang</a> version 1.7 or better</li>
+<li>MKPAGE_URL  - sets the URL to listen on (e.g. <a href="http://localhost:8000">http://localhost:8000</a>)</li>
+<li>MKPAGE_DOCROOT - sets the document path to use</li>
+<li>MKPAGE_SSL_KEY - the path to the SSL key if using https</li>
+<li>MKPAGE_SSL_CERT - the path to the SSL cert if using https</li>
 </ul>
 
-<p>Here&rsquo;s my basic approach to get things setup. Go 1.7 needs to be already installed.</p>
+<h2>OPTIONS</h2>
 
-<pre><code>  git clone https://github.com/caltechlibrary/ws
-  cd ws
-  go test
-  go build
-  go build cmds/ws/ws.go
+<pre><code>	-c	Set the path for the SSL Cert
+	-cert	Set the path for the SSL Cert
+	-d	Set the htdocs path
+	-docs	Set the htdocs path
+	-h	Display this help message
+	-help	Display this help message
+	-k	Set the path for the SSL Key
+	-key	Set the path for the SSL Key
+	-l	Should license info
+	-license	Should license info
+	-u	The protocal and hostname listen for as a URL
+	-url	The protocal and hostname listen for as a URL
+	-v	Should version info
+	-version	Should version info
 </code></pre>
 
-<p>If everything compiles fine then I do something like this&ndash;</p>
+<h2>EXAMPLES</h2>
 
-<pre><code>  go install cmds/ws/ws.go
+<p>Run web server using the content in the current directory
+(assumes the environment variables MKPAGE_DOCROOT are not defined).</p>
+
+<pre><code>   ws
 </code></pre>
 
-<h2>LICENSE</h2>
+<p>Run web server using a specified directory</p>
 
-<p>copyright &copy; 2016 Caltech
-See <a href="license.html">LICENSE</a> for details</p>
+<pre><code>   ws /www/htdocs
+</code></pre>
 
 </section>
 

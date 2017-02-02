@@ -39,6 +39,8 @@ var (
 	description = `
 SYNOPSIS
 
+	a nimble web server
+
 %s is a command line utility for developing and testing static websites.
 It uses Go's standard http libraries and can supports both http 1 and 2
 out of the box.  It is intended as a minimal wrapper for Go's standard
