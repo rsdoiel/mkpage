@@ -54,3 +54,5 @@ echo "Generating mkpage.html"
 MakePage nav.md mkpage.md mkpage.html
 echo "Generating sitemapper.html"
 MakePage nav.md sitemapper.md sitemapper.html
+echo "Generating ws.html"
+MakePage nav.md ws.md ws.html

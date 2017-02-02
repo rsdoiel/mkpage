@@ -132,6 +132,7 @@ func init() {
 	flag.StringVar(&excludeList, "exclude", "", "A colon delimited list of path parts to exclude from sitemap")
 }
 
+// ExcludeList is a list of directories to skip when generating a sitemap
 type ExcludeList []string
 
 // Set returns the len of the new DirList array based on spliting the passed in string

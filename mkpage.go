@@ -482,7 +482,7 @@ type Slide struct {
 }
 
 var (
-	// DefaultTemplateSource source provides the default HTML template for mkslides package, you probably want to override this...
+	// DefaultSlideTemplateSource provides the default HTML template for mkslides package, you probably want to override this...
 	DefaultSlideTemplateSource = `<!DOCTYPE html>
 <html>
 <head>
