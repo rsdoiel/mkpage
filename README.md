@@ -1,9 +1,17 @@
 
-This is experimental..., things are sure to change
-
 # mkpage
 
-An experimental template engine with an embedded markdown processor.  *mkpage* (pronounced "make page") is 
+_mkpage_ (pronounced "make page") project is an experiment in decomposing a web content manage 
+systems functionality into a series of simple command line tools -- [mkpage](mkpage.html), 
+[mkslide](mkslide.html), [reldocpath](reldocpath.html), [slugify](slugify.html), 
+[sitemapper](sitemapper.html), and [ws](ws.html). This makes creating static websites simple.  
+Complex sites can be created with a little bit of Bash scripting.
+
+This project started with the *mkpage* command.
+
+## mkpage command
+
+The *mkpage* command is an experimental template engine with an embedded markdown processor. *mkpage* is 
 a simple command line tool which accepts key value pairs and applies them to a 
 Golang [text/template](https://golang.org/pkg/text/template/).  The key side of a pair corresponds to the 
 template element names that will be replaced in the render version of the document. If a key was cllaed
@@ -218,3 +226,28 @@ Would yield
     My-thoughts-on-functional-programming
 ```
 
+### ws
+
+*ws* is a simple static file webserver.  It is suitable for viewing your local copy
+of your static website on your machine.  It runs with minimal resources and by default
+will serve content out to the URL http://localhost:8000.  It can also be used to host
+a static website and has run well on small Amazon virtual machines as well as Raspberry Pi
+computers acting as local private network web servers.
+
+### Example
+
+```shell
+    ws Sites/mysite.example.org
+```
+
+This would start the webserver up listen for browser requests on _http://localhost:8000_.
+The content viewable by your web browser would be the files inside the _Sites/mysite.example.org_
+directory.
+
+```shell
+    ws -url http://mysite.example.org:80 Sites/mysite.example.org
+```
+
+Assume the machine where you are running *ws* has the name mysite.example.org then your could
+point your web browser at _http://mysite.example.org_ and see the web content you have in 
+_Site/mysite.example.org_ directory.
