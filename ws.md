@@ -21,21 +21,21 @@ Try `ws -help` for a list of command line options.
 
 ### Environment variables
 
-+ WS_URL the URL to listen for by _ws_
++ MKPAGE_URL the URL to listen for by _ws_
   + default is http://localhost:8000
-+ WS_DOCROOT the directory of your static content you need to serve
++ MKPAGE_DOCROOT the directory of your static content you need to serve
   + the default is ./htdocs
-+ WS_SSL_KEY the path the the SSL key file (e.g. etc/ssl/site.key)
-  + default is empty, only checked if your WS_URL is starts with https://
-+ WS_SSL_CERT the path the the SSL cert file (e.g. etc/ssl/site.crt)
-  + default is empty, only checked if your WS_URL is starts with https://
++ MKPAGE_SSL_KEY the path the the SSL key file (e.g. etc/ssl/site.key)
+  + default is empty, only checked if your MKPAGE_URL is starts with https://
++ MKPAGE_SSL_CERT the path the the SSL cert file (e.g. etc/ssl/site.crt)
+  + default is empty, only checked if your MKPAGE_URL is starts with https://
 
 ### Command line options
 
-+ -url overrides WS_URL
-+ -docs overrides WS_DOCROOT
-+ -ssl-key overrides WS_SSL_KEY
-+ -ssl-pem overrides WS_SSL_PEM
++ -url overrides MKPAGE_URL
++ -docs overrides MKPAGE_DOCROOT
++ -ssl-key overrides MKPAGE_SSL_KEY
++ -ssl-pem overrides MKPAGE_SSL_PEM
 + -init triggers the initialization process and creates a setup.bash file
 + -h, -help displays the help documentation
 + -v, -version display the version of the command
