@@ -55,35 +55,35 @@ Try <code>ws -help</code> for a list of command line options.</p>
 <h3>Environment variables</h3>
 
 <ul>
-<li>WS_URL the URL to listen for by <em>ws</em>
+<li>MKPAGE_URL the URL to listen for by <em>ws</em>
 
 <ul>
 <li>default is <a href="http://localhost:8000">http://localhost:8000</a></li>
 </ul></li>
-<li>WS_DOCROOT the directory of your static content you need to serve
+<li>MKPAGE_DOCROOT the directory of your static content you need to serve
 
 <ul>
 <li>the default is ./htdocs</li>
 </ul></li>
-<li>WS_SSL_KEY the path the the SSL key file (e.g. etc/ssl/site.key)
+<li>MKPAGE_SSL_KEY the path the the SSL key file (e.g. etc/ssl/site.key)
 
 <ul>
-<li>default is empty, only checked if your WS_URL is starts with https://</li>
+<li>default is empty, only checked if your MKPAGE_URL is starts with https://</li>
 </ul></li>
-<li>WS_SSL_CERT the path the the SSL cert file (e.g. etc/ssl/site.crt)
+<li>MKPAGE_SSL_CERT the path the the SSL cert file (e.g. etc/ssl/site.crt)
 
 <ul>
-<li>default is empty, only checked if your WS_URL is starts with https://</li>
+<li>default is empty, only checked if your MKPAGE_URL is starts with https://</li>
 </ul></li>
 </ul>
 
 <h3>Command line options</h3>
 
 <ul>
-<li>-url overrides WS_URL</li>
-<li>-docs overrides WS_DOCROOT</li>
-<li>-ssl-key overrides WS_SSL_KEY</li>
-<li>-ssl-pem overrides WS_SSL_PEM</li>
+<li>-url overrides MKPAGE_URL</li>
+<li>-docs overrides MKPAGE_DOCROOT</li>
+<li>-ssl-key overrides MKPAGE_SSL_KEY</li>
+<li>-ssl-pem overrides MKPAGE_SSL_PEM</li>
 <li>-init triggers the initialization process and creates a setup.bash file</li>
 <li>-h, -help displays the help documentation</li>
 <li>-v, -version display the version of the command</li>
