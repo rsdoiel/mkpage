@@ -28,9 +28,14 @@
 </nav>
 
 <section>
-<h1>mkslides</h1>
+<h1>USAGE</h1>
 
-<p>Convert a Markdown file into a sequence of HTML5 slides.</p>
+<pre><code>mkslides [OPTIONS] [FILES]
+</code></pre>
+
+<h2>SYNOPSIS</h2>
+
+<p>mkslides converts a Markdown file into a sequence of HTML5 slides.</p>
 
 <ul>
 <li>Use Markdown to write your presentation in one file</li>
@@ -38,6 +43,40 @@
 <li>Apply the simple default template or use your own</li>
 <li>Control Layout and display with HTML5 and CSS</li>
 </ul>
+
+<h2>CONFIGURATION</h2>
+
+<ul>
+<li>MKSLIDES_CSS - specify the CSS file to include</li>
+<li>MKSLIDES_JS - specify the JS file to include</li>
+<li>MKSLIDES_MARKDOWN - the markdown file to process</li>
+<li>MKSLIDES_PRESENTATION_TITLE - specify the title of the presentation</li>
+<li>MKSLIDES_TEMPLATES - specify where to find the templates to use</li>
+</ul>
+
+<h2>OPTIONS</h2>
+
+<pre><code>	-c	Specify the CSS file to use
+	-css	Specify the CSS file to use
+	-h	display help
+	-help	display help
+	-j	Specify the JavaScript file to use
+	-js	Specify the JavaScript file to use
+	-l	display license
+	-license	display license
+	-m	Markdown filename
+	-markdown	Markdown filename
+	-p	Presentation title
+	-presentation-title	Presentation title
+	-s	display the default template
+	-show-template	display the default template
+	-t	A colon delimited list of HTML templates to use
+	-templates	A colon delimited list of HTML templates to use
+	-v	display version
+	-version	display version
+</code></pre>
+
+<h2>EXAMPLE</h2>
 
 <p>Here&rsquo;s an example of a three slide presentation</p>
 
@@ -57,27 +96,16 @@
     Thank you
 
     Hope you enjoy [mkslides](https://github.com/caltechlbrary/mkslides)
-
 </code></pre>
 
-<p>If you save this <a href="example/presentation.md">file</a> as presentation.md it would
+<p>If you save this as presentation.md and run &ldquo;mkslides presentation.md&rdquo; it would
 generate the following webpages</p>
 
 <ul>
-<li><a href="example/00-presentation.html">00-presentation01.html</a></li>
-<li><a href="example/01-presentation.html">01-presentation02.html</a></li>
-<li><a href="example/02-presentation.html">02-presentation03.html</a></li>
+<li><a href="demo/00-presentation.html">00-presentation.html</a></li>
+<li><a href="demo/01-presentation.html">01-presentation.html</a></li>
+<li><a href="demo/02-presentation.html">02-presentation.html</a></li>
 </ul>
-
-<h2>Releases and cross compilation</h2>
-
-<p>The script <a href="./mk-release.sh">mk-release.sh</a> cross compiles <em>mkslides</em> for Windows, Max OS X, Linux (amd64) and Raspberry Pi (Raspbian/ARM6 and ARM7).
-It places all the resulting executable programs in the <em>dist</em> folders. See <a href="install.html">INSTALL.md</a> for instructions.</p>
-
-<h2>windows issues</h2>
-
-<p><em>mkslides</em> has very limited Windows testing done.  <em>mkslides.exe</em>
-presumes the Unix style new line only and not the old DOS/Windows CR/LF type endings.</p>
 
 </section>
 

@@ -1,12 +1,49 @@
 
-# mkslides
+# USAGE
 
-Convert a Markdown file into a sequence of HTML5 slides.
+    mkslides [OPTIONS] [FILES]
+
+## SYNOPSIS
+
+mkslides converts a Markdown file into a sequence of HTML5 slides.
 
 + Use Markdown to write your presentation in one file
 + Separate slides by "--" and a new line (e.g. \n versus \r\n)
 + Apply the simple default template or use your own
 + Control Layout and display with HTML5 and CSS
+
+## CONFIGURATION
+
++ MKSLIDES_CSS - specify the CSS file to include
++ MKSLIDES_JS - specify the JS file to include
++ MKSLIDES_MARKDOWN - the markdown file to process
++ MKSLIDES_PRESENTATION_TITLE - specify the title of the presentation
++ MKSLIDES_TEMPLATES - specify where to find the templates to use 
+
+## OPTIONS
+
+```
+	-c	Specify the CSS file to use
+	-css	Specify the CSS file to use
+	-h	display help
+	-help	display help
+	-j	Specify the JavaScript file to use
+	-js	Specify the JavaScript file to use
+	-l	display license
+	-license	display license
+	-m	Markdown filename
+	-markdown	Markdown filename
+	-p	Presentation title
+	-presentation-title	Presentation title
+	-s	display the default template
+	-show-template	display the default template
+	-t	A colon delimited list of HTML templates to use
+	-templates	A colon delimited list of HTML templates to use
+	-v	display version
+	-version	display version
+```
+
+## EXAMPLE
 
 Here's an example of a three slide presentation
 
@@ -27,25 +64,13 @@ Here's an example of a three slide presentation
     Thank you
 
     Hope you enjoy [mkslides](https://github.com/caltechlbrary/mkslides)
-
 ```
 
-If you save this [file](example/presentation.md) as presentation.md it would
+
+If you save this as presentation.md and run "mkslides presentation.md" it would
 generate the following webpages
 
-+ [00-presentation01.html](example/00-presentation.html)
-+ [01-presentation02.html](example/01-presentation.html)
-+ [02-presentation03.html](example/02-presentation.html)
-
-
-## Releases and cross compilation
-
-The script [mk-release.sh](./mk-release.sh) cross compiles *mkslides* for Windows, Max OS X, Linux (amd64) and Raspberry Pi (Raspbian/ARM6 and ARM7).
-It places all the resulting executable programs in the *dist* folders. See [INSTALL.md](install.html) for instructions.
-
-## windows issues
-
-*mkslides* has very limited Windows testing done.  *mkslides.exe* 
-presumes the Unix style new line only and not the old DOS/Windows CR/LF type endings.
-
++ [00-presentation.html](demo/00-presentation.html)
++ [01-presentation.html](demo/01-presentation.html)
++ [02-presentation.html](demo/02-presentation.html)
 
