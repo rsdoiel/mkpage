@@ -41,7 +41,7 @@ the implied common base path calculate the relative path for target.
 `
 
 	examples = `
-EXAMPLE:
+EXAMPLE
 
 Given
 
