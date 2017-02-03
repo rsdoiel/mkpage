@@ -1,8 +1,8 @@
 
 + [Home](/)
 + [README](index.html)
-+ [INSTALL](install.html)
 + [LICENSE](license.html)
++ [INSTALL](install.html)
 + [mkpage](mkpage.html)
 + [mkslides](mkslides.html)
 + [reldocpath](reldocpath.html)
