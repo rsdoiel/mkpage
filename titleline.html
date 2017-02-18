@@ -8,36 +8,37 @@
     <header>
         <h1>mkpage: An experimental deconstructed content system, something is sure to change</h1>
     </header>
-    <section><p>USAGE: titleline [OPTIONS]</p>
+    <section><h1>USAGE</h1>
 
-<p>SYNOPSIS</p>
-
-<p>titleline extracts the first title line from a Markdown file. By default it reads
-from standard in and writes to standard out but can read/write
-to specific files using an option.</p>
-
-<pre><code>-h  display help
--help   display help
--i  input filename
--input  input filename
--l  display license
--license    display license
--o  output filename
--output output filename
--t  set title regexp
--title  set title regexp
--v  display version
--version    display version
+<pre><code>titleline [OPTIONS]
 </code></pre>
 
-<p>EXAMPLE</p>
+<h2>SYNOPSIS</h2>
 
-<pre><code>cat article.md | titleline
+<p>titleline extracts the first title line from a Markdown file. By
+default it reads from standard in and writes to standard out but
+can read/write to specific files using an option.</p>
+
+<pre><code>	-h	display help
+	-help	display help
+	-i	input filename
+	-input	input filename
+	-l	display license
+	-license	display license
+	-o	output filename
+	-output	output filename
+	-t	set title regexp
+	-title	set title regexp
+	-v	display version
+	-version	display version
 </code></pre>
 
-<p>This will display the titleline of article.md.</p>
+<h2>EXAMPLE</h2>
 
-<p>titleline v0.0.13</p>
+<pre><code class="language-shell">    cat article.md | titleline
+</code></pre>
+
+<p>This will display the title of article.md.</p>
 </section>
     <nav><ul>
 <li><a href="/">home</a></li>
