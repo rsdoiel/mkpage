@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>mkpage: An experimental deconstructed content system, something is sure to change</title>
+    <link href="css/site.css" rel="stylesheet" />
+<head>
+<body>
+    <header>
+        <h1>mkpage: An experimental deconstructed content system, something is sure to change</h1>
+    </header>
+    <section><h1>USAGE</h1>
+
+<pre><code>ws [OPTIONS] [DOCROOT]
+</code></pre>
+
+<h2>SYNOPSIS</h2>
+
+<pre><code>a nimble web server
+</code></pre>
+
+<p>ws is a command line utility for developing and testing static websites.
+It uses Go&rsquo;s standard http libraries and can supports both http 1 and 2
+out of the box.  It is intended as a minimal wrapper for Go&rsquo;s standard
+http libraries supporting http/https versions 1 and 2 out of the box.</p>
+
+<h2>CONFIGURATION</h2>
+
+<p>ws can be configurated through environment settings. The following are
+supported.</p>
+
+<ul>
+<li>MKPAGE_URL  - sets the URL to listen on (e.g. <a href="http://localhost:8000">http://localhost:8000</a>)</li>
+<li>MKPAGE_DOCROOT - sets the document path to use</li>
+<li>MKPAGE_SSL_KEY - the path to the SSL key if using https</li>
+<li>MKPAGE_SSL_CERT - the path to the SSL cert if using https</li>
+</ul>
+
+<h2>OPTIONS</h2>
+
+<pre><code>	-c	Set the path for the SSL Cert
+	-cert	Set the path for the SSL Cert
+	-d	Set the htdocs path
+	-docs	Set the htdocs path
+	-h	Display this help message
+	-help	Display this help message
+	-k	Set the path for the SSL Key
+	-key	Set the path for the SSL Key
+	-l	Should license info
+	-license	Should license info
+	-u	The protocal and hostname listen for as a URL
+	-url	The protocal and hostname listen for as a URL
+	-v	Should version info
+	-version	Should version info
+</code></pre>
+
+<h2>EXAMPLES</h2>
+
+<p>Run web server using the content in the current directory
+(assumes the environment variables MKPAGE_DOCROOT are not defined).</p>
+
+<pre><code class="language-shell">   ws
+</code></pre>
+
+<p>Run web server using a specified directory</p>
+
+<pre><code class="language-shell">   ws /www/htdocs
+</code></pre>
+</section>
+    <nav><ul>
+<li><a href="/">home</a></li>
+<li><a href="./">README</a></li>
+<li><a href="license.html">LICENSE</a></li>
+<li><a href="install.html">INSTALL</a></li>
+<li><a href="mkpage.html">mkpage</a></li>
+<li><a href="mkslides.html">mkslides</a></li>
+<li><a href="sitemapper.html">sitemapper</a></li>
+<li><a href="mkrss.html">mkrss</a></li>
+<li><a href="reldocpath.html">reldocpath</a></li>
+<li><a href="titleline.html">titleline</a></li>
+<li><a href="byline.html">byline</a></li>
+<li><a href="slugify.html">slugify</a></li>
+<li><a href="ws.html">ws</a></li>
+<li><a href="go-template-recipes.html">Go template recipes</a></li>
+<li><a href="https://github.com/rsdoiel/mkpage">Github</a></li>
+</ul>
+</nav>
+    <footer>
+    copyright (c) 2017 R. S. Doiel
+    See: <a href="license.html">LICENSE</a>
+    </footer>
+</body>
+</html>
