@@ -11,6 +11,7 @@
 + [titleline](titleline.html)
 + [byline](byline.html)
 + [slugify](slugify.html)
++ [ws](ws.html)
 + [Go template recipes](go-template-recipes.html)
 + [Github](https://github.com/rsdoiel/mkpage)
 
