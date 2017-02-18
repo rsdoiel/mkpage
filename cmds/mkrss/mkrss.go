@@ -196,27 +196,51 @@ func main() {
 	err := mkpage.Walk(htdocs, func(p string, info os.FileInfo) bool {
 		fname := path.Base(p)
 		if validBlogPath.MatchString(p) == true &&
-			strings.HasSuffix(fname, ".html") == true &&
-			strings.HasPrefix(fname, "40") == false &&
-			strings.HasPrefix(fname, "50") == false {
+			strings.HasSuffix(fname, ".md") == true {
+			// NOTE: We have a possible published markdown article.
+			// Make sure we have a HTML version before adding it
+			// to the feed.
+			if _, err := os.Stat(path.Join(p, path.Base(fname)+".html")); os.IsNotExist(err) {
+				return false
+			}
 			return true
 		}
 		return false
 	}, func(p string, info os.FileInfo) error {
+		// Read the article
+		buf, err := ioutil.ReadFile(p)
+		if err != nil {
+			return err
+		}
+		// Calc URL path
 		pname := strings.TrimPrefix(p, htdocs)
 		if strings.HasPrefix(pname, "/") {
 			pname = strings.TrimPrefix(pname, "/")
 		}
-		articleURL := fmt.Sprintf("%s/%s", channelLink, pname)
+		dname := path.Dir(pname)
+		bname := strings.TrimSuffix(path.Base(pname), ".md") + ".html"
+		articleURL := fmt.Sprintf("%s/%s", channelLink, path.Join(dname, bname))
 		u, err := url.Parse(articleURL)
 		if err != nil {
 			return err
 		}
-		title := mkpage.Unslugify(strings.TrimSuffix(path.Base(u.Path), ".html"))
+		// Collect metadata
+		src := fmt.Sprintf("%s", buf)
+		title := strings.TrimPrefix(mkpage.Grep(mkpage.TitleExp, src), "# ")
+		byline := mkpage.Grep(mkpage.BylineExp, src)
+		pubDate := mkpage.Grep(mkpage.DateExp, byline)
+		author := strings.TrimSpace(strings.TrimSuffix(byline[2:], pubDate))
+		// Reformat pubDate to conform to RSS2 date formats
+		dt, err := time.Parse(`2006-01-02`, pubDate)
+		if err != nil {
+			return err
+		}
+		pubDate = dt.Format(time.RFC1123)
 		item := new(rss2.Item)
 		item.Title = title
-		item.Link = articleURL
-		//FIXME: Need to pull the description from the Markdown version
+		item.Author = author
+		item.PubDate = pubDate
+		item.Link = u.String()
 		feed.ItemList = append(feed.ItemList, *item)
 		return nil
 	})

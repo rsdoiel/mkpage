@@ -1,8 +1,7 @@
 //
-// byline reads a Markdown file and returns the first byline
-// encountered.  A byline, by default, is identified by the RegExp
-// `^[B|b]y\s+(\w|\s)+ [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$`
-// This can be overwritten with another definition using an option.
+// titleine reads a Markdown file and returns the first title
+// encountered.  By default that is the first line starting with
+// '# '.
 //
 // @Author R. S. Doiel
 //
@@ -38,7 +37,7 @@ var (
 	description = `
 SYNOPSIS
 
-%s extracts a byline from a Markdown file. By default it reads
+%s extracts the first title line from a Markdown file. By default it reads
 from standard in and writes to standard out but can read/write
 to specific files using an option.
 `
@@ -48,7 +47,7 @@ EXAMPLE
 
     cat article.md | %s
 
-This will display the %s of article.md.
+This will display the title of an article.md.
 `
 
 	// Standard Options
@@ -59,7 +58,7 @@ This will display the %s of article.md.
 	outputFName string
 
 	// App Options
-	bylineExp string
+	titlelineExp string
 )
 
 func init() {
@@ -76,8 +75,8 @@ func init() {
 	flag.StringVar(&outputFName, "output", "", "output filename")
 
 	// App Options
-	flag.StringVar(&bylineExp, "b", mkpage.BylineExp, "set byline regexp")
-	flag.StringVar(&bylineExp, "byline", mkpage.BylineExp, "set byline regexp")
+	flag.StringVar(&titlelineExp, "t", mkpage.TitleExp, "set title regexp")
+	flag.StringVar(&titlelineExp, "title", mkpage.TitleExp, "set title regexp")
 
 }
 
@@ -89,7 +88,7 @@ func main() {
 	cfg := cli.New(appName, "MKPAGE", fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version), mkpage.Version)
 	cfg.UsageText = fmt.Sprintf(usage, appName)
 	cfg.DescriptionText = fmt.Sprintf(description, appName)
-	cfg.ExampleText = fmt.Sprintf(examples, appName, appName)
+	cfg.ExampleText = fmt.Sprintf(examples, appName)
 
 	if showHelp == true {
 		fmt.Println(cfg.Usage())
@@ -109,14 +108,17 @@ func main() {
 		fmt.Fprintf(os.Stderr, "%s\n", err)
 		os.Exit(1)
 	}
+	defer in.Close()
 	out, err := cli.Create(outputFName, os.Stdout)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%s\n", err)
 		os.Exit(1)
 	}
+	defer out.Close()
+
 	scanner := bufio.NewScanner(in)
 	for scanner.Scan() {
-		s := mkpage.Grep(bylineExp, scanner.Text())
+		s := mkpage.Grep(titlelineExp, scanner.Text())
 		if len(s) > 0 {
 			fmt.Fprintf(out, "%s", s)
 			os.Exit(0)

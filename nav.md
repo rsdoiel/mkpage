@@ -8,6 +8,7 @@
 + [sitemapper](sitemapper.html)
 + [mkrss](mkrss.html)
 + [reldocpath](reldocpath.html)
++ [titleline](titleline.html)
 + [byline](byline.html)
 + [slugify](slugify.html)
 + [Go template recipes](go-template-recipes.html)

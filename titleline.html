@@ -8,33 +8,36 @@
     <header>
         <h1>mkpage: An experimental deconstructed content system, something is sure to change</h1>
     </header>
-    <section><h1>USAGE</h1>
+    <section><p>USAGE: titleline [OPTIONS]</p>
 
-<pre><code>sitemapper [OPTIONS] HTDOCS_PATH SITEMAP_FILENAME PUBLIC_BASE_URL
+<p>SYNOPSIS</p>
+
+<p>titleline extracts the first title line from a Markdown file. By default it reads
+from standard in and writes to standard out but can read/write
+to specific files using an option.</p>
+
+<pre><code>-h  display help
+-help   display help
+-i  input filename
+-input  input filename
+-l  display license
+-license    display license
+-o  output filename
+-output output filename
+-t  set title regexp
+-title  set title regexp
+-v  display version
+-version    display version
 </code></pre>
 
-<h2>OVERVIEW</h2>
+<p>EXAMPLE</p>
 
-<p>sitemapper generates a sitemap for the website.</p>
-
-<pre><code>	-e	A colon delimited list of path parts to exclude from sitemap
-	-exclude	A colon delimited list of path parts to exclude from sitemap
-	-h	display help
-	-help	display help
-	-l	display license
-	-license	display license
-	-u	Set the change frequencely value, e.g. daily, weekly, monthly
-	-update-frequency	Set the change frequencely value, e.g. daily, weekly, monthly
-	-v	display version
-	-version	display version
+<pre><code>cat article.md | titleline
 </code></pre>
 
-<h2>EXAMPLE</h2>
+<p>This will display the titleline of article.md.</p>
 
-<pre><code class="language-shell">    sitemapper htdocs htdocs/sitemap.xml http://blog.example.org
-</code></pre>
-
-<p>This yields a sitemap.xml file in the htdocs folder.</p>
+<p>titleline v0.0.13</p>
 </section>
     <nav><ul>
 <li><a href="/">home</a></li>

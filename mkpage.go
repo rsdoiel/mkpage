@@ -136,8 +136,12 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 </body>
 </html>`
 
-	// Default Byline format used by mkpage utilities
-	BylineExp = `^[B|b]y\s+(\w|\s)+[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$`
+	// DateExp is the default format used by mkpage utilities for date exp
+	DateExp = `[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]`
+	// BylineExp is the default format used by mkpage utilities
+	BylineExp = (`^[B|b]y\s+(\w|\s|.)+` + DateExp + "$")
+	// TitleExp is the default format used by mkpage utilities
+	TitleExp = `^#\s+(\w|\s|.)+$`
 )
 
 // ResolveData takes a data map and reads in the files and URL sources
@@ -552,12 +556,12 @@ func Walk(startPath string, filterFn func(p string, info os.FileInfo) bool, outp
 	return err
 }
 
-// GrepByline looks for the first line matching the byline expression
+// Grep looks for the first line matching the expression
 // in src.
-func GrepByline(bylineExp string, src string) string {
-	re, err := regexp.Compile(bylineExp)
+func Grep(exp string, src string) string {
+	re, err := regexp.Compile(exp)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "%q is not a valid, %s\n", bylineExp, err)
+		fmt.Fprintf(os.Stderr, "%q is not a valid, %s\n", exp, err)
 		return ""
 	}
 	lines := strings.Split(src, "\n")
