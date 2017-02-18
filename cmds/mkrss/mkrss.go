@@ -36,24 +36,6 @@ import (
 )
 
 var (
-	// Standard options
-	showHelp    bool
-	showLicense bool
-	showVersion bool
-
-	// App specific options
-	excludeList        string
-	articleLimit       int
-	channelLanguage    string
-	channelTitle       string
-	channelDescription string
-	channelLink        string
-	channelGenerator   string
-	channelPubDate     string
-	channelBuildDate   string
-	channelCopyright   string
-	channelCategory    string
-
 	// Usage and docs
 	usage = `USAGE: %s [OPTION] HTDOCS [RSS_FILENAME]`
 
@@ -80,13 +62,43 @@ htdocs/myblog.
 This would build an RSS 2 file in htdocs/rss.xml from the 
 articles in htdocs/myblog/YYYY/MM/DD.
 `
+
+	// Standard options
+	showHelp    bool
+	showLicense bool
+	showVersion bool
+	inputFName  string
+	outputFName string
+
+	// App specific options
+	excludeList        string
+	articleLimit       int
+	channelLanguage    string
+	channelTitle       string
+	channelDescription string
+	channelLink        string
+	channelGenerator   string
+	channelPubDate     string
+	channelBuildDate   string
+	channelCopyright   string
+	channelCategory    string
+	bylineExp          string
+	titleExp           string
+	dateExp            string
 )
 
 func init() {
 	// Standard options
 	flag.BoolVar(&showHelp, "h", false, "display help")
+	flag.BoolVar(&showHelp, "help", false, "display help")
 	flag.BoolVar(&showLicense, "l", false, "display license")
+	flag.BoolVar(&showLicense, "license", false, "display license")
 	flag.BoolVar(&showVersion, "v", false, "display version")
+	flag.BoolVar(&showVersion, "version", false, "display version")
+	flag.StringVar(&inputFName, "i", "", "set input filename")
+	flag.StringVar(&inputFName, "input", "", "set input filename")
+	flag.StringVar(&outputFName, "o", "", "set output filename")
+	flag.StringVar(&outputFName, "output", "", "set output filename")
 
 	// App specific options
 	flag.StringVar(&excludeList, "e", "", "A colon delimited list of path exclusions")
@@ -100,6 +112,12 @@ func init() {
 	flag.StringVar(&channelBuildDate, "channel-builddate", "", "Build Date for channel (e.g. 2006-01-02 15:04:05 -0700)")
 	flag.StringVar(&channelCopyright, "channel-copyright", "", "Copyright for channel")
 	flag.StringVar(&channelCategory, "channel-category", "", "category for channel")
+	flag.StringVar(&dateExp, "d", mkpage.DateExp, "set date regexp")
+	flag.StringVar(&dateExp, "date-format", mkpage.DateExp, "set date regexp")
+	flag.StringVar(&titleExp, "t", mkpage.TitleExp, "set title regexp")
+	flag.StringVar(&titleExp, "title", mkpage.TitleExp, "set title regexp")
+	flag.StringVar(&bylineExp, "b", mkpage.BylineExp, "set byline regexp")
+	flag.StringVar(&bylineExp, "byline", mkpage.BylineExp, "set byline regexp")
 }
 
 func main() {
@@ -226,9 +244,9 @@ func main() {
 		}
 		// Collect metadata
 		src := fmt.Sprintf("%s", buf)
-		title := strings.TrimPrefix(mkpage.Grep(mkpage.TitleExp, src), "# ")
-		byline := mkpage.Grep(mkpage.BylineExp, src)
-		pubDate := mkpage.Grep(mkpage.DateExp, byline)
+		title := strings.TrimPrefix(mkpage.Grep(titleExp, src), "# ")
+		byline := mkpage.Grep(bylineExp, src)
+		pubDate := mkpage.Grep(dateExp, byline)
 		author := strings.TrimSpace(strings.TrimSuffix(byline[2:], pubDate))
 		// Reformat pubDate to conform to RSS2 date formats
 		dt, err := time.Parse(`2006-01-02`, pubDate)
