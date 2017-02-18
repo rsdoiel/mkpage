@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>mkpage: An experimental deconstructed content system, something is sure to change</title>
+    <link href="css/site.css" rel="stylesheet" />
+<head>
+<body>
+    <header>
+        <h1>mkpage: An experimental deconstructed content system, something is sure to change</h1>
+    </header>
+    <section><h1>USAGE</h1>
+
+<pre><code>mkpage [OPTION] [KEY/VALUE DATA PAIRS] [TEMPLATE_FILENAMES]
+</code></pre>
+
+<h2>SYNOPSIS</h2>
+
+<p>Using the key value pairs populate the template(s) and render to stdout.</p>
+
+<h2>OPTIONS</h2>
+
+<pre><code>	-h	show help
+	-help	show help
+	-l	show license
+	-license	show license
+	-t	show the default template source
+	-template	show the default template source
+	-v	show version
+	-version	show version
+</code></pre>
+
+<h2>EXAMPLE</h2>
+
+<p>Template</p>
+
+<pre><code>    Date: {{- .now}}
+
+    Hello {{.name -}},
+    
+    The current weather is
+
+    {{.weather}}
+
+    Thank you
+
+	{{.signature}}
+</code></pre>
+
+<p>Render the template above (i.e. myformletter.template) would be accomplished from the following
+data sources&ndash;</p>
+
+<ul>
+<li>&ldquo;now&rdquo; and &ldquo;name&rdquo; are strings</li>
+<li>&ldquo;weatherForcast&rdquo; comes from a URL</li>
+<li>&ldquo;license&rdquo; comes from a file in our local disc</li>
+</ul>
+
+<p>That would be expressed on the command line as follows</p>
+
+<pre><code class="language-shell">	mkpage &quot;now=text:$(date)&quot; &quot;name=text:Little Frieda&quot; \
+		&quot;weather=http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&amp;lon=144.74977715100056&amp;FcstType=json&quot; \
+		signature=testdata/signature.txt \
+		testdata/myformletter.template
+</code></pre>
+
+<p>Golang&rsquo;s text/template docs can be found at</p>
+
+<pre><code>  https://golang.org/pkg/text/template/
+</code></pre>
+</section>
+    <nav><ul>
+<li><a href="/">home</a></li>
+<li><a href="./">README</a></li>
+<li><a href="license.html">LICENSE</a></li>
+<li><a href="install.html">INSTALL</a></li>
+<li><a href="mkpage.html">mkpage</a></li>
+<li><a href="mkslides.html">mkslides</a></li>
+<li><a href="sitemapper.html">sitemapper</a></li>
+<li><a href="mkrss.html">mkrss</a></li>
+<li><a href="reldocpath.html">reldocpath</a></li>
+<li><a href="byline.html">byline</a></li>
+<li><a href="slugify.html">slugify</a></li>
+<li><a href="go-template-recipes.html">Go template recipes</a></li>
+<li><a href="https://github.com/rsdoiel/mkpage">Github</a></li>
+</ul>
+</nav>
+    <footer>
+    copyright (c) 2017 R. S. Doiel
+    See: <a href="license.html">LICENSE</a>
+    </footer>
+</body>
+</html>

@@ -44,16 +44,10 @@ echo "Generating go-template-recipes.html"
 MakePage nav.md go-template-recipes.md go-template-recipes.html
 echo "Generating license.html"
 MakePage nav.md "markdown:$(cat LICENSE)" license.html
-echo "Generating mkslides.html"
-MakePage nav.md mkslides.md mkslides.html
-echo "Generating sitemapper.html"
-MakePage nav.md sitemapper.md sitemapper.html
-echo "Generating reldocpath.html"
-MakePage nav.md reldocpath.md reldocpath.html
-echo "Generating slugify.html"
-MakePage nav.md slugify.md slugify.html
-echo "Generating mkrss.html"
-MakePage nav.md mkrss.md mkrss.html
+for FNAME in mkpage mkslides sitemapper reldocpath slugify mkrss byline; do
+  echo "Generating $FNAME.html"
+  MakePage nav.md $FNAME.md $FNAME.html
+done
 
 echo "Generating docs presentation"
 cd demo

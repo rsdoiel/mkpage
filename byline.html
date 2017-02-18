@@ -10,35 +10,35 @@
     </header>
     <section><h1>USAGE</h1>
 
-<pre><code>reldocpath SOURCE_DOC_PATH TARGET_DOC_PATH 
+<pre><code>byline [OPTIONS]
 </code></pre>
 
 <h2>SYNOPSIS</h2>
 
-<p>Given a source document path, a target document path calculate and
-the implied common base path calculate the relative path for target.</p>
+<p>byline extracts a byline from a Markdown file. By default it reads
+from standard in and writes to standard out but can read/write
+to specific files using an option.</p>
 
-<h2>OPTIONS</h2>
-
-<pre><code class="language-shell">	-h	display help
+<pre><code>	-b	set byline regexp
+	-byline	set byline regexp
+	-h	display help
 	-help	display help
+	-i	input filename
+	-input	input filename
 	-l	display license
 	-license	display license
+	-o	output filename
+	-output	output filename
 	-v	display version
 	-version	display version
 </code></pre>
 
 <h2>EXAMPLE</h2>
 
-<p>Given</p>
-
-<pre><code class="language-shell">    reldocpath chapter-01/lesson-03.html css/site.css
+<pre><code class="language-shell">    cat article.md | byline
 </code></pre>
 
-<p>would output</p>
-
-<pre><code class="language-shell">    .../css/site.css
-</code></pre>
+<p>This will display the byline of article.md.</p>
 </section>
     <nav><ul>
 <li><a href="/">home</a></li>

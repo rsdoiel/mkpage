@@ -211,3 +211,18 @@ This is slide three, just a random paragraph of text. Blah, blah, blah, blah, bl
 		}
 	}
 }
+
+func TestGrepByline(t *testing.T) {
+	src := `
+# This is some article
+
+by Jane Doe 3001-01-01
+
+It was some New Years day...
+`
+	expected := `by Jane Doe 3001-01-01`
+	result := GrepByline(BylineExp, src)
+	if expected != result {
+		t.Errorf("expected %q, got %q for GrepByLine()", expected, result)
+	}
+}

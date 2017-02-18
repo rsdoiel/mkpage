@@ -28,6 +28,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"text/template"
 	"time"
@@ -134,6 +135,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
   {{end}}
 </body>
 </html>`
+
+	// Default Byline format used by mkpage utilities
+	BylineExp = `^[B|b]y\s+(\w|\s)+[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$`
 )
 
 // ResolveData takes a data map and reads in the files and URL sources
@@ -546,4 +550,22 @@ func Walk(startPath string, filterFn func(p string, info os.FileInfo) bool, outp
 		return nil
 	})
 	return err
+}
+
+// GrepByline looks for the first line matching the byline expression
+// in src.
+func GrepByline(bylineExp string, src string) string {
+	re, err := regexp.Compile(bylineExp)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%q is not a valid, %s\n", bylineExp, err)
+		return ""
+	}
+	lines := strings.Split(src, "\n")
+	for _, line := range lines {
+		s := re.FindString(line)
+		if len(s) > 0 {
+			return s
+		}
+	}
+	return ""
 }

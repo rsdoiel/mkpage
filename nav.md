@@ -1,13 +1,15 @@
 
 + [home](/)
-+ [mkpage](./)
++ [README](./)
++ [LICENSE](license.html)
++ [INSTALL](install.html)
++ [mkpage](mkpage.html)
 + [mkslides](mkslides.html)
 + [sitemapper](sitemapper.html)
 + [mkrss](mkrss.html)
 + [reldocpath](reldocpath.html)
++ [byline](byline.html)
 + [slugify](slugify.html)
 + [Go template recipes](go-template-recipes.html)
-+ [LICENSE](license.html)
-+ [Install](install.html)
 + [Github](https://github.com/rsdoiel/mkpage)
 
