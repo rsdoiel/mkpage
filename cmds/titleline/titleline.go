@@ -120,7 +120,7 @@ func main() {
 	for scanner.Scan() {
 		s := mkpage.Grep(titlelineExp, scanner.Text())
 		if len(s) > 0 {
-			fmt.Fprintf(out, "%s", s)
+			fmt.Fprintf(out, "%s", s[2:])
 			os.Exit(0)
 		}
 	}
