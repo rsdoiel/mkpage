@@ -10,4 +10,5 @@
     + theatrical, audio or movie script project
     + presentation
     + ebook/ePub
-
++ consider the pros/cons of dropping arm6 support
++ consider adding arm64 and mips support
