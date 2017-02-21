@@ -33,61 +33,37 @@
 <section>
 <h1>USAGE</h1>
 
-<pre><code>ws [OPTIONS] [DOCROOT]
+<pre><code>titleline [OPTIONS]
 </code></pre>
 
 <h2>SYNOPSIS</h2>
 
-<pre><code>a nimble web server
-</code></pre>
-
-<p>ws is a command line utility for developing and testing static websites.
-It uses Go&rsquo;s standard http libraries and can supports both http 1 and 2
-out of the box.  It is intended as a minimal wrapper for Go&rsquo;s standard
-http libraries supporting http/https versions 1 and 2 out of the box.</p>
-
-<h2>CONFIGURATION</h2>
-
-<p>ws can be configurated through environment settings. The following are
-supported.</p>
-
-<ul>
-<li>MKPAGE_URL  - sets the URL to listen on (e.g. <a href="http://localhost:8000">http://localhost:8000</a>)</li>
-<li>MKPAGE_DOCROOT - sets the document path to use</li>
-<li>MKPAGE_SSL_KEY - the path to the SSL key if using https</li>
-<li>MKPAGE_SSL_CERT - the path to the SSL cert if using https</li>
-</ul>
+<p>titleline extracts the first title line from a Markdown file. By default it reads
+from standard in and writes to standard out but can read/write
+to specific files using an option.</p>
 
 <h2>OPTIONS</h2>
 
-<pre><code>	-c	Set the path for the SSL Cert
-	-cert	Set the path for the SSL Cert
-	-d	Set the htdocs path
-	-docs	Set the htdocs path
-	-h	Display this help message
-	-help	Display this help message
-	-k	Set the path for the SSL Key
-	-key	Set the path for the SSL Key
-	-l	Should license info
-	-license	Should license info
-	-u	The protocal and hostname listen for as a URL
-	-url	The protocal and hostname listen for as a URL
-	-v	Should version info
-	-version	Should version info
+<pre><code>	-h	display help
+	-help	display help
+	-i	input filename
+	-input	input filename
+	-l	display license
+	-license	display license
+	-o	output filename
+	-output	output filename
+	-t	set title regexp
+	-title	set title regexp
+	-v	display version
+	-version	display version
 </code></pre>
 
-<h2>EXAMPLES</h2>
+<h2>EXAMPLE</h2>
 
-<p>Run web server using the content in the current directory
-(assumes the environment variables MKPAGE_DOCROOT are not defined).</p>
-
-<pre><code>   ws
+<pre><code class="language-shell">    cat article.md | titleline
 </code></pre>
 
-<p>Run web server using a specified directory</p>
-
-<pre><code>   ws /www/htdocs
-</code></pre>
+<p>This will display the title of an article.md.</p>
 
 </section>
 

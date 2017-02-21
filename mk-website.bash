@@ -44,7 +44,7 @@ echo "Generating go-template-recipes.html"
 MakePage nav.md go-template-recipes.md go-template-recipes.html
 echo "Generating license.html"
 MakePage nav.md "markdown:$(cat LICENSE)" license.html
-for FNAME in mkpage mkslides mkrss reldocpath slugify sitemapper ws; do
+for FNAME in mkpage mkslides mkrss sitemapper byline titleline reldocpath slugify ws; do
     echo "Generating $FNAME.html"
     MakePage nav.md $FNAME.md $FNAME.html
 done
