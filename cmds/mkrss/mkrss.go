@@ -41,28 +41,29 @@ var (
 	usage = `USAGE: %s [OPTION] HTDOCS [RSS_FILENAME]`
 
 	description = `
-																	SYNOPSIS
+SYNOPSIS
 
-																	%s walks the file system to generate a RSS2 file. It assumes that the directory
-																	for HTDOCS is is the base directory containing subdirectories in the form of
-																	/YYYY/MM/DD/ARTICLE_HTML where YYYY/MM/DD (Year, Month, Day)
-																	corresponds to the publication date of ARTICLE_HTML.
-																	`
+%s walks the file system to generate a RSS2 file. It assumes 
+that the directory for HTDOCS is is the base directory containing 
+subdirectories in the form of /YYYY/MM/DD/ARTICLE_HTML where 
+YYYY/MM/DD (Year, Month, Day) corresponds to the publication date 
+of ARTICLE_HTML.
+`
 
 	examples = `
-																		EXAMPLE
+EXAMPLE
 
-																		If our htdocs folder is our document root and out blog is
-																		htdocs/myblog.
+If our htdocs folder is our document root and out blog is
+htdocs/myblog.
 
-																		    %s -channel-title="This Great Beyond" \
-																				   -channel-description="Blog to save the world" \
-																				   	   -channel-link="http://blog.example.org" \
-																					   	   htdocs htdocs/rss.xml
+    %s -channel-title="This Great Beyond" \
+        -channel-description="Blog to save the world" \
+        -channel-link="http://blog.example.org" \
+        htdocs htdocs/rss.xml
 
-																						   This would build an RSS 2 file in htdocs/rss.xml from the
-																						   articles in htdocs/myblog/YYYY/MM/DD.
-																						   `
+This would build an RSS 2 file in htdocs/rss.xml from the
+articles in htdocs/myblog/YYYY/MM/DD.
+`
 
 	// Standard options
 	showHelp    bool
