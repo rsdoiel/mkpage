@@ -5,6 +5,7 @@
 + [INSTALL](install.html)
 + [mkpage](mkpage.html)
 + [mkslides](mkslides.html)
++ [mkrss](mkrss.html)
 + [reldocpath](reldocpath.html)
 + [sitemapper](sitemapper.html)
 + [slugify](slugify.html)

@@ -27,8 +27,11 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"path/filepath"
+	"regexp"
 	"strings"
 	"text/template"
+	"time"
 
 	// 3rd Party Packages
 	"github.com/russross/blackfriday"
@@ -36,7 +39,7 @@ import (
 
 const (
 	// Version of the mkpage package.
-	Version = "v0.0.13"
+	Version = "v0.0.14"
 
 	// LicenseText provides a string template for rendering cli license info
 	LicenseText = `
@@ -337,6 +340,13 @@ footer a, footer a:link, footer a:visited, footer a:active, footer a:focus, foot
 </body>
 </html>
 `
+
+	// DateExp is the default format used by mkpage utilities for date exp
+	DateExp = `[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]`
+	// BylineExp is the default format used by mkpage utilities
+	BylineExp = (`^[B|b]y\s+(\w|\s|.)+` + DateExp + "$")
+	// TitleExp is the default format used by mkpage utilities
+	TitleExp = `^#\s+(\w|\s|.)+$`
 )
 
 // ResolveData takes a data map and reads in the files and URL sources
@@ -630,4 +640,54 @@ func MakeSlideString(tmpl *template.Template, slide *Slide) (string, error) {
 	wr := io.Writer(&buf)
 	err := MakeSlide(wr, tmpl, slide)
 	return buf.String(), err
+}
+
+// NormalizeDate takes a MySQL like date string and returns a time.Time or error
+func NormalizeDate(s string) (time.Time, error) {
+	switch len(s) {
+	case len(`2006-01-02 15:04:05 -0700`):
+		dt, err := time.Parse(`2006-01-02 15:04:05 -0700`, s)
+		return dt, err
+	case len(`2006-01-02 15:04:05`):
+		dt, err := time.Parse(`2006-01-02 15:04:05`, s)
+		return dt, err
+	case len(`2006-01-02`):
+		dt, err := time.Parse(`2006-01-02`, s)
+		return dt, err
+	default:
+		return time.Time{}, fmt.Errorf("Can't format %s, expected format like 2006-01-02 15:04:05 -0700", s)
+	}
+}
+
+// Walk takes a start path and walks the file system to process Markdown files for useful elements.
+func Walk(startPath string, filterFn func(p string, info os.FileInfo) bool, outputFn func(s string, info os.FileInfo) error) error {
+	err := filepath.Walk(startPath, func(p string, info os.FileInfo, err error) error {
+		// Are we interested in this path?
+		if filterFn(p, info) == true {
+			// Yes, so send to output function.
+			if err := outputFn(p, info); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+	return err
+}
+
+// Grep looks for the first line matching the expression
+// in src.
+func Grep(exp string, src string) string {
+	re, err := regexp.Compile(exp)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%q is not a valid, %s\n", exp, err)
+		return ""
+	}
+	lines := strings.Split(src, "\n")
+	for _, line := range lines {
+		s := re.FindString(line)
+		if len(s) > 0 {
+			return s
+		}
+	}
+	return ""
 }

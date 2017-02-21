@@ -191,3 +191,23 @@ This is slide three, just a random paragraph of text. Blah, blah, blah, blah, bl
 		}
 	}
 }
+
+func TestGrep(t *testing.T) {
+	src := `
+# This is some article
+
+by Jane Doe 3001-01-01
+
+It was some New Years day...
+`
+	expected := `by Jane Doe 3001-01-01`
+	result := Grep(BylineExp, src)
+	if expected != result {
+		t.Errorf("expected %q, got %q for Grep() for byline", expected, result)
+	}
+	expected = `# This is some article`
+	result = Grep(TitleExp, src)
+	if expected != result {
+		t.Errorf("expected %q, got %q for Grep() for title", expected, result)
+	}
+}
