@@ -1,10 +1,11 @@
 
 # mkpage
 
-_mkpage_ (pronounced "make page") project is an experiment in decomposing a web content manage 
+_mkpage_ (pronounced "make page") project is an experiment in decomposing web content management
 systems functionality into a series of simple command line tools -- [mkpage](mkpage.html), 
-[mkslide](mkslide.html), [reldocpath](reldocpath.html), [slugify](slugify.html), 
-[sitemapper](sitemapper.html), and [ws](ws.html). This makes creating static websites simple.  
+[mkslide](mkslide.html), [mkrss](mkrss.html), [sitemapper](sitemapper.html), 
+[byline](byline.html), [titleline](titleline), [reldocpath](reldocpath.html), 
+[slugify](slugify.html), and [ws](ws.html). This makes creating static websites simple.  
 Complex sites can be created with a little bit of Bash scripting.
 
 This project started with the *mkpage* command.
@@ -22,9 +23,9 @@ and JSON.  These three formatted strings can be explicit strings, data from a fi
 a URL. Here's a basic demonstration starting with the template.
 
 ```template
-    Date: {{.now}}
+    Date: {{ .now}}
 
-    Hello {{.name -}},
+    Hello {{ .name -}},
     
     Forecast:
 
@@ -180,6 +181,22 @@ content management system from Bash easier.
 *mkslides* generates a set of HTML5 slides from a single Markdown file. It uses
 the same template engine as *mkpage*
 
+### mkrss
+
+*mkrss* will scan a directory tree for Markdown files and add each markdown file with
+a corresponding HTML file to the RSS feed generated.
+
+### byline
+
+*byline* will look inside a markdown file and return the first _byline_ it finds
+or an empty string if it finds none. The _byline_ is identified with a regular
+expression. This regular expression can be overriden with a command line option.
+
+### titleline
+
+*titleline* will look inside a markdown file and return the first h1 exquivalent title
+it finds or an empty string if it finds none. 
+
 ### reldocpath
 
 *reldocpath* is intended to simplify the calculation of relative
@@ -208,7 +225,6 @@ the output would look like
     ../../../css/site.css
 ```
 
-
 ### slugify
 
 *slugify* takes one or more command line args (e.g. a phrase like "Hello World") and return
@@ -234,7 +250,7 @@ will serve content out to the URL http://localhost:8000.  It can also be used to
 a static website and has run well on small Amazon virtual machines as well as Raspberry Pi
 computers acting as local private network web servers.
 
-### Example
+#### Example
 
 ```shell
     ws Sites/mysite.example.org

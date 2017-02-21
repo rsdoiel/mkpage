@@ -33,10 +33,11 @@
 <section>
 <h1>mkpage</h1>
 
-<p><em>mkpage</em> (pronounced &ldquo;make page&rdquo;) project is an experiment in decomposing a web content manage
+<p><em>mkpage</em> (pronounced &ldquo;make page&rdquo;) project is an experiment in decomposing web content management
 systems functionality into a series of simple command line tools &ndash; <a href="mkpage.html">mkpage</a>,
-<a href="mkslide.html">mkslide</a>, <a href="reldocpath.html">reldocpath</a>, <a href="slugify.html">slugify</a>,
-<a href="sitemapper.html">sitemapper</a>, and <a href="ws.html">ws</a>. This makes creating static websites simple.<br />
+<a href="mkslide.html">mkslide</a>, <a href="mkrss.html">mkrss</a>, <a href="sitemapper.html">sitemapper</a>,
+<a href="byline.html">byline</a>, <a href="titleline">titleline</a>, <a href="reldocpath.html">reldocpath</a>,
+<a href="slugify.html">slugify</a>, and <a href="ws.html">ws</a>. This makes creating static websites simple.<br />
 Complex sites can be created with a little bit of Bash scripting.</p>
 
 <p>This project started with the <em>mkpage</em> command.</p>
@@ -53,9 +54,9 @@ On the value side of the key/value pair you have strings of one of three formats
 and JSON.  These three formatted strings can be explicit strings, data from a file or content received from
 a URL. Here&rsquo;s a basic demonstration starting with the template.</p>
 
-<pre><code class="language-template">    Date: {{.now}}
+<pre><code class="language-template">    Date: {{ .now}}
 
-    Hello {{.name -}},
+    Hello {{ .name -}},
     
     Forecast:
 
@@ -204,6 +205,22 @@ content management system from Bash easier.</p>
 <p><em>mkslides</em> generates a set of HTML5 slides from a single Markdown file. It uses
 the same template engine as <em>mkpage</em></p>
 
+<h3>mkrss</h3>
+
+<p><em>mkrss</em> will scan a directory tree for Markdown files and add each markdown file with
+a corresponding HTML file to the RSS feed generated.</p>
+
+<h3>byline</h3>
+
+<p><em>byline</em> will look inside a markdown file and return the first <em>byline</em> it finds
+or an empty string if it finds none. The <em>byline</em> is identified with a regular
+expression. This regular expression can be overriden with a command line option.</p>
+
+<h3>titleline</h3>
+
+<p><em>titleline</em> will look inside a markdown file and return the first h1 exquivalent title
+it finds or an empty string if it finds none.</p>
+
 <h3>reldocpath</h3>
 
 <p><em>reldocpath</em> is intended to simplify the calculation of relative
@@ -255,7 +272,7 @@ will serve content out to the URL <a href="http://localhost:8000">http://localho
 a static website and has run well on small Amazon virtual machines as well as Raspberry Pi
 computers acting as local private network web servers.</p>
 
-<h3>Example</h3>
+<h4>Example</h4>
 
 <pre><code class="language-shell">    ws Sites/mysite.example.org
 </code></pre>
