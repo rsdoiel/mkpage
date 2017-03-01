@@ -3,26 +3,26 @@
 
 # mkpage project
 
-*mkpage* (pronounced "make page") colletion of command line utilities written as a 
+*mkpage* (pronounced "make page") collection of command line utilities written as a 
 [Go](https://golang.org) package. These utilities provide an 
-experimental deconstructed content management systems for the websites. Rather than
+experimental deconstructed content management system for websites. Rather than
 run systems like Wordpress and Drupal you can assemble your own by combining the
 tools in *mkpage* with common Unix utilities to render your website. This means
 that Bash scripts can easily create simple to complex websites from content 
 written in Markdown. Versioning your site works easily with source code control systems
 such as git or svn.
 
-## It stared with *mkpage*
+## It started with *mkpage*
 
 *mkpage* utility is an experimental template engine with an embedded markdown processor.  
 It is a simple command line tool which accepts key value pairs and applies them to a 
 Golang [text/template](https://golang.org/pkg/text/template/).  The key side of a pair corresponds to the 
-template element names that will be replaced in the render version of the document. If a key was cllaed
+template element names that will be replaced in the render version of the document. If a key was called
 "pageContent" the template element would look like `{{ .pageContent }}`. The value of "pageContent" would
-replace `{{ .pageContent }}`. Go text/templates elements can do more than that but the is the core idea.
-On the value side of the key/value pair you is alsp a string. But the value describes both a data source and
-as well as having a specific type of content.  Data sources can be one of three types -
-- literal text, a filename or URL. The data source can be of one of three types - plain text, markdown
+replace `{{ .pageContent }}`. Go text/templates elements can do more than that but this is the core idea.
+On the value side of the key/value pair is also a string. The value describes a data source,
+as well as, a specific type of content.  Data sources can be one of three types -
+- literal text, a filename, or URL. The data source can be of one of three types - plain text, markdown
 or JSON.
 
 
@@ -47,7 +47,7 @@ This break down is as follows.
 
 + "now" and "name" are explicit strings
 + "weather" comes from a URL of JSON content
-+ "signature" comes from a file in our local disc
++ "signature" comes from a file on local disc
 
 Here is how we would express the key/value pairs on the command line.
 
@@ -93,7 +93,7 @@ Would replace `{{ .name }}` with the value passed into the template as "name".
 
 ### Conditional elements
 
-One nice feature of Go's text/template DSL is that template elements can be condition. This can
+One nice feature of Go's text/template DSL is that template elements can be conditional. This can
 be done using the "if" and "with" template functions. Here's how to show a title conditionally
 using the "if" function.
 
@@ -111,7 +111,7 @@ or using "with"
 
 Go text/templates support defining blocks and rendering them in conjuction with a main template. This is
 also supported by *mkpage*. For each template encountered on the command line it is added to an array of templates
-parsed by the text/template package.  Collectively they are then executed which causes final results 
+parsed by the text/template package.  Collectively they are then executed which causes final results to
 render to stdout by *mkpage*.
 
 ```shell
@@ -156,7 +156,7 @@ In this example the output would look like
 
 ## Content formats and data sources
 
-*mkpage* support three content formats
+*mkpage* supports three content formats
 
 + text/plain (e.g. "text:" when specifying strings and any file expect those having the extension ".md" or ".json")
 + text/markdown (e.g. "markdown:" when specifying strings, file extension ".md")
@@ -169,7 +169,7 @@ It also supports three data sources
 + a filepath and filename
 + a URL
 
-Content type is evaluate and if necessary transformed before going into the Go text/template.
+Content type is evaluated, and if necessary, transformed before going into the Go text/template.
 
 
 ## A note about Markdown dialect
@@ -180,8 +180,8 @@ function is envoked whenever markdown content is suggested. That means for strin
 "markdown:" hint prefix, files ending in ".md" file extension or URL content with the content type
 returned as "text/markdown".
 
-The blackfriday implementation includes many enhancement to the original 
-[Markdown](https://daringfireball.net/projects/markdown/). As example blackfirday's implemetation 
+The blackfriday implementation includes many enhancements to the original 
+[Markdown](https://daringfireball.net/projects/markdown/). For example, blackfirday's implemetation 
 includes a basic table output.
 
 
@@ -225,7 +225,7 @@ the output would look like
 
 ### slugify
 
-*slugify* takes one or more command line args (e.g. a phrase like "Hello World") and return
+*slugify* takes one or more command line args (e.g. a phrase like "Hello World") and returns
 an updated version that is more friendly for filenames and URLS (e.g. "Hello-World").
 
 #### Example
