@@ -8,7 +8,7 @@ VERSION = $(shell grep -m1 "Version = " $(PROJECT).go | cut -d\" -f 2)
 
 BRANCH = $(shell git branch | grep "* " | cut -d\   -f 2)
 
-build: bin/mkpage bin/mkslides bin/mkrss bin/sitemapper bin/byline bin/titleline bin/reldocpath bin/slugify bin/urlencode bin/urldecode bin/ws
+build: bin/mkpage bin/mkslides bin/mkrss bin/sitemapper bin/byline bin/titleline bin/reldocpath bin/urlencode bin/urldecode bin/ws
 
 bin/mkpage: mkpage.go cmds/mkpage/mkpage.go
 	go build -o bin/mkpage cmds/mkpage/mkpage.go
@@ -31,9 +31,6 @@ bin/titleline: mkpage.go cmds/titleline/titleline.go
 bin/reldocpath: cmds/reldocpath/reldocpath.go
 	go build -o bin/reldocpath cmds/reldocpath/reldocpath.go
 
-bin/slugify: cmds/slugify/slugify.go
-	go build -o bin/slugify cmds/slugify/slugify.go
-
 bin/urlencode: cmds/urlencode/urlencode.go
 	go build -o bin/urlencode cmds/urlencode/urlencode.go
 
@@ -53,7 +50,6 @@ lint:
 	golint cmds/byline/byline.go
 	golint cmds/titleline/titleline.go
 	golint cmds/reldocpath/reldocpath.go
-	golint cmds/slugify/slugify.go
 	golint cmds/urlencode/urlencode.go
 	golint cmds/urldecode/urldecode.go
 	golint cmds/ws/ws.go
@@ -68,7 +64,6 @@ format:
 	gofmt -w cmds/byline/byline.go
 	gofmt -w cmds/titleline/titleline.go
 	gofmt -w cmds/reldocpath/reldocpath.go
-	gofmt -w cmds/slugify/slugify.go
 	gofmt -w cmds/urlencode/urlencode.go
 	gofmt -w cmds/urldecode/urldecode.go
 	gofmt -w cmds/ws/ws.go
@@ -96,7 +91,6 @@ install:
 	env GOBIN=$(HOME)/bin go install cmds/byline/byline.go
 	env GOBIN=$(HOME)/bin go install cmds/titleline/titleline.go
 	env GOBIN=$(HOME)/bin go install cmds/reldocpath/reldocpath.go
-	env GOBIN=$(HOME)/bin go install cmds/slugify/slugify.go
 	env GOBIN=$(HOME)/bin go install cmds/urlencode/urlencode.go
 	env GOBIN=$(HOME)/bin go install cmds/urldecode/urldecode.go
 	env GOBIN=$(HOME)/bin go install cmds/ws/ws.go
@@ -110,7 +104,6 @@ dist/linux-amd64:
 	env  GOOS=linux GOARCH=amd64 go build -o dist/linux-amd64/byline cmds/byline/byline.go
 	env  GOOS=linux GOARCH=amd64 go build -o dist/linux-amd64/titleline cmds/titleline/titleline.go
 	env  GOOS=linux GOARCH=amd64 go build -o dist/linux-amd64/reldocpath cmds/reldocpath/reldocpath.go
-	env  GOOS=linux GOARCH=amd64 go build -o dist/linux-amd64/slugify cmds/slugify/slugify.go
 	env  GOOS=linux GOARCH=amd64 go build -o dist/linux-amd64/urlencode cmds/urlencode/urlencode.go
 	env  GOOS=linux GOARCH=amd64 go build -o dist/linux-amd64/urldecode cmds/urldecode/urldecode.go
 	env  GOOS=linux GOARCH=amd64 go build -o dist/linux-amd64/ws cmds/ws/ws.go
@@ -123,7 +116,6 @@ dist/windows-amd64:
 	env  GOOS=windows GOARCH=amd64 go build -o dist/windows-amd64/byline.exe cmds/byline/byline.go
 	env  GOOS=windows GOARCH=amd64 go build -o dist/windows-amd64/titleline.exe cmds/titleline/titleline.go
 	env  GOOS=windows GOARCH=amd64 go build -o dist/windows-amd64/reldocpath.exe cmds/reldocpath/reldocpath.go
-	env  GOOS=windows GOARCH=amd64 go build -o dist/windows-amd64/slugify.exe cmds/slugify/slugify.go
 	env  GOOS=windows GOARCH=amd64 go build -o dist/windows-amd64/urlencode.exe cmds/urlencode/urlencode.go
 	env  GOOS=windows GOARCH=amd64 go build -o dist/windows-amd64/urldecode.exe cmds/urldecode/urldecode.go
 	env  GOOS=windows GOARCH=amd64 go build -o dist/windows-amd64/ws.exe cmds/ws/ws.go
@@ -136,7 +128,6 @@ dist/macosx-amd64:
 	env  GOOS=darwin GOARCH=amd64 go build -o dist/macosx-amd64/byline cmds/byline/byline.go
 	env  GOOS=darwin GOARCH=amd64 go build -o dist/macosx-amd64/titleline cmds/titleline/titleline.go
 	env  GOOS=darwin GOARCH=amd64 go build -o dist/macosx-amd64/reldocpath cmds/reldocpath/reldocpath.go
-	env  GOOS=darwin GOARCH=amd64 go build -o dist/macosx-amd64/slugify cmds/slugify/slugify.go
 	env  GOOS=darwin GOARCH=amd64 go build -o dist/macosx-amd64/urlencode cmds/urlencode/urlencode.go
 	env  GOOS=darwin GOARCH=amd64 go build -o dist/macosx-amd64/urldecode cmds/urldecode/urldecode.go
 	env  GOOS=darwin GOARCH=amd64 go build -o dist/macosx-amd64/ws cmds/ws/ws.go
@@ -149,7 +140,6 @@ dist/raspbian-arm7:
 	env  GOOS=linux GOARCH=arm GOARM=7 go build -o dist/raspbian-arm7/byline cmds/byline/byline.go
 	env  GOOS=linux GOARCH=arm GOARM=7 go build -o dist/raspbian-arm7/titleline cmds/titleline/titleline.go
 	env  GOOS=linux GOARCH=arm GOARM=7 go build -o dist/raspbian-arm7/reldocpath cmds/reldocpath/reldocpath.go
-	env  GOOS=linux GOARCH=arm GOARM=7 go build -o dist/raspbian-arm7/slugify cmds/slugify/slugify.go
 	env  GOOS=linux GOARCH=arm GOARM=7 go build -o dist/raspbian-arm7/urlencode cmds/urlencode/urlencode.go
 	env  GOOS=linux GOARCH=arm GOARM=7 go build -o dist/raspbian-arm7/urldecode cmds/urldecode/urldecode.go
 	env  GOOS=linux GOARCH=arm GOARM=7 go build -o dist/raspbian-arm7/ws cmds/ws/ws.go
@@ -164,7 +154,6 @@ release: dist/linux-amd64 dist/windows-amd64 dist/macosx-amd64 dist/raspbian-arm
 	cp -v sitemapper.md dist/
 	cp -v byline.md dist/
 	cp -v titleline.md dist/
-	cp -v slugify.md dist/
 	cp -v urlencode.md dist/
 	cp -v urldecode.md dist/
 	cp -v reldocpath.md dist/
