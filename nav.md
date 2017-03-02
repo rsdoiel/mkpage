@@ -11,6 +11,8 @@
 + [titleline](titleline.html)
 + [reldocpath](reldocpath.html)
 + [slugify](slugify.html)
++ [urlencode](urlencode.html)
++ [urldecode](urldecode.html)
 + [ws](ws.html)
 + [Go template recipes](go-template-recipes.html)
 + [Github](https://github.com/caltechlibrary/mkpage)
