@@ -57,6 +57,9 @@ would yield
 	showVersion bool
 	inputFName  string
 	outputFName string
+
+	// App Options
+	useQueryUnescape bool
 )
 
 func init() {
@@ -71,6 +74,10 @@ func init() {
 	flag.StringVar(&inputFName, "input", "", "set input filename")
 	flag.StringVar(&outputFName, "o", "", "set output filename")
 	flag.StringVar(&outputFName, "output", "", "set output filename")
+
+	// App Options
+	flag.BoolVar(&useQueryUnescape, "q", false, "use query escape (pluses for spaces)")
+	flag.BoolVar(&useQueryUnescape, "query", false, "use query escape (pluses for spaces)")
 }
 
 func main() {
@@ -112,7 +119,10 @@ func main() {
 	}
 	defer cli.CloseFile(outputFName, out)
 
-	var src string
+	var (
+		src string
+		s   string
+	)
 
 	if len(args) > 0 {
 		src = strings.Join(args, " ")
@@ -124,10 +134,14 @@ func main() {
 		}
 		src = fmt.Sprintf("%s", buf)
 	}
-	s, err := url.PathUnescape(src)
+	if useQueryUnescape {
+		s, err = url.QueryUnescape(src)
+	} else {
+		s, err = url.PathUnescape(src)
+	}
 	if err != nil {
 		fmt.Fprint(os.Stderr, "%s\n", err)
 		os.Exit(1)
 	}
-	fmt.Printf("%s", s)
+	fmt.Fprintf(out, "%s", s)
 }

@@ -8,7 +8,7 @@ VERSION = $(shell grep -m1 "Version = " $(PROJECT).go | cut -d\" -f 2)
 
 BRANCH = $(shell git branch | grep "* " | cut -d\   -f 2)
 
-build: bin/mkpage bin/mkslides bin/mkrss bin/sitemapper bin/byline bin/titleline bin/reldocpath bin/slugify bin/ws bin/urlencode bin/urldecode
+build: bin/mkpage bin/mkslides bin/mkrss bin/sitemapper bin/byline bin/titleline bin/reldocpath bin/slugify bin/urlencode bin/urldecode bin/ws
 
 bin/mkpage: mkpage.go cmds/mkpage/mkpage.go
 	go build -o bin/mkpage cmds/mkpage/mkpage.go
