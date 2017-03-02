@@ -54,8 +54,9 @@ lint:
 	golint cmds/titleline/titleline.go
 	golint cmds/reldocpath/reldocpath.go
 	golint cmds/slugify/slugify.go
-	golint cmds/ws/ws.go
 	golint cmds/urlencode/urlencode.go
+	golint cmds/urldecode/urldecode.go
+	golint cmds/ws/ws.go
 
 format:
 	gofmt -w mkpage.go
@@ -69,6 +70,7 @@ format:
 	gofmt -w cmds/reldocpath/reldocpath.go
 	gofmt -w cmds/slugify/slugify.go
 	gofmt -w cmds/urlencode/urlencode.go
+	gofmt -w cmds/urldecode/urldecode.go
 	gofmt -w cmds/ws/ws.go
 
 test:
