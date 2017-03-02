@@ -624,7 +624,7 @@ func MakeSlideFile(tmpl *template.Template, slide *Slide) error {
 	sname := fmt.Sprintf(`%02d-%s.html`, slide.CurNo, strings.TrimSuffix(path.Base(slide.FName), path.Ext(slide.FName)))
 	fp, err := os.Create(sname)
 	if err != nil {
-		return fmt.Errorf("%s %s\n", sname, err)
+		return fmt.Errorf("%s %s", sname, err)
 	}
 	defer fp.Close()
 	err = MakeSlide(fp, tmpl, slide)
