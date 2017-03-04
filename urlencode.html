@@ -10,31 +10,37 @@
     </header>
     <section><h1>USAGE</h1>
 
-<pre><code>slugify [OPTIONS] STRING_TO_SLUGIFY
+<pre><code>urlencode [OPTIONS] [STRING_TO_ENCODE]
 </code></pre>
 
 <h2>SYNOPSIS</h2>
 
-<p>slugify changes a human readable string into a path or URL friendly
-string. E.g. &ldquo;Hello World&rdquo; becomes &ldquo;hello-world&rdquo;</p>
+<p>urlencode is a simple command line utility to URL encode content. By default
+it reads from standard input and writes to standard out.  You can
+also specifty the string to encode as a command line parameter.</p>
 
-<pre><code class="language-shell">	-h	display help
+<pre><code>	-h	display help
+	-help	display help
+	-i	set input filename
+	-input	set input filename
 	-l	display license
-	-m	allow mixed case, defats to true
-	-mixed-case	allow mixed case, defaults to true
-	-s	JSON representation of substitution
-	-substitutions	JSON representation of substitutions
+	-license	display license
+	-o	set output filename
+	-output	set output filename
+	-q	use query escape (pluses for spaces)
+	-query	use query escape (pluses for spaces)
 	-v	display version
+	-version	display version
 </code></pre>
 
-<h2>EXAMPLE</h2>
+<h2>EXAMPLES</h2>
 
-<pre><code class="language-shell">    slugify &quot;Hello World my friend&quot;
+<pre><code class="language-shell">    echo &quot;This is the string to encode &amp; nothing else!&quot; | urlencode
 </code></pre>
 
-<p>becomes</p>
+<p>would yield</p>
 
-<pre><code>    Hello-World-my-friend
+<pre><code>    This%20is%20the%20string%20to%20encode%20&amp;%20nothing%20else%0A
 </code></pre>
 </section>
     <nav><ul>
