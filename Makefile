@@ -8,7 +8,7 @@ VERSION = $(shell grep -m1 "Version = " $(PROJECT).go | cut -d\" -f 2)
 
 BRANCH = $(shell git branch | grep "* " | cut -d\   -f 2)
 
-build: bin/mkpage bin/reldocpath bin/slugify bin/mkslides bin/sitemapper bin/mkrss bin/byline bin/titleline bin/ws
+build: bin/mkpage bin/reldocpath bin/slugify bin/mkslides bin/sitemapper bin/mkrss bin/byline bin/titleline bin/ws bin/urlencode bin/urldecode
 
 bin/mkpage: mkpage.go cmds/mkpage/mkpage.go
 	go build -o bin/mkpage cmds/mkpage/mkpage.go
@@ -37,6 +37,12 @@ bin/titleline: mkpage.go cmds/titleline/titleline.go
 bin/ws: mkpage.go cmds/ws/ws.go
 	go build -o bin/ws cmds/ws/ws.go
 
+bin/urlencode: mkpage.go cmds/urlencode/urlencode.go
+	go build -o bin/urlencode cmds/urlencode/urlencode.go
+
+bin/urldecode: mkpage.go cmds/urldecode/urldecode.go
+	go build -o bin/urldecode cmds/urldecode/urldecode.go
+
 lint:
 	golint mkpage.go
 	golint mkpage_test.go
@@ -49,6 +55,8 @@ lint:
 	golint cmds/byline/byline.go
 	golint cmds/titleline/titleline.go
 	golint cmds/ws/ws.go
+	golint cmds/urlencode/urlencode.go
+	golint cmds/urldecode/urldecode.go
 
 format:
 	gofmt -w mkpage.go
@@ -62,6 +70,8 @@ format:
 	gofmt -w cmds/byline/byline.go
 	gofmt -w cmds/titleline/titleline.go
 	gofmt -w cmds/ws/ws.go
+	gofmt -w cmds/urlencode/urlencode.go
+	gofmt -w cmds/urldecode/urldecode.go
 
 test:
 	go test
@@ -88,6 +98,8 @@ install:
 	env GOBIN=$(HOME)/bin go install cmds/byline/byline.go
 	env GOBIN=$(HOME)/bin go install cmds/titleline/titleline.go
 	env GOBIN=$(HOME)/bin go install cmds/ws/ws.go
+	env GOBIN=$(HOME)/bin go install cmds/urlencode/urlencode.go
+	env GOBIN=$(HOME)/bin go install cmds/urldecode/urldecode.go
 
 
 dist/linux-amd64:
@@ -100,6 +112,8 @@ dist/linux-amd64:
 	env CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o dist/linux-amd64/byline cmds/byline/byline.go
 	env CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o dist/linux-amd64/titleline cmds/titleline/titleline.go
 	env CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o dist/linux-amd64/ws cmds/ws/ws.go
+	env CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o dist/linux-amd64/urlencode cmds/urlencode/urlencode.go
+	env CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o dist/linux-amd64/urldecode cmds/urldecode/urldecode.go
 
 dist/windows-amd64:
 	env CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o dist/windows-amd64/mkpage.exe cmds/mkpage/mkpage.go
@@ -111,6 +125,8 @@ dist/windows-amd64:
 	env CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o dist/windows-amd64/byline.exe cmds/byline/byline.go
 	env CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o dist/windows-amd64/titleline.exe cmds/titleline/titleline.go
 	env CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o dist/windows-amd64/ws.exe cmds/ws/ws.go
+	env CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o dist/windows-amd64/urlencode.exe cmds/urlencode/urlencode.go
+	env CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o dist/windows-amd64/urldecode.exe cmds/urldecode/urldecode.go
 
 dist/macosx-amd64:
 	env CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o dist/macosx-amd64/mkpage cmds/mkpage/mkpage.go
@@ -122,6 +138,8 @@ dist/macosx-amd64:
 	env CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o dist/macosx-amd64/byline cmds/byline/byline.go
 	env CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o dist/macosx-amd64/titleline cmds/titleline/titleline.go
 	env CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o dist/macosx-amd64/ws cmds/ws/ws.go
+	env CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o dist/macosx-amd64/urlencode cmds/urlencode/urlencode.go
+	env CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o dist/macosx-amd64/urldecode cmds/urldecode/urldecode.go
 
 dist/raspbian-arm7:
 	env CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=7 go build -o dist/raspbian-arm7/mkpage cmds/mkpage/mkpage.go
@@ -133,6 +151,8 @@ dist/raspbian-arm7:
 	env CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=7 go build -o dist/raspbian-arm7/byline cmds/byline/byline.go
 	env CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=7 go build -o dist/raspbian-arm7/titleline cmds/titleline/titleline.go
 	env CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=7 go build -o dist/raspbian-arm7/ws cmds/ws/ws.go
+	env CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=7 go build -o dist/raspbian-arm7/urlencode cmds/urlencode/urlencode.go
+	env CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=7 go build -o dist/raspbian-arm7/urldecode cmds/urldecode/urldecode.go
 
 dist/raspbian-arm6:
 	env CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=6 go build -o dist/raspbian-arm6/mkpage cmds/mkpage/mkpage.go
@@ -144,6 +164,8 @@ dist/raspbian-arm6:
 	env CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=6 go build -o dist/raspbian-arm6/byline cmds/byline/byline.go
 	env CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=6 go build -o dist/raspbian-arm6/titleline cmds/titleline/titleline.go
 	env CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=6 go build -o dist/raspbian-arm6/ws cmds/ws/ws.go
+	env CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=6 go build -o dist/raspbian-arm6/urlencode cmds/urlencode/urlencode.go
+	env CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=6 go build -o dist/raspbian-arm6/urldecode cmds/urldecode/urldecode.go
 
 release: dist/linux-amd64 dist/windows-amd64 dist/macosx-amd64 dist/raspbian-arm7 dist/raspbian-arm6
 	cp -v README.md dist/
@@ -156,6 +178,8 @@ release: dist/linux-amd64 dist/windows-amd64 dist/macosx-amd64 dist/raspbian-arm
 	cp -v byline.md dist/
 	cp -v titleline.md dist/
 	cp -v ws.md dist/
+	cp -v urlencode.md dist/
+	cp -v urldecode.md dist/
 	cp -vR demo dist/
 	cp -vR examples dist/
 	zip -r $(PROJECT)-$(VERSION)-release.zip dist/*
