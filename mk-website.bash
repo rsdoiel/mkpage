@@ -27,10 +27,10 @@ function MakePage () {
 
     echo "Rendering $html"
     $MKPAGE \
-	"title=text:mkpage: An experimental deconstructed content system, something is sure to change" \
-        "nav=$nav" \
-        "content=$content" \
-        "csspath=text:$csspath" \
+    	"Title=text:mkpage: Experimental deconstructed content system" \
+        "Nav=$nav" \
+        "Content=$content" \
+        "CSSPath=text:$csspath" \
         page.tmpl > $html
 }
 
@@ -58,5 +58,14 @@ else
     mkslides presentation.md
     mkslides three-slides.md
 fi
+cd ..
 
+echo "Generating theme examples"
+mkpage \
+    "CSS=themes/simple/css/site.css" \
+    "Title=text:mkpage themes demos" \
+    "Nav=markdown:+ [up](../)" \
+    "Content=themes/README.md" \
+    "Footer=text:mkpage theme demo updated $(date)" \
+    themes/simple/page.tmpl > themes/index.html
 

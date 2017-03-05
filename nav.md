@@ -1,5 +1,5 @@
 
-+ [home](/)
++ [Home](/)
 + [README](./)
 + [LICENSE](license.html)
 + [INSTALL](install.html)
@@ -14,6 +14,7 @@
 + [urlencode](urlencode.html)
 + [urldecode](urldecode.html)
 + [ws](ws.html)
-+ [Go template recipes](go-template-recipes.html)
++ [Template Recipes](go-template-recipes.html)
++ [Themes](themes/)
 + [Github](https://github.com/rsdoiel/mkpage)
 
