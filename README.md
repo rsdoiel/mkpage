@@ -29,9 +29,7 @@ a URL. Here's a basic demonstration starting with the template.
     
     Forecast:
 
-    {{range .weather.data.text}}
-       + {{ . }}
-    {{end}}
+    {{index .weather.data.weather 0}}
 
     Thank you
 
@@ -42,7 +40,9 @@ To render the template above (i.e. myformletter.tmpl) is expecting values from v
 This break down is as follows.
 
 + "now" and "name" are explicit strings
-+ "weather" comes from a URL of JSON content
++ "weather" comes from a URL which returns a JSON document
+    + ".data.weather" is the path into the JSON document
+    + _index_ is a function that lets us pull out the initial value in the array
 + "signature" comes from a file in our local disc
 
 Here is how we would express the key/value pairs on the command line.
@@ -51,8 +51,8 @@ Here is how we would express the key/value pairs on the command line.
     mkpage "now=text:$(date)" \
         "name=text:Little Frieda" \
         "weather=http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&lon=144.74977715100056&FcstType=json" \
-        signature=testdata/signature.txt \
-        testdata/myformletter.tmpl
+        signature=examples/signature.txt \
+        examples/weather.tmpl
 ```
 
 Notice the two explicit strings are prefixed with "text:" (other possible formats are "markdown:", "json:").
