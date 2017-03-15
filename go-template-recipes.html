@@ -36,13 +36,13 @@
 
 <p><em>mkpage</em> template engine is Go&rsquo;s <a href="https://golang.org/pkg/text/template/">text/template</a>. Go&rsquo;s templates provide a flexible and simple <a href="https://en.wikipedia.org/wiki/Domain-specific_language">DSL</a> describing how to assemble a document based on a data structure passed to it.  <em>mkpage</em> uses a list of key/value pairs on the command line to populate the data structure the template package expects.  This includes support for JSON formatted text from strings, files and URL response. It also support transforming markdown content into HTML before assembling the final template.</p>
 
-<p>While Go&rsquo;s template package is not complicated to use it doesn&rsquo;t come with allot of examples or tutorials.  Most articles you find on Go&rsquo;s template packages either focus on web server code or are for sophisticated static content generators like <a href="http://gohugo.io">Hugo</a>. Hugo extends Go&rsquo;s template DSL providing capabilities that rival or surpose older static content generators like <a href="https://jekyllrb.com/">Jekyll</a> and <a href="http://jade-lang.com/">Jade</a>.</p>
+<p>While Go&rsquo;s template package is not complicated to use it doesn&rsquo;t come with allot of examples or tutorials.  Most articles you find on Go&rsquo;s template packages either focus on web server code or are for sophisticated static content generators like <a href="http://gohugo.io">Hugo</a>. Hugo extends Go&rsquo;s template DSL providing capabilities that rival or surpass older static content generators like <a href="https://jekyllrb.com/">Jekyll</a> and <a href="http://jade-lang.com/">Jade</a>.</p>
 
-<p><em>mkpage</em> uses Go v1.7.1&rsquo;s template as is. It does not provide any exentions.  <em>mkpage</em> is meant to be a trivially easy system for producing simple content from plain text, markdown text, and JSON. The intent was of <em>mkpage</em> is to provide a very limited set of features so that it remains both easy to use as well as potentially scriptable in the Bash shell.</p>
+<p><em>mkpage</em> uses Go v1.8&rsquo;s template as is. It provides little in the way of exentions.  <em>mkpage</em> is meant to be a trivially easy system for producing simple content from plain text, markdown text, and JSON. It deliberately implements a minimal feature set targetting a scripting environment like a Bash shell.</p>
 
 <h2>only three data formats are supported</h2>
 
-<p><em>mkpage</em> supports three formats of text</p>
+<p><em>mkpage</em> supports three document formats</p>
 
 <ul>
 <li>text/plain</li>
@@ -55,8 +55,8 @@
 <p><em>mkpage</em> supports three data sources</p>
 
 <ul>
-<li>explicit strings (prividing a hint prefix, e.g. &ldquo;text:&ldquo;, &ldquo;markdown:&ldquo;, &ldquo;json:&ldquo;)</li>
 <li>files (the default data source)</li>
+<li>explicit strings (using a hint prefix, e.g. &ldquo;text:&ldquo;, &ldquo;markdown:&ldquo;, &ldquo;json:&ldquo;)</li>
 <li>URLs as data sources (prefixed with http:// and https:// as appropriate)</li>
 </ul>
 
@@ -187,7 +187,7 @@
 
 <p>The command line for <em>mkpage</em> would look like</p>
 
-<pre><code class="language-shell">    mkpage &quot;forecast=http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&amp;lon=144.74977715100056&amp;FcstType=json&quot; testdata/forecast.tmpl
+<pre><code class="language-shell">    mkpage &quot;forecast=http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&amp;lon=144.74977715100056&amp;FcstType=json&quot; forecast.tmpl
 </code></pre>
 
 <p>The resulting page should look something like</p>
