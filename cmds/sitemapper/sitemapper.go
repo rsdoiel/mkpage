@@ -58,13 +58,10 @@ EXAMPLE
 	showLicense bool
 
 	// App specific options
-	apiURL       string
-	datatsetName string
-	bleveName    string
 	htdocs       string
-	templatePath string
 	siteURL      string
 	excludeList  string
+	sitemapFName string
 
 	changefreq string
 	locList    []*locInfo
@@ -72,29 +69,10 @@ EXAMPLE
 
 func check(cfg *cli.Config, key, value string) string {
 	if value == "" {
-		log.Fatal("Missing %s_%s", cfg.EnvPrefix, strings.ToUpper(key))
+		log.Fatalf("Missing %s_%s", cfg.EnvPrefix, strings.ToUpper(key))
 		return ""
 	}
 	return value
-}
-
-func init() {
-	// Log to standard out
-	log.SetOutput(os.Stdout)
-
-	// Setup options
-	flag.BoolVar(&showHelp, "h", false, "display help")
-	flag.BoolVar(&showHelp, "help", false, "display help")
-	flag.BoolVar(&showVersion, "v", false, "display version")
-	flag.BoolVar(&showVersion, "version", false, "display version")
-	flag.BoolVar(&showLicense, "l", false, "display license")
-	flag.BoolVar(&showLicense, "license", false, "display license")
-
-	// App specific options
-	flag.StringVar(&changefreq, "u", "daily", "Set the change frequencely value, e.g. daily, weekly, monthly")
-	flag.StringVar(&changefreq, "update-frequency", "daily", "Set the change frequencely value, e.g. daily, weekly, monthly")
-	flag.StringVar(&excludeList, "e", "", "A colon delimited list of path parts to exclude from sitemap")
-	flag.StringVar(&excludeList, "exclude", "", "A colon delimited list of path parts to exclude from sitemap")
 }
 
 // ExcludeList is a list of directories to skip when generating a sitemap
@@ -115,6 +93,25 @@ func (dirList ExcludeList) Exclude(p string) bool {
 		}
 	}
 	return false
+}
+
+func init() {
+	// Log to standard out
+	log.SetOutput(os.Stdout)
+
+	// Setup options
+	flag.BoolVar(&showHelp, "h", false, "display help")
+	flag.BoolVar(&showHelp, "help", false, "display help")
+	flag.BoolVar(&showVersion, "v", false, "display version")
+	flag.BoolVar(&showVersion, "version", false, "display version")
+	flag.BoolVar(&showLicense, "l", false, "display license")
+	flag.BoolVar(&showLicense, "license", false, "display license")
+
+	// App specific options
+	flag.StringVar(&changefreq, "u", "daily", "Set the change frequencely value, e.g. daily, weekly, monthly")
+	flag.StringVar(&changefreq, "update-frequency", "daily", "Set the change frequencely value, e.g. daily, weekly, monthly")
+	flag.StringVar(&excludeList, "e", "", "A colon delimited list of path parts to exclude from sitemap")
+	flag.StringVar(&excludeList, "exclude", "", "A colon delimited list of path parts to exclude from sitemap")
 }
 
 func main() {
@@ -145,15 +142,20 @@ func main() {
 		os.Exit(1)
 	}
 
+	if len(args) > 0 {
+		htdocs = args[0]
+	}
+	if len(args) > 1 {
+		sitemapFName = args[1]
+	}
+	if len(args) > 2 {
+		siteURL = args[2]
+	}
+
 	// Required
 	htdocs = check(cfg, "htdocs", cfg.MergeEnv("htdocs", htdocs))
 	siteURL = check(cfg, "site_url", cfg.MergeEnv("site_url", siteURL))
-
-	// Optional
-	apiURL = cfg.MergeEnv("api_url", apiURL)
-	datatsetName = cfg.MergeEnv("dataset", datatsetName)
-	bleveName = cfg.MergeEnv("bleve", bleveName)
-	templatePath = cfg.MergeEnv("template_path", templatePath)
+	sitemapFName = check(cfg, "sitemap", cfg.MergeEnv("sitemap", sitemapFName))
 
 	if changefreq == "" {
 		changefreq = "daily"
@@ -161,14 +163,14 @@ func main() {
 
 	excludeDirs := ExcludeList(strings.Split(excludeList, ":"))
 
-	log.Printf("Starting map of %s\n", args[0])
-	filepath.Walk(args[0], func(p string, info os.FileInfo, err error) error {
+	log.Printf("Starting map of %s\n", htdocs)
+	filepath.Walk(htdocs, func(p string, info os.FileInfo, err error) error {
 		if strings.HasSuffix(p, ".html") {
 			fname := path.Base(p)
 			//NOTE: You can skip the eror pages, and excluded directories in the sitemap
 			if strings.HasPrefix(fname, "50") == false && strings.HasPrefix(p, "40") == false && excludeDirs.Exclude(p) == false {
 				finfo := new(locInfo)
-				finfo.Loc = fmt.Sprintf("%s%s", args[2], strings.TrimPrefix(p, args[0]))
+				finfo.Loc = fmt.Sprintf("%s%s", siteURL, strings.TrimPrefix(p, htdocs))
 				yr, mn, dy := info.ModTime().Date()
 				finfo.LastMod = fmt.Sprintf("%d-%0.2d-%0.2d", yr, mn, dy)
 				log.Printf("Adding %s\n", finfo.Loc)
@@ -177,10 +179,10 @@ func main() {
 		}
 		return nil
 	})
-	fmt.Printf("Writing %s\n", args[1])
-	fp, err := os.OpenFile(args[1], os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0664)
+	fmt.Printf("Writing %s\n", sitemapFName)
+	fp, err := os.OpenFile(sitemapFName, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0664)
 	if err != nil {
-		log.Fatalf("Can't create %s, %s\n", args[1], err)
+		log.Fatalf("Can't create %s, %s\n", sitemapFName, err)
 	}
 	defer fp.Close()
 	fp.Write([]byte(`<?xml version="1.0" encoding="UTF-8"?>
