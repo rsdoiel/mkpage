@@ -6,7 +6,7 @@
 
 While Go's template package is not complicated to use it doesn't come with allot of examples or tutorials.  Most articles you find on Go's template packages either focus on web server code or are for sophisticated static content generators like [Hugo](http://gohugo.io). Hugo extends Go's template DSL providing capabilities that rival or surpass older static content generators like [Jekyll](https://jekyllrb.com/) and [Jade](http://jade-lang.com/).
 
-*mkpage* uses Go v1.8's template as is. It provides little in the way of exentions.  *mkpage* is meant to be a trivially easy system for producing simple content from plain text, markdown text, and JSON. It deliberately implements a minimal feature set targetting a scripting environment like a Bash shell.
+*mkpage* uses Go v1.8's template as is. It provides little in the way of extensions.  *mkpage* is meant to be a trivially easy system for producing simple content from plain text, markdown text, and JSON. It deliberately implements a minimal feature set targetting a scripting environment like a Bash shell.
 
 
 ## only three data formats are supported
