@@ -2,19 +2,19 @@
 # Installation
 
 *mkpage* is a command line program run from a shell like Bash. You can find compiled
-version in the [releases](https://github.com/caltechlibrary/mkpage/releases/latest) 
-in the Github repository in a zip file named *mkpage-release.zip*. Inside
-the zip file look for the directory that matches your computer and copy that someplace
-defined in your path (e.g. $HOME/bin). 
+version in the [releases](https://github.com/caltechlibrary/mkpage/releases/latest). 
+Download the zip file and unzip it. The filename is in the form of `mkpage-VERSION_NO-release.zip`.
+Inside the zip file look for the directory that matches your computer and copy that someplace
+defined in your path (e.g. $HOME/bin if you're running things on Unix/Linux/Mac OS X). 
 
 Compiled versions are available for Mac OS X (amd64 processor), Linux (amd64), Windows
-(amd64) and Rapsberry Pi (both ARM6 and ARM7)
+(amd64) and Rapsberry Pi (ARM7)
 
 ## Mac OS X
 
 1. Go to [github.com/caltechlibrary/mkpage/releases/latest](https://github.com/caltechlibrary/mkpage/releases/latest)
-2. Click on the green "mkpage-release.zip" link and download
-3. Open a terminal and type `cd ~/Downloads/mkpage-releasedist/macosx-amd64`
+2. Click on the green "mkpage-VERSION_NO-release.zip" link and download
+3. Open a terminal and type `cd ~/Downloads/` then unzip the file `unzip mkpage-VERSION_NO-release.zip` and `cd dist/macosx-amd64/`
 4. Copy the *mkpage* to a "bin" directory in your path.  For example, type `sudo cp mkpage /usr/local/bin`
 5. Test by typing `mkpage -h`
 
