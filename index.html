@@ -38,7 +38,7 @@
 systems functionality into a series of simple command line tools &ndash; <a href="mkpage.html">mkpage</a>,
 <a href="mkslide.html">mkslide</a>, <a href="mkrss.html">mkrss</a>, <a href="sitemapper.html">sitemapper</a>,
 <a href="byline.html">byline</a>, <a href="titleline">titleline</a>, <a href="reldocpath.html">reldocpath</a>,
-<a href="slugify.html">slugify</a>, and <a href="ws.html">ws</a>. This makes creating static websites simple.<br />
+and <a href="ws.html">ws</a>. This makes creating static websites simple.<br />
 Complex sites can be created with a little bit of Bash scripting.</p>
 
 <p>This project started with the <em>mkpage</em> command.</p>
@@ -61,9 +61,7 @@ a URL. Here&rsquo;s a basic demonstration starting with the template.</p>
     
     Forecast:
 
-    {{range .weather.data.text}}
-       + {{ . }}
-    {{end}}
+    {{index .weather.data.weather 0}}
 
     Thank you
 
@@ -75,7 +73,12 @@ This break down is as follows.</p>
 
 <ul>
 <li>&ldquo;now&rdquo; and &ldquo;name&rdquo; are explicit strings</li>
-<li>&ldquo;weather&rdquo; comes from a URL of JSON content</li>
+<li>&ldquo;weather&rdquo; comes from a URL which returns a JSON document
+
+<ul>
+<li>&rdquo;.data.weather&rdquo; is the path into the JSON document</li>
+<li><em>index</em> is a function that lets us pull out the initial value in the array</li>
+</ul></li>
 <li>&ldquo;signature&rdquo; comes from a file in our local disc</li>
 </ul>
 
@@ -84,8 +87,8 @@ This break down is as follows.</p>
 <pre><code class="language-shell">    mkpage &quot;now=text:$(date)&quot; \
         &quot;name=text:Little Frieda&quot; \
         &quot;weather=http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&amp;lon=144.74977715100056&amp;FcstType=json&quot; \
-        signature=testdata/signature.txt \
-        testdata/myformletter.tmpl
+        signature=examples/signature.txt \
+        examples/weather.tmpl
 </code></pre>
 
 <p>Notice the two explicit strings are prefixed with &ldquo;text:&rdquo; (other possible formats are &ldquo;markdown:&ldquo;, &ldquo;json:&ldquo;).
@@ -248,21 +251,6 @@ a common project directory.</p>
 <p>the output would look like</p>
 
 <pre><code class="language-shell">    ../../../css/site.css
-</code></pre>
-
-<h3>slugify</h3>
-
-<p><em>slugify</em> takes one or more command line args (e.g. a phrase like &ldquo;Hello World&rdquo;) and return
-an updated version that is more friendly for filenames and URLS (e.g. &ldquo;Hello-World&rdquo;).</p>
-
-<h4>Example</h4>
-
-<pre><code class="language-shell">    slugify My thoughts on functional programming
-</code></pre>
-
-<p>Would yield</p>
-
-<pre><code>    My-thoughts-on-functional-programming
 </code></pre>
 
 <h3>ws</h3>

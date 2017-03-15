@@ -4,14 +4,14 @@
 *mkpage* template engine is Go's [text/template](https://golang.org/pkg/text/template/). Go's templates provide a flexible and simple [DSL](https://en.wikipedia.org/wiki/Domain-specific_language) describing how to assemble a document based on a data structure passed to it.  *mkpage* uses a list of key/value pairs on the command line to populate the data structure the template package expects.  This includes support for JSON formatted text from strings, files and URL response. It also support transforming markdown content into HTML before assembling the final template.
 
 
-While Go's template package is not complicated to use it doesn't come with allot of examples or tutorials.  Most articles you find on Go's template packages either focus on web server code or are for sophisticated static content generators like [Hugo](http://gohugo.io). Hugo extends Go's template DSL providing capabilities that rival or surpose older static content generators like [Jekyll](https://jekyllrb.com/) and [Jade](http://jade-lang.com/).
+While Go's template package is not complicated to use it doesn't come with allot of examples or tutorials.  Most articles you find on Go's template packages either focus on web server code or are for sophisticated static content generators like [Hugo](http://gohugo.io). Hugo extends Go's template DSL providing capabilities that rival or surpass older static content generators like [Jekyll](https://jekyllrb.com/) and [Jade](http://jade-lang.com/).
 
-*mkpage* uses Go v1.7.1's template as is. It does not provide any exentions.  *mkpage* is meant to be a trivially easy system for producing simple content from plain text, markdown text, and JSON. The intent was of *mkpage* is to provide a very limited set of features so that it remains both easy to use as well as potentially scriptable in the Bash shell. 
+*mkpage* uses Go v1.8's template as is. It provides little in the way of exentions.  *mkpage* is meant to be a trivially easy system for producing simple content from plain text, markdown text, and JSON. It deliberately implements a minimal feature set targetting a scripting environment like a Bash shell.
 
 
 ## only three data formats are supported
 
-*mkpage* supports three formats of text
+*mkpage* supports three document formats
 
 + text/plain
 + text/markdown
@@ -22,8 +22,8 @@ While Go's template package is not complicated to use it doesn't come with allot
 
 *mkpage* supports three data sources 
 
-+ explicit strings (prividing a hint prefix, e.g. "text:", "markdown:", "json:")
 + files (the default data source)
++ explicit strings (using a hint prefix, e.g. "text:", "markdown:", "json:")
 + URLs as data sources (prefixed with http:// and https:// as appropriate)
 
 ## Examples
@@ -162,7 +162,7 @@ Our template will be call **forecast.tmpl**. It will be used to produce a Markdo
 The command line for *mkpage* would look like
 
 ```shell
-    mkpage "forecast=http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&lon=144.74977715100056&FcstType=json" testdata/forecast.tmpl
+    mkpage "forecast=http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&lon=144.74977715100056&FcstType=json" forecast.tmpl
 ```
 
 The resulting page should look something like 

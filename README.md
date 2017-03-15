@@ -5,7 +5,7 @@ _mkpage_ (pronounced "make page") project is an experiment in decomposing web co
 systems functionality into a series of simple command line tools -- [mkpage](mkpage.html), 
 [mkslide](mkslide.html), [mkrss](mkrss.html), [sitemapper](sitemapper.html), 
 [byline](byline.html), [titleline](titleline), [reldocpath](reldocpath.html), 
-[slugify](slugify.html), and [ws](ws.html). This makes creating static websites simple.  
+and [ws](ws.html). This makes creating static websites simple.  
 Complex sites can be created with a little bit of Bash scripting.
 
 This project started with the *mkpage* command.
@@ -223,23 +223,6 @@ the output would look like
 
 ```shell
     ../../../css/site.css
-```
-
-### slugify
-
-*slugify* takes one or more command line args (e.g. a phrase like "Hello World") and return
-an updated version that is more friendly for filenames and URLS (e.g. "Hello-World").
-
-#### Example
-
-```shell
-    slugify My thoughts on functional programming
-```
-
-Would yield
-
-```
-    My-thoughts-on-functional-programming
 ```
 
 ### ws
