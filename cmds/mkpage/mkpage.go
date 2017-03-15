@@ -59,7 +59,7 @@ Template
     
     The current weather is
 
-    {{index .weatherForcast.data.weather 0}}
+    {{index .weatherForecast.data.weather 0}}
 
     Thank you
 
@@ -69,7 +69,7 @@ Render the template above (i.e. examples/weather.tmpl) would be accomplished fro
 the following data sources--
 
  + "now" and "name" are strings
- + "weatherForcast" is JSON data retrieved from a URL
+ + "weatherForecast" is JSON data retrieved from a URL
  	+ ".data.weather" is a data path inside the JSON document
 	+ "index" let's us pull our the "0"-th element (i.e. the initial element of the array)
  + "signature" comes from a file in our local disc (i.e. examples/signature.txt)
@@ -77,7 +77,7 @@ the following data sources--
 That would be expressed on the command line as follows
 
     %s "now=text:$(date)" "name=text:Little Frieda" \
-        "weather=http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&lon=144.74977715100056&FcstType=json" \
+        "weatherForecast=http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&lon=144.74977715100056&FcstType=json" \
         signature=examples/signature.txt \
         examples/weather.tmpl     
 
