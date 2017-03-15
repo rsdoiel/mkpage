@@ -153,7 +153,7 @@ func main() {
 	}
 
 	// Required
-	htdocs = check(cfg, "htdocs", cfg.MergeEnv("htdocs", htdocs))
+	htdocs = check(cfg, "docroot", cfg.MergeEnv("docroot", htdocs))
 	siteURL = check(cfg, "site_url", cfg.MergeEnv("site_url", siteURL))
 	sitemapFName = check(cfg, "sitemap", cfg.MergeEnv("sitemap", sitemapFName))
 
