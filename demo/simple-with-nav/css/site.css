@@ -121,6 +121,26 @@ h4 {
     text-transform: lowercase;
 }
 
+header {
+    display: block;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+header h1 {
+    display: block;
+    width: 100%;
+    height: auto;
+    padding-top: 2em;
+    padding-left: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    margin: 0;
+    text-align: center;
+}
+
+
 footer {
     position: fixed;
     bottom: 0;
