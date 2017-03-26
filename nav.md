@@ -10,7 +10,6 @@
 + [reldocpath](reldocpath.html)
 + [titleline](titleline.html)
 + [byline](byline.html)
-+ [slugify](slugify.html)
 + [urlencode](urlencode.html)
 + [urldecode](urldecode.html)
 + [ws](ws.html)
