@@ -1,5 +1,5 @@
 
-# Simple With Name
+# Simple With Navigation
 
 This theme demonstates adding a Markdown file for controlling site 
 navigation and document specific titles. Like the simple theme you have 

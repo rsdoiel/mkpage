@@ -14,7 +14,7 @@ function SoftwareCheck() {
 }
 
 function GenerateNav() {
-  echo "" > nav.md
+  echo "+ [Home](/)" > nav.md
   for FNAME in $(find . -type f | grep -E '.md'); do
       title=$(titleline -i "$FNAME")
       docpath=$(dirname $FNAME)
@@ -36,14 +36,15 @@ for MARKDOWN_FILE in $(find . -type f | grep -E '.md'); do
     # Caltechlate DOCPath
     DOCPath=$(dirname $MARKDOWN_FILE)
     # Calculate the HTML filename
-    HTML_FILE="$DOCPath/$(basename $MARKDOWN_FILE .md).html"
+    HTML_FILE="$(basename $MARKDOWN_FILE .md).html"
     CSSPath=$(reldocpath $DOCPath css)
+    WEBSITE_TILE=$(titleline -i $MARKDOWN_FILE)
     mkpage \
         "Title=text:$WEBSITE_TITLE" \
         "CSSPath=text:$CSSPath/site.css" \
         "Nav=nav.md" \
         "Content=$MARKDOWN_FILE" \
-        page.tmpl > $HTML_FILE
+        page.tmpl > $DOCPath/$HTML_FILE
 done
 
 cd $START

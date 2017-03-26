@@ -1,2 +1,2 @@
 
-+ [Simple With Name](./index.html)
++ [Simple With Navigation](./index.html)
