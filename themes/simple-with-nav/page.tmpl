@@ -3,12 +3,14 @@
 <head>
     {{with .Title -}}<title>{{- . -}}</title>{{- end }}
     {{with .CSSPath -}}<link rel="stylesheet" href="{{- . -}}">{{- end}}
+    {{with .CSS -}}<style>{{- . -}}</style>{{- end }} 
 </head>
 <body>
     <header>
         {{with .Title -}}<h1>{{- . -}}</h1>{{- end}}
     </header>
     {{with .Content}}<section>{{- . -}}</section>{{- end}}
-    <footer>Simple is a theme that works with  three elements Title, CSSPath, and Content</footer>{{- end -}}
+    {{with .Nav}}<nav>{{- . -}}</nav>{{- end}}
+    {{with .Footer -}}<footer>{{- . -}}</footer>{{- end -}}
 </body>
 </html>

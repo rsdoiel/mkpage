@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>One Element</title>
+    <link rel="stylesheet" href="/css/site.css">
+</head>
+<body>
+    <header>
+        <h1>One Element<h1>
+    </header>
+    {{with .Content}}<section>{{- . -}}</section>{{- end}}
+    <footer>This template features a single replacable element</footer>
+</body>
+</html>
