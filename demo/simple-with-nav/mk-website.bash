@@ -34,7 +34,7 @@ GenerateNav
 echo "Converting Markdown files to HTML supporting a relative document path to the CSS file"
 for MARKDOWN_FILE in $(find . -type f | grep -E '.md'); do
     # Get filename
-    FNAME=$(basename $MARKDOWN_FILE .md)
+    FNAME=$(basename $MARKDOWN_FILE)
     if [ "$FNAME" != "nav.md" ]; then
         # Caltechlate DOCPath
         DOCPath=$(dirname $MARKDOWN_FILE)

@@ -9,8 +9,8 @@
     <header>
         {{with .Title -}}<h1>{{- . -}}</h1>{{- end}}
     </header>
-    {{with .Content}}<section>{{- . -}}</section>{{- end}}
     {{with .Nav}}<nav>{{- . -}}</nav>{{- end}}
+    {{with .Content}}<section>{{- . -}}</section>{{- end}}
     {{with .Footer -}}<footer>{{- . -}}</footer>{{- end -}}
 </body>
 </html>
