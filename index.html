@@ -13,26 +13,29 @@
 
 <h1>mkpage project</h1>
 
-<p><em>mkpage</em> (pronounced &ldquo;make page&rdquo;) collection of command line utilities written as a
-<a href="https://golang.org">Go</a> package. These utilities provide an
-experimental deconstructed content management system for websites. Rather than
-run systems like Wordpress and Drupal you can assemble your own by combining the
-tools in <em>mkpage</em> with common Unix utilities to render your website. This means
-that Bash scripts can easily create simple to complex websites from content
-written in Markdown. Versioning your site works easily with source code control systems
-such as git or svn.</p>
+<p><em>mkpage</em> (pronounced &ldquo;make page&rdquo;) collection of command line utilities
+written as a <a href="https://golang.org">Go</a> package. These utilities provide an
+experimental deconstructed content management system for websites. Rather
+than run systems like Wordpress and Drupal you can assemble your own by
+combining the tools in <em>mkpage</em> with common Unix utilities to render
+your website. This means that Bash scripts can easily create simple to
+complex websites from content written in Markdown. Versioning your site
+works easily with source code control systems such as git or svn.</p>
 
 <h2>It started with <em>mkpage</em></h2>
 
-<p><em>mkpage</em> utility is an experimental template engine with an embedded markdown processor.<br />
-It is a simple command line tool which accepts key value pairs and applies them to a
-Golang <a href="https://golang.org/pkg/text/template/">text/template</a>.  The key side of a pair corresponds to the
-template element names that will be replaced in the render version of the document. If a key was called
-&ldquo;pageContent&rdquo; the template element would look like <code>{{ .pageContent }}</code>. The value of &ldquo;pageContent&rdquo; would
-replace <code>{{ .pageContent }}</code>. Go text/templates elements can do more than that but this is the core idea.
-On the value side of the key/value pair is also a string. The value describes a data source,
-as well as, a specific type of content.  Data sources can be one of three types -
-- literal text, a filename, or URL. The data source can be of one of three types - plain text, markdown
+<p><em>mkpage</em> utility is an experimental template engine with an embedded
+markdown processor.  It is a simple command line tool which accepts key
+value pairs and applies them to a Golang <a href="https://golang.org/pkg/text/template/">text/template</a>.<br />
+The key side of a pair corresponds to the template element names that will
+be replaced in the render version of the document. If a key was called
+&ldquo;pageContent&rdquo; the template element would look like <code>{{ .pageContent }}</code>.
+The value of &ldquo;pageContent&rdquo; would replace <code>{{ .pageContent }}</code>. Go
+text/templates elements can do more than that but this is the core idea.
+On the value side of the key/value pair is also a string. The value
+describes a data source, as well as, a specific type of content.  Data
+sources can be one of three types - literal text, a filename, or URL.
+The data source can be of one of three types - plain text, markdown
 or JSON.</p>
 
 <pre><code class="language-template">    Date: {{.now}}
@@ -50,8 +53,8 @@ or JSON.</p>
     {{.signature}}
 </code></pre>
 
-<p>To render the template above (i.e. weather_form_letter.tmpl) is expecting values from various data sources.
-This break down is as follows.</p>
+<p>To render the template above (i.e. weather_form_letter.tmpl) is expecting
+values from various data sources. This break down is as follows.</p>
 
 <ul>
 <li>&ldquo;now&rdquo; and &ldquo;name&rdquo; are explicit strings</li>
@@ -68,38 +71,47 @@ This break down is as follows.</p>
         testdata/weather_form_letter.tmpl
 </code></pre>
 
-<p>Notice the two literal strings are prefixed with &ldquo;text:&rdquo; (other possible formats are &ldquo;markdown:&ldquo;, &ldquo;json:&ldquo;).
-Values without a prefix are assumed to be file paths. We see that in testdata/signature.txt.  Likewise the
-weather data is coming from a URL. <em>mkpage</em> distinguishes URLs by prefixes &ldquo;http://&rdquo; and &ldquo;https://&ldquo;.
-Since an HTTP response contains headers describing the content type (e.g.  &ldquo;Content-Type: text/markdown&rdquo;) we
-do not require any other prefix. Likewise a filename&rsquo;s extension can give us an inference of the data format.
-JSON content ends in &ldquo;.json&rdquo;, Markdown in &ldquo;.md&rdquo; and everything else is treated as plain text.</p>
+<p>Notice the two literal strings are prefixed with &ldquo;text:&rdquo;
+(other possible formats are &ldquo;markdown:&ldquo;, &ldquo;json:&ldquo;).  Values without a
+prefix are assumed to be file paths. We see that in
+testdata/signature.txt.  Likewise the weather data is coming from a URL.
+<em>mkpage</em> distinguishes URLs by prefixes &ldquo;http://&rdquo; and &ldquo;https://&ldquo;.
+Since an HTTP response contains headers describing the content type
+(e.g.  &ldquo;Content-Type: text/markdown&rdquo;) we do not require any other prefix.
+Likewise a filename&rsquo;s extension can give us an inference of the data
+format.  JSON content ends in &ldquo;.json&rdquo;, Markdown in &ldquo;.md&rdquo; and everything
+else is treated as plain text.</p>
 
-<p>Since we are leveraging Go&rsquo;s <a href="https://golang.org/pkg/text/template/">text/template</a> the template itself
-can be more than a simple substitution. It can contain conditional expressions, ranges for data and even
-include blocks from other templates included on the command line of <em>mkpage</em>.</p>
+<p>Since we are leveraging Go&rsquo;s
+<a href="https://golang.org/pkg/text/template/">text/template</a> the template itself
+can be more than a simple substitution. It can contain conditional
+expressions, ranges for data and even include blocks from other templates
+included on the command line of <em>mkpage</em>.</p>
 
 <h2>Template basics</h2>
 
-<p><em>mkpage</em> template engine is the Go <a href="https://golang.org/pkg/text/template/">text/template</a> package.
-That&rsquo;s a good place to look for official answers but I&rsquo;ve included a simple overview to ease you
-into Go&rsquo;s template system.</p>
+<p><em>mkpage</em> template engine is the Go
+<a href="https://golang.org/pkg/text/template/">text/template</a> package.
+That&rsquo;s a good place to look for official answers but I&rsquo;ve included a
+simple overview to ease you into Go&rsquo;s template system.</p>
 
 <h3>Basic template element</h3>
 
-<p>A basic replacement happens by wrapping a content variable in two curly braces. Variables begin
-with a dot.</p>
+<p>A basic replacement happens by wrapping a content variable in two curly
+braces. Variables begin with a dot.</p>
 
 <pre><code class="language-go">    Hello {{ .name }},
 </code></pre>
 
-<p>Would replace <code>{{ .name }}</code> with the value passed into the template as &ldquo;name&rdquo;.</p>
+<p>Would replace <code>{{ .name }}</code> with the value passed into the template as
+&ldquo;name&rdquo;.</p>
 
 <h3>Conditional elements</h3>
 
-<p>One nice feature of Go&rsquo;s text/template DSL is that template elements can be conditional. This can
-be done using the &ldquo;if&rdquo; and &ldquo;with&rdquo; template functions. Here&rsquo;s how to show a title conditionally
-using the &ldquo;if&rdquo; function.</p>
+<p>One nice feature of Go&rsquo;s text/template DSL is that template elements can
+be conditional. This can be done using the &ldquo;if&rdquo; and &ldquo;with&rdquo; template
+functions. Here&rsquo;s how to show a title conditionally using the &ldquo;if&rdquo;
+function.</p>
 
 <pre><code class="language-go">    {{if .title}}And the title is: {{.title}}{{end}}
 </code></pre>
@@ -111,10 +123,12 @@ using the &ldquo;if&rdquo; function.</p>
 
 <h3>Template blocks</h3>
 
-<p>Go text/templates support defining blocks and rendering them in conjuction with a main template. This is
-also supported by <em>mkpage</em>. For each template encountered on the command line it is added to an array of templates
-parsed by the text/template package.  Collectively they are then executed which causes final results to
-render to stdout by <em>mkpage</em>.</p>
+<p>Go text/templates support defining blocks and rendering them in
+conjuction with a main template. This is also supported by <em>mkpage</em>.
+For each template encountered on the command line it is added to an
+array of templates parsed by the text/template package.  Collectively
+they are then executed which causes final results to render to stdout
+by <em>mkpage</em>.</p>
 
 <pre><code class="language-shell">    mkpage &quot;content=text:Hello World&quot; testdata/page.tmpl testdata/header.tmpl testdata/footer.tmpl
 </code></pre>
@@ -128,8 +142,9 @@ render to stdout by <em>mkpage</em>.</p>
     {{template &quot;footer&quot; . }}
 </code></pre>
 
-<p>The header and footer are then defined in their own template files (though they also could be combined into one
-or even be defined in the main template file itself).</p>
+<p>The header and footer are then defined in their own template files (though
+they also could be combined into one or even be defined in the main
+template file itself).</p>
 
 <p><em>header.tmpl</em></p>
 
@@ -176,25 +191,27 @@ or even be defined in the main template file itself).</p>
 
 <h2>A note about Markdown dialect</h2>
 
-<p>In additional to populating a template with values from data sources <em>mkpage</em> also includes the
-<a href="https://github.com/russross/blackfriday">blackfriday</a> markdown processor.  The <code>blackfriday.MarkdownCommon()</code>
-function is envoked whenever markdown content is suggested. That means for strings that have the
-&ldquo;markdown:&rdquo; hint prefix, files ending in &ldquo;.md&rdquo; file extension or URL content with the content type
-returned as &ldquo;text/markdown&rdquo;.</p>
+<p>In additional to populating a template with values from data sources
+<em>mkpage</em> also includes the
+<a href="https://github.com/russross/blackfriday">blackfriday</a> markdown
+processor.  The <code>blackfriday.MarkdownCommon()</code> function is envoked
+whenever markdown content is suggested. That means for strings that have
+the &ldquo;markdown:&rdquo; hint prefix, files ending in &ldquo;.md&rdquo; file extension or
+URL content with the content type returned as &ldquo;text/markdown&rdquo;.</p>
 
 <p>The blackfriday implementation includes many enhancements to the original
-<a href="https://daringfireball.net/projects/markdown/">Markdown</a>. For example, blackfirday&rsquo;s implemetation
-includes a basic table output.</p>
+<a href="https://daringfireball.net/projects/markdown/">Markdown</a>. For example,
+blackfirday&rsquo;s implemetation includes a basic table output.</p>
 
 <h2>Companion utilities</h2>
 
-<p><em>mkpage</em> comes with some helper utilities that make scripting a deconstructed
-content management system from Bash easier.</p>
+<p><em>mkpage</em> comes with some helper utilities that make scripting a
+deconstructed content management system from Bash easier.</p>
 
 <h3>mkslides</h3>
 
-<p><em>mkslides</em> generates a set of HTML5 slides from a single Markdown file. It uses
-the same template engine as <em>mkpage</em></p>
+<p><em>mkslides</em> generates a set of HTML5 slides from a single Markdown file.
+It uses the same template engine as <em>mkpage</em></p>
 
 <h3>reldocpath</h3>
 
@@ -204,7 +221,8 @@ a common project directory.</p>
 
 <h4>Example</h4>
 
-<p>You know the path from the source document to target document from the project root folder.</p>
+<p>You know the path from the source document to target document from the
+project root folder.</p>
 
 <ul>
 <li>Source is <em>course/week/01/readings.html</em><br /></li>
@@ -224,21 +242,6 @@ a common project directory.</p>
 <pre><code class="language-shell">    ../../../css/site.css
 </code></pre>
 
-<h3>slugify</h3>
-
-<p><em>slugify</em> takes one or more command line args (e.g. a phrase like &ldquo;Hello World&rdquo;) and returns
-an updated version that is more friendly for filenames and URLS (e.g. &ldquo;Hello-World&rdquo;).</p>
-
-<h4>Example</h4>
-
-<pre><code class="language-shell">    slugify My thoughts on functional programming
-</code></pre>
-
-<p>Would yield</p>
-
-<pre><code>    My-thoughts-on-functional-programming
-</code></pre>
-
 <h2>References</h2>
 
 <ul>
@@ -248,24 +251,57 @@ an updated version that is more friendly for filenames and URLS (e.g. &ldquo;Hel
 </ul>
 </section>
     <nav><ul>
-<li><a href="/">home</a></li>
-<li><a href="./">README</a></li>
-<li><a href="license.html">LICENSE</a></li>
-<li><a href="install.html">INSTALL</a></li>
-<li><a href="mkpage.html">mkpage</a></li>
-<li><a href="mkslides.html">mkslides</a></li>
-<li><a href="sitemapper.html">sitemapper</a></li>
-<li><a href="mkrss.html">mkrss</a></li>
-<li><a href="reldocpath.html">reldocpath</a></li>
-<li><a href="titleline.html">titleline</a></li>
-<li><a href="byline.html">byline</a></li>
-<li><a href="slugify.html">slugify</a></li>
-<li><a href="urlencode.html">urlencode</a></li>
-<li><a href="urldecode.html">urldecode</a></li>
-<li><a href="ws.html">ws</a></li>
-<li><a href="go-template-recipes.html">Template Recipes</a></li>
-<li><a href="themes/">Theme Recipes</a></li>
-<li><a href="https://github.com/rsdoiel/mkpage">Github</a></li>
+<li><a href="./ideas.html">Ideas and questions</a></li>
+<li><a href="./mkslides.html">mkslides</a></li>
+<li><a href="./go-template-recipes.html">Go text/template recipes</a></li>
+<li><a href="./titleline.html">USAGE</a></li>
+<li><a href="./byline.html">USAGE</a></li>
+<li><a href="./README.html">mkpage project</a></li>
+<li>[](./testdata/content.html)</li>
+<li><a href="./mkpage.html">USAGE</a></li>
+<li><a href="./mkrss.html">USAGE</a></li>
+<li><a href="./reldocpath.html">USAGE</a></li>
+<li>[](./cmds/ws/ws.go.html.html.html)</li>
+<li>[](./cmds/ws/ws.go.html.html)</li>
+<li>[](./cmds/ws/ws.go.html)</li>
+<li>[](./cmds/mkpage/mkpage.go.html.html.html)</li>
+<li>[](./cmds/mkpage/mkpage.go.html.html)</li>
+<li>[](./cmds/mkpage/mkpage.go.html)</li>
+<li>[](./cmds/byline/byline.go.html)</li>
+<li>[](./cmds/byline/byline.go.html.html.html)</li>
+<li>[](./cmds/byline/byline.go.html.html)</li>
+<li>[](./cmds/mkrss/mkrss.go.html.html.html)</li>
+<li>[](./cmds/mkrss/mkrss.go.html)</li>
+<li>[](./cmds/mkrss/mkrss.go.html.html)</li>
+<li>[](./cmds/urlencode/urlencode.go.html.html.html)</li>
+<li>[](./cmds/urlencode/urlencode.go.html)</li>
+<li>[](./cmds/urlencode/urlencode.go.html.html)</li>
+<li>[](./cmds/sitemapper/sitemapper.go.html)</li>
+<li>[](./cmds/sitemapper/sitemapper.go.html.html)</li>
+<li>[](./cmds/sitemapper/sitemapper.go.html.html.html)</li>
+<li>[](./cmds/urldecode/urldecode.go.html)</li>
+<li>[](./cmds/urldecode/urldecode.go.html.html.html)</li>
+<li>[](./cmds/urldecode/urldecode.go.html.html)</li>
+<li>[](./cmds/reldocpath/reldocpath.go.html)</li>
+<li>[](./cmds/reldocpath/reldocpath.go.html.html.html)</li>
+<li>[](./cmds/reldocpath/reldocpath.go.html.html)</li>
+<li>[](./cmds/titleline/titleline.go.html.html.html)</li>
+<li>[](./cmds/titleline/titleline.go.html.html)</li>
+<li>[](./cmds/titleline/titleline.go.html)</li>
+<li>[](./cmds/mkslides/mkslides.go.html)</li>
+<li>[](./cmds/mkslides/mkslides.go.html.html)</li>
+<li>[](./cmds/mkslides/mkslides.go.html.html.html)</li>
+<li><a href="./sitemapper.html">USAGE</a></li>
+<li><a href="./urlencode.html">USAGE</a></li>
+<li><a href="./demo/simple/index.html">Simple Theme</a></li>
+<li><a href="./demo/one-element/index.html">One Element</a></li>
+<li><a href="./demo/three-slides.html">Title Page</a></li>
+<li><a href="./demo/simple-with-nav/index.html">Simple With Name</a></li>
+<li><a href="./demo/presentation.html">What is mkslides?</a></li>
+<li><a href="./INSTALL.html">Installation</a></li>
+<li><a href="./ws.html">USAGE</a></li>
+<li><a href="./TODO.html">Someday, maybe</a></li>
+<li><a href="./urldecode.html">USAGE</a></li>
 </ul>
 </nav>
     <footer>

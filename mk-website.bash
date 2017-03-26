@@ -44,7 +44,7 @@ echo "Generating go-template-recipes.html"
 MakePage nav.md go-template-recipes.md go-template-recipes.html
 echo "Generating license.html"
 MakePage nav.md "markdown:$(cat LICENSE)" license.html
-for FNAME in mkpage mkslides sitemapper reldocpath slugify mkrss byline titleline ws urlencode urldecode; do
+for FNAME in mkpage mkslides sitemapper reldocpath mkrss byline titleline ws urlencode urldecode; do
   echo "Generating $FNAME.html"
   MakePage nav.md $FNAME.md $FNAME.html
 done
@@ -61,11 +61,6 @@ fi
 cd ..
 
 echo "Generating theme examples"
-mkpage \
-    "CSS=themes/simple/css/site.css" \
-    "Title=text:mkpage themes demos" \
-    "Nav=markdown:+ [up](../)" \
-    "Content=themes/README.md" \
-    "Footer=text:mkpage theme demo updated $(date)" \
-    themes/simple/page.tmpl > themes/index.html
-
+for ITEM in demo/one-element demo/simple demo/simple-with-nav; do
+    $ITEM/mk-website.bash
+done

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+START=$(pwd)
+cd $(dirname $0)
+
 function SoftwareCheck() {
     for NAME in $@; do
         APP_NAME=$(which $NAME)
@@ -29,3 +32,6 @@ for MARKDOWN_FILE in $(find . -type f | grep -E '.md'); do
         "Content=$MARKDOWN_FILE" \
         page.tmpl > $HTML_FILE
 done
+
+cd $START
+
