@@ -1,6 +1,6 @@
 #!/bin/bash
 
-function softwareCheck() {
+function SoftwareCheck() {
     for NAME in $@; do
         APP_NAME=$(which $NAME)
         if [ "$APP_NAME" = "" ] && [ ! -f "./bin/$NAME" ]; then
@@ -25,7 +25,7 @@ for MARKDOWN_FILE in $(find . -type f | grep -E '.md'); do
     CSSPath=$(reldocpath $DOCPath css)
     mkpage \
         "Title=text:$WEBSITE_TITLE" \
-        "CSSPath=text:$CSSPath" \
+        "CSSPath=text:$CSSPath/site.css" \
         "Content=$MARKDOWN_FILE" \
         page.tmpl > $HTML_FILE
 done

@@ -6,15 +6,16 @@ template. Two are explicit text lines and one like the one element theme
 is a Markdown file.
 
 This theme supports using a common Title element and CSSPath element across
-all the pages in the website. The _mk-website.bash_ will traverse all the 
-Markdown files and render corresponding HTML pages.
+all the pages in the website. The [mk-website.bash](mk-website.bash) will 
+traverse all the Markdown files and render corresponding HTML pages.
 
-This theme relies on three _mkpage_ project commands - _mkpage_, _reldocpath_
-and _ws_ (for testing the website and viewing from your web browser over 
-http://localhost:8000)
+This theme relies on three _mkpage_ project commands - _mkpage_, 
+_reldocpath_ and _ws_ (for testing the website and viewing from your web 
+browser over http://localhost:8000)
 
 
-To test this theme do the following run the following commands in this directory.
+To test this theme do the following run the following commands in this 
+directory.
 
 ```shell
     export WEBSITE_TITLE="Simple Theme Demo"
