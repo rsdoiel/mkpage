@@ -80,7 +80,7 @@ status:
 	git status
 
 save:
-	git commit -am "Quick Save"
+	if [ "$(msg)" = "" ]; then git commit -am "Quick Save"; else git commit -am "$(msg)"; fi
 	git push origin $(BRANCH)
 
 clean:
