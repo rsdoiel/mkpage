@@ -33,18 +33,23 @@ GenerateNav
 
 echo "Converting Markdown files to HTML supporting a relative document path to the CSS file"
 for MARKDOWN_FILE in $(find . -type f | grep -E '.md'); do
-    # Caltechlate DOCPath
-    DOCPath=$(dirname $MARKDOWN_FILE)
-    # Calculate the HTML filename
-    HTML_FILE="$(basename $MARKDOWN_FILE .md).html"
-    CSSPath=$(reldocpath $DOCPath css)
-    WEBSITE_TILE=$(titleline -i $MARKDOWN_FILE)
-    mkpage \
-        "Title=text:$WEBSITE_TITLE" \
-        "CSSPath=text:$CSSPath/site.css" \
-        "Nav=nav.md" \
-        "Content=$MARKDOWN_FILE" \
-        page.tmpl > $DOCPath/$HTML_FILE
+    # Get filename
+    FNAME=$(basename $MARKDOWN_FILE .md)
+    if [ "$FNAME" != "nav.md" ]; then
+        # Caltechlate DOCPath
+        DOCPath=$(dirname $MARKDOWN_FILE)
+        # Calculate the HTML filename
+        HTML_FILE="$(basename $MARKDOWN_FILE .md).html"
+        CSSPath=$(reldocpath $DOCPath css)
+        WEBSITE_TITLE=$(titleline -i $MARKDOWN_FILE)
+        echo "Generating $WEBSITE_TITLE from $MARKDOWN_FILE"
+        mkpage \
+            "Title=text:$WEBSITE_TITLE" \
+            "CSSPath=text:$CSSPath/site.css" \
+            "Nav=nav.md" \
+            "Content=$MARKDOWN_FILE" \
+            page.tmpl > $DOCPath/$HTML_FILE
+    fi
 done
 
 cd $START
