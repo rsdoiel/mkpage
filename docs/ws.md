@@ -1,5 +1,7 @@
 
-# USAGE
+# ws
+
+## USAGE
 
     ws [OPTIONS] [DOCROOT]
 

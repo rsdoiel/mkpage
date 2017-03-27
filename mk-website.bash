@@ -1,5 +1,8 @@
 #!/bin/bash
 
+START=$(pwd)
+cd $(dirname $0)
+
 function checkApp() {
     APP_NAME=$(which $1)
     if [ "$APP_NAME" = "" ] && [ ! -f "./bin/$1" ]; then
@@ -41,9 +44,19 @@ echo "Generating install.html"
 MakePage nav.md INSTALL.md install.html
 echo "Generating license.html"
 MakePage nav.md "markdown:$(cat LICENSE)" license.html
-for FNAME in mkpage mkslides mkrss sitemapper byline titleline reldocpath urlencode urldecode ws; do
-    echo "Generating $FNAME.html"
-    MakePage nav.md $FNAME.md $FNAME.html
+
+echo "Generating CLI docs"
+mkpage \
+	"title=text:mkpage: An experimental template and markdown processor" \
+        "nav=docs/nav.md" \
+        "content=docs/index.md" \
+	    "sitebuilt=text:Updated $(date)" \
+        "copyright=copyright.md" \
+        page.tmpl > docs/index.html
+
+for SCRIPT_NAME in $(findfile -s .bash docs); do
+    echo "Running how-to/$SCRIPT_NAME" 
+    docs/$SCRIPT_NAME
 done
 
 echo "Generating How-To documentation"
@@ -54,6 +67,7 @@ mkpage \
 	    "sitebuilt=text:Updated $(date)" \
         "copyright=copyright.md" \
         page.tmpl > how-to/index.html
+
 echo "Generating go-template-recipes.html"
 MakePage how-to/nav.md how-to/go-template-recipes.md how-to/go-template-recipes.html
 
@@ -61,3 +75,5 @@ for SCRIPT_NAME in $(findfile -s .bash how-to); do
     echo "Running how-to/$SCRIPT_NAME" 
     how-to/$SCRIPT_NAME
 done
+
+cd $START

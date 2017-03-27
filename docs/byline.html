@@ -12,40 +12,40 @@
 <nav>
 <ul>
 <li><a href="/">Home</a></li>
-<li><a href="index.html">README</a></li>
-<li><a href="license.html">LICENSE</a></li>
-<li><a href="install.html">INSTALL</a></li>
-<li><a href="mkpage.html">mkpage</a></li>
-<li><a href="mkslides.html">mkslides</a></li>
-<li><a href="mkrss.html">mkrss</a></li>
-<li><a href="sitemapper.html">sitemapper</a></li>
-<li><a href="byline.html">byline</a></li>
-<li><a href="titleline.html">titleline</a></li>
-<li><a href="reldocpath.html">reldocpath</a></li>
-<li><a href="urlencode.html">urlencode</a></li>
-<li><a href="urldecode.html">urldecode</a></li>
-<li><a href="ws.html">ws</a></li>
-<li><a href="how-to/">How to</a></li>
-<li><a href="https://github.com/caltechlibrary/mkpage">Github</a></li>
+<li><a href="../">Up</a></li>
+<li><a href="./byline.html">byline</a></li>
+<li><a href="./mkpage.html">mkpage</a></li>
+<li><a href="./mkrss.html">mkrss</a></li>
+<li><a href="./mkslides.html">mkslides</a></li>
+<li><a href="./reldocpath.html">reldocpath</a></li>
+<li><a href="./sitemapper.html">sitemapper</a></li>
+<li><a href="./titleline.html">titleline</a></li>
+<li><a href="./urldecode.html">urldecode</a></li>
+<li><a href="./urlencode.html">urlencode</a></li>
+<li><a href="./ws.html">ws</a></li>
 </ul>
 
 </nav>
 
 <section>
-<h1>USAGE</h1>
+<h1>byline</h1>
 
-<pre><code>titleline [OPTIONS]
+<h3>USAGE</h3>
+
+<pre><code>byline [OPTIONS]
 </code></pre>
 
 <h2>SYNOPSIS</h2>
 
-<p>titleline extracts the first title line from a Markdown file. By default it reads
+<p>byline extracts a byline from a Markdown file. By default it reads
 from standard in and writes to standard out but can read/write
 to specific files using an option.</p>
 
 <h2>OPTIONS</h2>
 
-<pre><code>	-h	display help
+<pre><code>	-b	set byline regexp
+	-byline	set byline regexp
+	-h	display help
 	-help	display help
 	-i	input filename
 	-input	input filename
@@ -53,18 +53,16 @@ to specific files using an option.</p>
 	-license	display license
 	-o	output filename
 	-output	output filename
-	-t	set title regexp
-	-title	set title regexp
 	-v	display version
 	-version	display version
 </code></pre>
 
 <h2>EXAMPLE</h2>
 
-<pre><code class="language-shell">    cat article.md | titleline
+<pre><code class="language-shell">    cat article.md | byline
 </code></pre>
 
-<p>This will display the title of an article.md.</p>
+<p>This will display the byline of article.md.</p>
 
 </section>
 

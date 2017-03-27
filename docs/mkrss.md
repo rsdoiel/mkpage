@@ -1,5 +1,7 @@
 
-# USAGE: 
+# mkrss
+
+## USAGE
 
     mkrss [OPTION] HTDOCS [RSS_FILENAME]
 

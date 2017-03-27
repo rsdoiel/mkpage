@@ -1,5 +1,7 @@
 
-# USAGE
+# urldecode
+
+## USAGE
 
     urldecode [OPTIONS] [STRING_TO_ENCODE]
 

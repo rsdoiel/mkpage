@@ -1,17 +1,21 @@
 
-# USAGE
+# byline
 
-    titleline [OPTIONS]
+### USAGE
+
+    byline [OPTIONS]
 
 ## SYNOPSIS
 
-titleline extracts the first title line from a Markdown file. By default it reads
+byline extracts a byline from a Markdown file. By default it reads
 from standard in and writes to standard out but can read/write
 to specific files using an option.
 
 ## OPTIONS
 
 ```
+	-b	set byline regexp
+	-byline	set byline regexp
 	-h	display help
 	-help	display help
 	-i	input filename
@@ -20,8 +24,6 @@ to specific files using an option.
 	-license	display license
 	-o	output filename
 	-output	output filename
-	-t	set title regexp
-	-title	set title regexp
 	-v	display version
 	-version	display version
 ```
@@ -29,8 +31,8 @@ to specific files using an option.
 ## EXAMPLE
 
 ```shell
-    cat article.md | titleline
+    cat article.md | byline
 ```
 
-This will display the title of an article.md.
+This will display the byline of article.md.
 

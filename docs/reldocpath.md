@@ -1,4 +1,7 @@
-# USAGE
+
+# reldocpath
+
+## USAGE
 
     reldocpath SOURCE_DOC_PATH TARGET_DOC_PATH 
 

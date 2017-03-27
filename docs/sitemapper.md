@@ -1,5 +1,7 @@
 
-# USAGE
+# sitemapper
+
+## USAGE
 
     sitemapper [OPTIONS] HTDOCS_PATH MAP_FILENAME PUBLIC_BASE_URL
 

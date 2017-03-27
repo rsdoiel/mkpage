@@ -12,56 +12,57 @@
 <nav>
 <ul>
 <li><a href="/">Home</a></li>
-<li><a href="index.html">README</a></li>
-<li><a href="license.html">LICENSE</a></li>
-<li><a href="install.html">INSTALL</a></li>
-<li><a href="mkpage.html">mkpage</a></li>
-<li><a href="mkslides.html">mkslides</a></li>
-<li><a href="mkrss.html">mkrss</a></li>
-<li><a href="sitemapper.html">sitemapper</a></li>
-<li><a href="byline.html">byline</a></li>
-<li><a href="titleline.html">titleline</a></li>
-<li><a href="reldocpath.html">reldocpath</a></li>
-<li><a href="urlencode.html">urlencode</a></li>
-<li><a href="urldecode.html">urldecode</a></li>
-<li><a href="ws.html">ws</a></li>
-<li><a href="how-to/">How to</a></li>
-<li><a href="https://github.com/caltechlibrary/mkpage">Github</a></li>
+<li><a href="../">Up</a></li>
+<li><a href="./byline.html">byline</a></li>
+<li><a href="./mkpage.html">mkpage</a></li>
+<li><a href="./mkrss.html">mkrss</a></li>
+<li><a href="./mkslides.html">mkslides</a></li>
+<li><a href="./reldocpath.html">reldocpath</a></li>
+<li><a href="./sitemapper.html">sitemapper</a></li>
+<li><a href="./titleline.html">titleline</a></li>
+<li><a href="./urldecode.html">urldecode</a></li>
+<li><a href="./urlencode.html">urlencode</a></li>
+<li><a href="./ws.html">ws</a></li>
 </ul>
 
 </nav>
 
 <section>
-<h1>USAGE</h1>
+<h1>urlencode</h1>
 
-<pre><code>reldocpath SOURCE_DOC_PATH TARGET_DOC_PATH 
+<h2>USAGE</h2>
+
+<pre><code>urlencode [OPTIONS] [STRING_TO_ENCODE]
 </code></pre>
 
 <h2>SYNOPSIS</h2>
 
-<p>Given a source document path, a target document path calculate and
-the implied common base path calculate the relative path for target.</p>
+<p>urlencode is a simple command line utility to URL encode content. By default
+it reads from standard input and writes to standard out.  You can
+also specifty the string to encode as a command line parameter.</p>
 
 <h2>OPTIONS</h2>
 
 <pre><code>	-h	display help
 	-help	display help
+	-i	set input filename
+	-input	set input filename
 	-l	display license
 	-license	display license
+	-o	set output filename
+	-output	set output filename
 	-v	display version
 	-version	display version
 </code></pre>
 
-<h2>EXAMPLE</h2>
+<h2>EXAMPLES</h2>
 
-<p>Given</p>
-
-<pre><code>    reldocpath chapter-01/lesson-03.html css/site.css
+<pre><code class="language-shell">    echo &quot;This is the string to encode &amp; nothing else!&quot; | urlencode
 </code></pre>
 
-<p>would output</p>
+<p>would yield</p>
 
-<pre><code>    .../css/site.css
+<pre><code>    This%20is%20the%20string%20to%20encode%20&amp;%20nothing%20else%0A
 </code></pre>
 
 </section>

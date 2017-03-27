@@ -1,5 +1,7 @@
 
-# USAGE
+# mkslides
+
+## USAGE
 
     mkslides [OPTIONS] [FILES]
 
