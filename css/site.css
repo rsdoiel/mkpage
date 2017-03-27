@@ -151,6 +151,11 @@ section {
      padding-right: 0;
 }
 
+section p {
+    width: 86%;
+    height: auto;
+}
+
 section h1 {
     font-size: 1.32em;
 }

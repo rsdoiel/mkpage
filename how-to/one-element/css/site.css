@@ -89,6 +89,52 @@ section, article {
     margin-bottom: 0.24em;
 }
 
+section p {
+    width: 86%;
+    height: auto;
+}
+
+section h1 {
+    font-size: 1.32em;
+}
+
+section h2 {
+    font-size: 1.12em;
+    font-weight: italic;
+}
+
+section h3 {
+    font-size: 1em;
+    text-transform: uppercase;
+}
+
+section ul {
+    display: block;
+    list-style: inside;
+    list-style-type: circle;
+    margin: 0;
+    padding-left: 1.24em;
+}
+
+section ul ul {
+    list-style-type: disc;
+}
+
+section ul ul ul {
+    list-style-type: square;
+}
+
+section ul ul ul ul {
+    list-style-type: circle;
+}
+
+section ul ul ul ul ul {
+    list-style-type: disc;
+}
+
+section ul ul ul ul ul ul {
+    list-style-type: square;
+}
 
 img.rss-valid {
     display: inline;
