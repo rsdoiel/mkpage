@@ -4,9 +4,10 @@
 *mkpage* template engine is Go's [text/template](https://golang.org/pkg/text/template/). Go's templates provide a flexible and simple [DSL](https://en.wikipedia.org/wiki/Domain-specific_language) describing how to assemble a document based on a data structure passed to it.  *mkpage* uses a list of key/value pairs on the command line to populate the data structure the template package expects.  This includes support for JSON formatted text from strings, files and URL response. It also support transforming markdown content into HTML before assembling the final template.
 
 
-While Go's template package is not complicated to use it doesn't come with allot of examples or tutorials.  Most articles you find on Go's template packages either focus on web server code or are for sophisticated static content generators like [Hugo](http://gohugo.io). Hugo extends Go's template DSL providing capabilities that rival or surpass older static content generators like [Jekyll](https://jekyllrb.com/) and [Jade](http://jade-lang.com/).
+While Go's template package is not complicated to use it doesn't come with allot of examples or tutorials.  Most articles you find on Go's template packages either focus on web server code or are for sophisticated static content generators like [Hugo](http://gohugo.io). Hugo extends Go's template DSL providing capabilities that rival and surpass older static content generators like [Jekyll](https://jekyllrb.com/) and [Jade](http://jade-lang.com/).
 
-*mkpage* uses Go v1.8's template as is. It provides little in the way of extensions.  *mkpage* is meant to be a trivially easy system for producing simple content from plain text, markdown text, and JSON. It deliberately implements a minimal feature set targetting a scripting environment like a Bash shell.
+*mkpage* uses Go v1.8's text/template as is providing little in the way of extensions.  *mkpage* is meant to be a trivially easy system for producing simple content from plain text, markdown text, and JSON. It deliberately implements a minimal feature set targetting a scripting environment like a Bash shell.
+
 
 
 ## only three data formats are supported
@@ -27,6 +28,29 @@ While Go's template package is not complicated to use it doesn't come with allot
 + URLs as data sources (prefixed with http:// and https:// as appropriate)
 
 ## Examples
+
+### Rendering a Markdown as HTML
+
+This is a minimal example of using *mkpage* to render a Markdown file as an HTML page.
+It features no navigation, just a wrapping HTML document head (with link to CSS file) and body.
+
+```
+    <!DOCTYPE html>
+    <html>
+        <head><link rel="stylesheet" href="/css/site.css"></head>
+        <body>
+        {{ .Content }}
+        </body>
+    </html>
+```
+
+Rendering a markdown document named _myfile.md_ as _myfile.html_ would look like
+
+```shell
+    mkpage Content=myfile.md > myfile.html
+```
+
+
 
 ### explicit stings, a get well card
 

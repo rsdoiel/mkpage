@@ -7,26 +7,16 @@
 </head>
 <body>
 <header>
-<a href="http://library.caltech.edu"><img src="assets/liblogo.gif" alt="Caltech Library logo"></a>
+<a href="http://library.caltech.edu"><img src="/assets/liblogo.gif" alt="Caltech Library logo"></a>
 </header>
 <nav>
 <ul>
 <li><a href="/">Home</a></li>
-<li><a href="index.html">README</a></li>
-<li><a href="license.html">LICENSE</a></li>
-<li><a href="install.html">INSTALL</a></li>
-<li><a href="mkpage.html">mkpage</a></li>
-<li><a href="mkslides.html">mkslides</a></li>
-<li><a href="mkrss.html">mkrss</a></li>
-<li><a href="sitemapper.html">sitemapper</a></li>
-<li><a href="byline.html">byline</a></li>
-<li><a href="titleline.html">titleline</a></li>
-<li><a href="reldocpath.html">reldocpath</a></li>
-<li><a href="urlencode.html">urlencode</a></li>
-<li><a href="urldecode.html">urldecode</a></li>
-<li><a href="ws.html">ws</a></li>
-<li><a href="go-template-recipes.html">Go template recipes</a></li>
-<li><a href="https://github.com/caltechlibrary/mkpage">Github</a></li>
+<li><a href="../">Up</a></li>
+<li><a href="one-element/">One element</a></li>
+<li><a href="simple/">Simple</a></li>
+<li><a href="simple-with-nav/">Simple w/Nav</a></li>
+<li><a href="go-template-recipes.html">Template Recipes</a></li>
 </ul>
 
 </nav>
@@ -36,9 +26,9 @@
 
 <p><em>mkpage</em> template engine is Go&rsquo;s <a href="https://golang.org/pkg/text/template/">text/template</a>. Go&rsquo;s templates provide a flexible and simple <a href="https://en.wikipedia.org/wiki/Domain-specific_language">DSL</a> describing how to assemble a document based on a data structure passed to it.  <em>mkpage</em> uses a list of key/value pairs on the command line to populate the data structure the template package expects.  This includes support for JSON formatted text from strings, files and URL response. It also support transforming markdown content into HTML before assembling the final template.</p>
 
-<p>While Go&rsquo;s template package is not complicated to use it doesn&rsquo;t come with allot of examples or tutorials.  Most articles you find on Go&rsquo;s template packages either focus on web server code or are for sophisticated static content generators like <a href="http://gohugo.io">Hugo</a>. Hugo extends Go&rsquo;s template DSL providing capabilities that rival or surpass older static content generators like <a href="https://jekyllrb.com/">Jekyll</a> and <a href="http://jade-lang.com/">Jade</a>.</p>
+<p>While Go&rsquo;s template package is not complicated to use it doesn&rsquo;t come with allot of examples or tutorials.  Most articles you find on Go&rsquo;s template packages either focus on web server code or are for sophisticated static content generators like <a href="http://gohugo.io">Hugo</a>. Hugo extends Go&rsquo;s template DSL providing capabilities that rival and surpass older static content generators like <a href="https://jekyllrb.com/">Jekyll</a> and <a href="http://jade-lang.com/">Jade</a>.</p>
 
-<p><em>mkpage</em> uses Go v1.8&rsquo;s template as is. It provides little in the way of extensions.  <em>mkpage</em> is meant to be a trivially easy system for producing simple content from plain text, markdown text, and JSON. It deliberately implements a minimal feature set targetting a scripting environment like a Bash shell.</p>
+<p><em>mkpage</em> uses Go v1.8&rsquo;s text/template as is providing little in the way of extensions.  <em>mkpage</em> is meant to be a trivially easy system for producing simple content from plain text, markdown text, and JSON. It deliberately implements a minimal feature set targetting a scripting environment like a Bash shell.</p>
 
 <h2>only three data formats are supported</h2>
 
@@ -61,6 +51,25 @@
 </ul>
 
 <h2>Examples</h2>
+
+<h3>Rendering a Markdown as HTML</h3>
+
+<p>This is a minimal example of using <em>mkpage</em> to render a Markdown file as an HTML page.
+It features no navigation, just a wrapping HTML document head (with link to CSS file) and body.</p>
+
+<pre><code>    &lt;!DOCTYPE html&gt;
+    &lt;html&gt;
+        &lt;head&gt;&lt;link rel=&quot;stylesheet&quot; href=&quot;/css/site.css&quot;&gt;&lt;/head&gt;
+        &lt;body&gt;
+        {{ .Content }}
+        &lt;/body&gt;
+    &lt;/html&gt;
+</code></pre>
+
+<p>Rendering a markdown document named <em>myfile.md</em> as <em>myfile.html</em> would look like</p>
+
+<pre><code class="language-shell">    mkpage Content=myfile.md &gt; myfile.html
+</code></pre>
 
 <h3>explicit stings, a get well card</h3>
 
@@ -319,7 +328,7 @@ We have a <em>signature.tmpl</em> and <em>postscript.tmpl</em> files as sub temp
 
 <footer>
 <span><h1><A href="http://caltech.edu">Caltech</a></h1></span>
-<span>&copy; 2015 - 2017 <a href="https://www.library.caltech.edu/copyright">Caltech library</a></span>
+<span>&copy; 2017 <a href="https://www.library.caltech.edu/copyright">Caltech library</a></span>
 <address>1200 E California Blvd, Mail Code 1-32, Pasadena, CA 91125-3200</address> 
 <span>Phone: <a href="tel:+1-626-395-3405">(626)395-3405</a></span>
 <span><a href="mailto:library@caltech.edu">Email Us</a></span>

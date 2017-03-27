@@ -19,14 +19,13 @@ function MakePage () {
     content="$2"
     html="$3"
     # Always use the latest compiled mkpage
-    APP=$(which mkpage)
     if [ -f ./bin/mkpage ]; then
-        APP="./bin/mkpage"
+        export PATH=bin:$PATH
     fi
 
     echo "Rendering $html"
-    $APP \
-	"title=text:mkpage: An experimental template and markdown processor" \
+    mkpage \
+	    "title=text:mkpage: An experimental template and markdown processor" \
         "nav=$nav" \
         "content=$content" \
 	    "sitebuilt=text:Updated $(date)" \
@@ -40,11 +39,25 @@ echo "Generating website index.html"
 MakePage nav.md README.md index.html
 echo "Generating install.html"
 MakePage nav.md INSTALL.md install.html
-echo "Generating go-template-recipes.html"
-MakePage nav.md go-template-recipes.md go-template-recipes.html
 echo "Generating license.html"
 MakePage nav.md "markdown:$(cat LICENSE)" license.html
 for FNAME in mkpage mkslides mkrss sitemapper byline titleline reldocpath urlencode urldecode ws; do
     echo "Generating $FNAME.html"
     MakePage nav.md $FNAME.md $FNAME.html
+done
+
+echo "Generating How-To documentation"
+mkpage \
+	"title=text:mkpage: An experimental template and markdown processor" \
+        "nav=how-to/nav.md" \
+        "content=how-to/index.md" \
+	    "sitebuilt=text:Updated $(date)" \
+        "copyright=copyright.md" \
+        page.tmpl > how-to/index.html
+echo "Generating go-template-recipes.html"
+MakePage how-to/nav.md how-to/go-template-recipes.md how-to/go-template-recipes.html
+
+for SCRIPT_NAME in $(findfile -s .bash how-to); do
+    echo "Running how-to/$SCRIPT_NAME" 
+    how-to/$SCRIPT_NAME
 done

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>One Element</title>
+    <link rel="stylesheet" href="/css/site.css">
+</head>
+<body>
+    <header>
+        <h1>One Element<h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="../">Up</a></li>
+        </ul>
+    </nav>
+    <section><h1>One Element</h1>
+
+<p>One element features a theme where the template, <a href="page.tmpl">page.tmpl</a>, has
+one replacable element named &ldquo;Content&rdquo;. Included is a Bash script for
+assembling markdown files into HTML pages. The Bash
+script is called <a href="mk-website.bash">mk-website.bash</a>.</p>
+
+<p>To test this theme do the following run the following commands in this directory.</p>
+
+<pre><code class="language-shell">    ./mk-website.bash
+    ws
+</code></pre>
+
+<p>Then point your webbrowser at <a href="http://localhost:8000">http://localhost:8000</a> and view this page.</p>
+
+<h2>Limitations</h2>
+
+<ol>
+<li>This theme assumes this directory is the root HTML directory</li>
+<li>No unified navigation beyond what you provide in your Markdown files is available.</li>
+</ol>
+</section>
+    <footer>This template features a single replacable element</footer>
+</body>
+</html>

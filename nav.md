@@ -13,6 +13,6 @@
 + [urlencode](urlencode.html)
 + [urldecode](urldecode.html)
 + [ws](ws.html)
-+ [Go template recipes](go-template-recipes.html)
++ [How to](how-to/)
 + [Github](https://github.com/caltechlibrary/mkpage)
 
