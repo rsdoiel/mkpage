@@ -68,6 +68,8 @@ mkpage \
         "copyright=copyright.md" \
         page.tmpl > how-to/index.html
 
+echo "Generating the-basics.html"
+MakePage how-to/nav.md how-to/the-basics.md how-to/the-basics.html
 echo "Generating go-template-recipes.html"
 MakePage how-to/nav.md how-to/go-template-recipes.md how-to/go-template-recipes.html
 

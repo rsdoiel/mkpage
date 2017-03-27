@@ -1,5 +1,6 @@
 + [Home](/)
 + [Up](../)
++ [The basics](the-basics.html)
 + [One element](one-element/)
 + [Simple](simple/)
 + [Simple w/Nav](simple-with-nav/)
