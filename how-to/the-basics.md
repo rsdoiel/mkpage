@@ -223,7 +223,7 @@ What do you see?
 
 ## A note about Markdown dialect
 
-_mkpage_ implements [Github Flavored Markdown](https://guides.github.com/features/mastering-markdown/) 
+_mkpage_ implements [Github Flavored Markdown](https://guides.github.com/features/mastering-markdown/#GitHub-flavored-markdown) 
 using the [blackfriday](https://github.com/russross/blackfriday) markdown processor.  This is a 
 superset of [Markdown](http://daringfireball.net/projects/markdown/) as created by John Gruber.
 
