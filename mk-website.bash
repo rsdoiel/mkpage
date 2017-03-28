@@ -1,10 +1,10 @@
 #!/bin/bash
 
 START=$(pwd)
-cd $(dirname $0)
+cd "$(dirname "$0")"
 
 function checkApp() {
-	APP_NAME=$(which $1)
+	APP_NAME="$(which "$1")"
 	if [ "$APP_NAME" = "" ] && [ ! -f "./bin/$1" ]; then
 		echo "Missing $APP_NAME"
 		exit 1
@@ -12,8 +12,8 @@ function checkApp() {
 }
 
 function softwareCheck() {
-	for APP_NAME in $@; do
-		checkApp $APP_NAME
+	for APP_NAME in "$@"; do
+		checkApp "$APP_NAME"
 	done
 }
 
@@ -33,7 +33,7 @@ function MakePage() {
 		"content=$content" \
 		"sitebuilt=text:Updated $(date)" \
 		"copyright=copyright.md" \
-		page.tmpl >$html
+		page.tmpl > "$html"
 }
 
 echo "Checking necessary software is installed"
@@ -56,7 +56,7 @@ mkpage \
 
 for SCRIPT_NAME in $(findfile -s .bash docs); do
 	echo "Running how-to/$SCRIPT_NAME"
-	docs/$SCRIPT_NAME
+	"docs/$SCRIPT_NAME"
 done
 
 echo "Generating How-To documentation"
@@ -75,7 +75,7 @@ MakePage how-to/nav.md how-to/go-template-recipes.md how-to/go-template-recipes.
 
 for SCRIPT_NAME in $(findfile -s .bash how-to); do
 	echo "Running how-to/$SCRIPT_NAME"
-	how-to/$SCRIPT_NAME
+	"how-to/$SCRIPT_NAME"
 done
 
-cd $START
+cd "$START"

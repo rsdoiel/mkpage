@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 
-WORKING_BRANCH=$(git branch | grep '* ' | cut -d \  -f 2)
+WORKING_BRANCH=$(git branch | grep  "\* " | cut -d \  -f 2)
 if [ "$WORKING_BRANCH" = "gh-pages" ]; then
     git commit -am "publishing to gh-pages branch"
     git push origin gh-pages
