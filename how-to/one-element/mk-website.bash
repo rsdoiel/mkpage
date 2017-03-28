@@ -21,7 +21,7 @@ for MARKDOWN_FILE in $(find . -type f | grep -E "\.md$"); do
 	HTML_FILE="$(dirname "$MARKDOWN_FILE")/$(basename "$MARKDOWN_FILE" .md).html"
 	mkpage \
 		"Content=$MARKDOWN_FILE" \
-		page.tmpl > "$HTML_FILE"
+		page.tmpl >"$HTML_FILE"
 
 done
 

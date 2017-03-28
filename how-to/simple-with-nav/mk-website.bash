@@ -49,7 +49,7 @@ for MARKDOWN_FILE in $(find . -type f | grep -E "\.md$"); do
 			"CSSPath=text:$CSSPath/site.css" \
 			"Nav=nav.md" \
 			"Content=$MARKDOWN_FILE" \
-			page.tmpl > "$DOCPath/$HTML_FILE"
+			page.tmpl >"$DOCPath/$HTML_FILE"
 	fi
 done
 

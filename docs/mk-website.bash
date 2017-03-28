@@ -25,9 +25,9 @@ function GenerateNav() {
 		html_filename="$(basename "$FNAME" .md).html"
 		if [ "$html_filename" != "nav.html" ] && [ "$html_filename" != "index.html" ]; then
 			if [ "$docpath" != "" ]; then
-				echo "+ [$title]($docpath/$html_filename)" >> nav.md
+				echo "+ [$title]($docpath/$html_filename)" >>nav.md
 			else
-				echo "+ [$title]($html_filename)" >> nav.md
+				echo "+ [$title]($html_filename)" >>nav.md
 			fi
 		fi
 	done
@@ -56,7 +56,7 @@ for MARKDOWN_FILE in $(find . -type f | grep -E "\.md$"); do
 			"CSSPath=text:$CSSPath/site.css" \
 			"nav=nav.md" \
 			"content=$DOCPath/$FNAME" \
-			../page.tmpl > "$DOCPath/$HTML_FILE"
+			../page.tmpl >"$DOCPath/$HTML_FILE"
 	fi
 done
 
