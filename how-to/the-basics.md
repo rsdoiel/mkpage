@@ -10,14 +10,13 @@ with _mkpage_ and _mkslides_.
 ## Basic element
 
 Like Mustache and Handlebars Go text/templates use double curly brackets to indicate an
-element which is to be replace.  If you wanted to replace "Hello World" with "Hello Georgina" then
-your Go template would look something like this
+element which is to be replace.  A template that says "Hello" would look something like this
 
 ```
     Hello {{ .World }}
 ```
 
-Here's an example of replacing `{{ .World }}` with "Georgina"
+We can use the template to say Hello to "Georgina"
 
 ```shell
     echo 'Hello {{ .World }}' > hello-world.tmpl
@@ -31,12 +30,11 @@ Running these two command should result in output like
 ```
 
 The line with the `echo` is just creating our template and saving it as the file _hello-world.tmpl_.
-In the template the only special part is `{{ .World }}`. This indicates the variable "World" will
-be replace by something.  In the line with `mkpage` we define the value for ".World". Note
-we don't need to prefix "World" with a dot like we did in the template. We just type 
-`World=text:Georgina` in quotes.  This tells the template to replace `{{ .World }}` with the text "Georgina".
-At the end of the line starting with _mkpage_ well tell it to use _hello-world.tmpl_ for
-the template.
+In the template the only special part is `{{ .World }}`. ".World" is a variable, as indicated by the initial '.'.
+".World" will be replaced by something we define.  In the line with `mkpage` we define the value for ".World". Note
+we don't need to prefix "World" with a dot like we did in the template. We use 'text' before the variable name
+to indicate the type of object.  The line tells the template to replace `{{ .World }}` with the text "Georgina".
+The last part of the command instructs _mkpage_ to use our _hello-world.tmpl_ template.
 
 If we did not include `World=...` with the _mkpage_ command using the _hello-world.tmpl_ template
 _mkpage_ would return output like 
@@ -51,10 +49,9 @@ If we made a typo in _hello-world.tmpl_ then we would see an error message.
 
 
 Try the following to get a feel for how key/value pairs work with _mkpage_. The first two will render but display
-`Hello <no value>` where "Georgina" was in our previous example. The first one because no value is
-provided and the second one because the value provided doesn't match what is in the template (i.e.
-notice the typo "Wrold" vs. "World").  The next one will display an error because
-_text:_ wasn't included on the value side of the key/value pair.  By default _mkpage_ assumes the
+`Hello <no value>`. The first example fails because no value is provided and the second fails because the value 
+provided doesn't match what is in the template (notice the typo "Wrold" vs. "World").  The next one will display 
+an error because _text:_ wasn't included on the value side of the key/value pair.  By default _mkpage_ assumes the
 value is refering to a file and in this case can't find the file Georgina in your current directory.  
 The last two will display `Hello Georgina` should display since the value for "World" is provided. The
 last one just ignores "Name=text:Fred" because name isn't found in the template.
@@ -100,12 +97,12 @@ The output should look like
     With this title: This is a title demo
 ```
 
-In the first line with the *if* we refer to ".title" as in our first example with ".World".
-In the second line we refer to the value as ".".  The reason we prefix variable names with
-a dot (period) is because we are actually describing a path or context of object relationships.
-I like to think of the starting dot as "this here" or simply "this".  So in the "with" line
-We waying "with this title do something" and between that and the part ending in `{{end}}`
-we can refer to ".title" simply as "this thing" where `{{ . }}` is replace with the value
+In the first line with the *if* we use ".title" as the variable, just like ".World" in our first example.
+In the second line we can refer to the value as "." because we used the *with* conditional.  
+The reason we prefix variable names with dot (period) is because we are actually describing a path 
+or context of object relationships. I like to think of the starting dot as "this here" or simply "this".  
+So in the "with" line we are saying "with this title do something" up until the `{{end}}`.
+We can refer to ".title" simply as "this thing" or `{{ . }}`, which will be replaced with the value
 of ".title".
 
 What happens if you run this command?
@@ -121,7 +118,7 @@ There is two empty lines of output. The reason is we don't see something like
     With this title: <no value>
 ```
 
-Is because *if* and *with* are conditionally writing the value of title if it has been set.
+is because *if* and *with* are conditionally writing the value of title if it has been set.
 This becomes a useful tool when you have content that may or may not exist depending on the
 page you're processing.
 
@@ -129,8 +126,8 @@ page you're processing.
 ### Template blocks
 
 Go text/templates support defining blocks and rendering them in conjuction with a main template. This is
-also supported by *mkpage*. For each template encountered on the command line it is added to an array of templates
-parsed by the text/template package.  Collectively they are then executed which causes final results 
+also supported by *mkpage*. Each template encountered on the command line is added to an array of templates
+parsed by the text/template package.  Each template will be executed and the final results will
 render to stdout by *mkpage*.
 
 ```shell
@@ -177,17 +174,17 @@ In this example the output would look like
 
 *mkpage* understands three content formats
 
-+ text/plain (e.g. "text:" when specifying strings and any file expect those having the extension ".md" or ".json")
-+ text/markdown (e.g. "markdown:" when specifying strings, file extension ".md")
-+ application/json (e.g. "json:" when specifying strings, file extension ".json")
++ text/plain (e.g. "text:" strings and any file expect those having the extension ".md" or ".json")
++ text/markdown (e.g. "markdown:" strings and file extension ".md")
++ application/json (e.g. "json:" strings and file extension ".json")
 
 It also supports three data sources
 
-+ an explicit string (prefixed with a hint, e.g. "text:", "markdown:", "json:")
++ an explicit string (prefixed with a format, e.g. "text:", "markdown:", "json:")
 + a filepath and filename (the default data source)
 + a URL (identified by the URL prefixes http:// and https://)
 
-Content type is evaluate and if necessary transformed sending it to the Go text/template.
+Content type is evaluated, transformed (if necessary), and sent to the Go text/template.
 
 Create a template called _data-source-demo.tmpl_. It would look like
 
@@ -229,7 +226,6 @@ superset of [Markdown](http://daringfireball.net/projects/markdown/) as created 
 
 The markdown processor is invoked for values with the "markdown:" hint prefix, files ending 
 in ".md" extension or URL content with the content type returned as "text/markdown" (i.e. 
-content type of "text/plain" mean the markdown process is not run and the content is 
-treated as plain 
+content with a type of "text/plain" does not use the markdown process and is treated as plain 
 text).
 
