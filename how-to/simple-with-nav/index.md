@@ -6,10 +6,10 @@ navigation and document specific titles. Like the simple theme you have
 a Content element and a sitewide common CSSPath element.
 
 The title element in the Markdown document is extracted with the _mkpage_ 
-utility called _titleline_.  
+utility called _titleline_.
 
 This theme relies on three _mkpage_ project commands - _mkpage_, 
-_reldocpath_, _titleline_` and _ws_ (for testing the website and viewing 
+_reldocpath_, _titleline_ and _ws_ (for testing the website and viewing 
 from your web browser over http://localhost:8000)
 
 To test this theme do the following run the following commands in this 

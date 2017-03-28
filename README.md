@@ -10,9 +10,10 @@ have a port of Bash).
 _mkpage_ can run on machines as small as a Raspberry Pi.  Its small foot print and minimal 
 dependencies means installation usually boils down to copying the precompiled binaries to a bin directory 
 in your path. Precompiled binaries are available for Linux, Windows and Mac OS X running on Intel as 
-well as for the ARM7 versions of Raspbian running on Raspberry Pi.  _mkpage_ built on Go's text templates
-has been easier for us to support when compared with more established static site generators like 
-[Jekyll](https://jekyllrb.com/).
+well as for the ARM7 versions of Raspbian running on Raspberry Pi.  _mkpage_ is built on Go's text templates.
+The template markup similar to the [Mustache](https://mustache.github.io/) templates and 
+[Handlebars](http://handlebarsjs.com/).  _mkpage_ has been easier for us to support when compared with 
+more established static site generators like [Jekyll](https://jekyllrb.com/).
 
 _mkpage_'s minimalism turns into an advantage when you combine _mkpage_ with the standard suite of text 
 processing tools available under your typical Unix/Posix like operating sytems. This makes scripting a 

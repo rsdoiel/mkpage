@@ -6,6 +6,10 @@ one replacable element named "Content". Included is a Bash script for
 assembling markdown files into HTML pages. The Bash
 script is called [mk-website.bash](mk-website.bash).
 
+```shell
+
+```
+
 To test this theme do the following run the following commands in this directory.
 
 ```shell
