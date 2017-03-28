@@ -33,7 +33,7 @@ function MakePage() {
 		"content=$content" \
 		"sitebuilt=text:Updated $(date)" \
 		"copyright=copyright.md" \
-		page.tmpl > "$html"
+		page.tmpl >"$html"
 }
 
 echo "Checking necessary software is installed"
