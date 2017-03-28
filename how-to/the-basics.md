@@ -111,7 +111,7 @@ What happens if you run this command?
     mkpage title-demo.tmpl
 ```
 
-There is two empty lines of output. The reason is we don't see something like
+This produces two empty lines of output. The reason we don't see something like
 
 ```
     If this title: <no value>
