@@ -7,19 +7,18 @@ comprised of a set of command line utilities that augment the standard suite of 
 available on most Posix based operating systems (e.g. Linux, Mac OS X, Raspberry Pi and Windows systems that 
 have a port of Bash).
 
-Depending on the ammount of content you need to render _mkpage_ will run on machines as small
-as a Raspberry Pi.  Given its small foot print and minimal dependencies installing it 
-usually boils down to copying the precompiled binaries to a bin directory in your path. Precompiled
-binaries are available for Linux, Windows and Mac OS X running on Intel as well as for the ARM7 versions
-of Raspbian running on Raspberry Pi.  Given the minimal dependencies and simpler template syntax it 
-has made our lifes easier when compared to support older static site generators like [Jekyll](https://jekyllrb.com/).  
-Since _mkpage_ uses the Go text/template packages graduating to a more featureful systems like 
-[Hugo](http://hugo.io) usually amounts to adding Hugo's additional template functionality when
-desired.  _mkpage_'s minimalism turns into an advantage when you combine _mkpage_ with the standard 
-suite of text processing tools available under your typical Unix/Posix like operating sytems. This makes 
-scripting a _mkpage_ project using languages like Bash and Python relatively straight forward. 
-Each _mkpage_ utility is independent. You can use as few or as many as you like as you when you script the 
-website creation process that best fits your needs.
+_mkpage_ can run on machines as small as a Raspberry Pi.  Its small foot print and minimal 
+dependencies means installation usually boils down to copying the precompiled binaries to a bin directory 
+in your path. Precompiled binaries are available for Linux, Windows and Mac OS X running on Intel as 
+well as for the ARM7 versions of Raspbian running on Raspberry Pi.  _mkpage_ built on Go's text templates
+has been easier for us to support when compared with more established static site generators like 
+[Jekyll](https://jekyllrb.com/).
+
+_mkpage_'s minimalism turns into an advantage when you combine _mkpage_ with the standard suite of text 
+processing tools available under your typical Unix/Posix like operating sytems. This makes scripting a 
+_mkpage_ project using languages like Bash and Python relatively straight forward.  Each _mkpage_ utility 
+is independent. You can use as few or as many as you like as you when you script the website creation 
+process that best fits your needs.
 
 
 The following command line tools come with _mkpage_ 
@@ -32,7 +31,6 @@ The following command line tools come with _mkpage_
 + [titleline](docs/titleline) -- a tool for extracting the first title (H1) in a Markdown document
 + [reldocpath](docs/reldocpath.html) -- a relative path calculator, useful for pathing hrefs and src attributes in a website
 + [ws](docs/ws.html) -- a fast, small, web server for site development or deployment
-
 
 ## A quick tour
 
