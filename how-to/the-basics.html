@@ -26,40 +26,48 @@
 <h1>mkpage templates and Markdown</h1>
 
 <p><em>mkpage</em> uses Go&rsquo;s text/templates for rendering content. This template system was inspired by
-simple templates like <a href="https://mustache.github.io/">Mustache</a> and <a href="http://handlebarsjs.com/">Handlebars</a>.<br />
-While Go&rsquo;s take on these template systems is simple it lacks documentation.  To start to remedy
-that I&rsquo;ve collected the basics used I&rsquo;ve commonly in the websites I&rsquo;ve built using <em>mkpage</em> and <em>mkslides</em>.</p>
+simple templates like <a href="https://mustache.github.io/">Mustache</a> and <a href="http://handlebarsjs.com/">Handlebars</a>.
+While Go&rsquo;s templates can be simple the systems lacks documentation.  As a remedy
+I&rsquo;ve collected few simple examples here based on my experience developing websites
+with <em>mkpage</em> and <em>mkslides</em>.</p>
 
 <h2>Basic element</h2>
 
-<p>Like Mustache and Handlebars Go text/templates using a double curly bracket notation to indicate an
-element to replace.  If you wanted to place &ldquo;Hello World&rdquo; with &ldquo;Hello Georgina&rdquo; then
+<p>Like Mustache and Handlebars Go text/templates use double curly brackets to indicate an
+element which is to be replace.  If you wanted to replace &ldquo;Hello World&rdquo; with &ldquo;Hello Georgina&rdquo; then
 your Go template would look something like this</p>
 
 <pre><code>    Hello {{ .World }}
 </code></pre>
 
-<p>Here&rsquo;s an example of replacing {{ .World }} would get replaced with &ldquo;Georgina&rdquo; using <em>mkpage</em></p>
+<p>Here&rsquo;s an example of replacing <code>{{ .World }}</code> with &ldquo;Georgina&rdquo;</p>
 
 <pre><code class="language-shell">    echo 'Hello {{ .World }}' &gt; hello-world.tmpl
     mkpage &quot;World=text:Georgina&quot; hello-world.tmpl
 </code></pre>
 
-<p>To he output should look like</p>
+<p>Running these two command should result in output like</p>
 
 <pre><code>    Hello Georgina
 </code></pre>
 
 <p>The line with the <code>echo</code> is just creating our template and saving it as the file <em>hello-world.tmpl</em>.
-In the template the only special part is that <code>{{ .World }}</code> indicating the variable &ldquo;World&rdquo; will
-be replace by something.  In the line with <code>mkpage</code> we are define the value for &ldquo;.World&rdquo;. Note
-we don&rsquo;t need to prefix &ldquo;World&rdquo; with a dot. We just type <code>World=text:Georgina</code> in quotes.
-This tells the template to replace <code>{{ .World }}</code> with the text &ldquo;Georgina&rdquo;.
-The end of the line with <em>mkpage</em> simply says use the template <em>hello-world.tmpl</em> we previously created.</p>
+In the template the only special part is <code>{{ .World }}</code>. This indicates the variable &ldquo;World&rdquo; will
+be replace by something.  In the line with <code>mkpage</code> we define the value for &ldquo;.World&rdquo;. Note
+we don&rsquo;t need to prefix &ldquo;World&rdquo; with a dot like we did in the template. We just type
+<code>World=text:Georgina</code> in quotes.  This tells the template to replace <code>{{ .World }}</code> with the text &ldquo;Georgina&rdquo;.
+At the end of the line starting with <em>mkpage</em> well tell it to use <em>hello-world.tmpl</em> for
+the template.</p>
 
-<p>If we did not include <code>World=...</code> wth the <em>mkpage</em> command using the <em>hello-world.tmpl</em> template
-<em>mkpage</em> would return an error. If we included other key/value pairs not mentioned in the template
-they would be silently ignored.</p>
+<p>If we did not include <code>World=...</code> with the <em>mkpage</em> command using the <em>hello-world.tmpl</em> template
+<em>mkpage</em> would return output like</p>
+
+<pre><code>    Hello &lt;no value&gt;
+</code></pre>
+
+<p>If we included other key/value pairs not mentioned in the template they would be silently ignored.</p>
+
+<p>If we made a typo in <em>hello-world.tmpl</em> then we would see an error message.</p>
 
 <p>Try the following to get a feel for how key/value pairs work with <em>mkpage</em>. The first two will render but display
 <code>Hello &lt;no value&gt;</code> where &ldquo;Georgina&rdquo; was in our previous example. The first one because no value is
@@ -79,7 +87,7 @@ last one just ignores &ldquo;Name=text:Fred&rdquo; because name isn&rsquo;t foun
 
 <h3>Conditional elements</h3>
 
-<p>One nice feature of Go&rsquo;s text/template DSL is that template elements can be condition. This can
+<p>One nice feature of Go&rsquo;s text template is that template elements can be condition. This can
 be done using the &ldquo;if&rdquo; and &ldquo;with&rdquo; template functions. Here&rsquo;s how to show a title conditionally
 using the &ldquo;if&rdquo; function.</p>
 
@@ -90,6 +98,43 @@ using the &ldquo;if&rdquo; function.</p>
 
 <pre><code class="language-go">    {{with .title}}{{ . }}{{end}}
 </code></pre>
+
+<p>Let&rsquo;s create a template file with both these statements called <em>title-demo.tmpl</em> and run the
+<em>mkpage</em> command.</p>
+
+<pre><code class="language-shell">    echo &quot;{{if .title}}If this title: {{.title}}{{end}}&quot; &gt; title-demo.tmpl
+    echo &quot;{{with .title}}With this title: {{ . }}{{end}}&quot; &gt;&gt; title-demo.tmpl 
+    mkpage &quot;title=text:This is a title demo&quot; title-demo.tmpl
+</code></pre>
+
+<p>The output should look like</p>
+
+<pre><code>    If this title: This is a title demo
+    With this title: This is a title demo
+</code></pre>
+
+<p>In the first line with the <em>if</em> we refer to &ldquo;.title&rdquo; as in our first example with &ldquo;.World&rdquo;.
+In the second line we refer to the value as &ldquo;.&rdquo;.  The reason we prefix variable names with
+a dot (period) is because we are actually describing a path or context of object relationships.
+I like to think of the starting dot as &ldquo;this here&rdquo; or simply &ldquo;this&rdquo;.  So in the &ldquo;with&rdquo; line
+We waying &ldquo;with this title do something&rdquo; and between that and the part ending in <code>{{end}}</code>
+we can refer to &ldquo;.title&rdquo; simply as &ldquo;this thing&rdquo; where <code>{{ . }}</code> is replace with the value
+of &ldquo;.title&rdquo;.</p>
+
+<p>What happens if you run this command?</p>
+
+<pre><code class="language-shell">    mkpage title-demo.tmpl
+</code></pre>
+
+<p>There is two empty lines of output. The reason is we don&rsquo;t see something like</p>
+
+<pre><code>    If this title: &lt;no value&gt;
+    With this title: &lt;no value&gt;
+</code></pre>
+
+<p>Is because <em>if</em> and <em>with</em> are conditionally writing the value of title if it has been set.
+This becomes a useful tool when you have content that may or may not exist depending on the
+page you&rsquo;re processing.</p>
 
 <h3>Template blocks</h3>
 
@@ -134,7 +179,7 @@ or even be defined in the main template file itself).</p>
 
 <h2>Content formats and data sources</h2>
 
-<p><em>mkpage</em> support three content formats</p>
+<p><em>mkpage</em> understands three content formats</p>
 
 <ul>
 <li>text/plain (e.g. &ldquo;text:&rdquo; when specifying strings and any file expect those having the extension &ldquo;.md&rdquo; or &ldquo;.json&rdquo;)</li>
@@ -146,19 +191,50 @@ or even be defined in the main template file itself).</p>
 
 <ul>
 <li>an explicit string (prefixed with a hint, e.g. &ldquo;text:&ldquo;, &ldquo;markdown:&ldquo;, &ldquo;json:&ldquo;)</li>
-<li>a filepath and filename</li>
-<li>a URL</li>
+<li>a filepath and filename (the default data source)</li>
+<li>a URL (identified by the URL prefixes http:// and https://)</li>
 </ul>
 
-<p>Content type is evaluate and if necessary transformed before going into the Go text/template.</p>
+<p>Content type is evaluate and if necessary transformed sending it to the Go text/template.</p>
+
+<p>Create a template called <em>data-source-demo.tmpl</em>. It would look like</p>
+
+<pre><code>    This is a plain text string: &quot;{{ .string }}&quot;
+
+    Below is a an included file:
+    {{ .file }}
+    
+    Finally below is data from a URL:
+    {{ .url }}
+</code></pre>
+
+<p>Create a text file named <em>hello.md</em>.</p>
+
+<pre><code>    # this is a file
+
+    Hello World!
+</code></pre>
+
+<p>Type the following</p>
+
+<pre><code class="language-shell">    mkpage &quot;string=text:Hello World&quot; &quot;file=hello.md&quot; \
+      &quot;url=https://raw.githubusercontent.com/caltechlibrary/mkpage/master/nav.md&quot; \
+      data-source-demo.tmpl
+</code></pre>
+
+<p>What do you see?</p>
 
 <h2>A note about Markdown dialect</h2>
 
-<p>In additional to populating a template with values from data sources <em>mkpage</em> also includes the
-<a href="https://github.com/russross/blackfriday">blackfriday</a> markdown processor.  The <code>blackfriday.MarkdownCommon()</code>
-function is envoked whenever markdown content is suggested. That means for strings that have the
-&ldquo;markdown:&rdquo; hint prefix, files ending in &ldquo;.md&rdquo; file extension or URL content with the content type
-returned as &ldquo;text/markdown&rdquo;.</p>
+<p><em>mkpage</em> implements <a href="https://guides.github.com/features/mastering-markdown/">Github Flavored Markdown</a>
+using the <a href="https://github.com/russross/blackfriday">blackfriday</a> markdown processor.  This is a
+superset of <a href="http://daringfireball.net/projects/markdown/">Markdown</a> as created by John Gruber.</p>
+
+<p>The markdown processor is invoked for values with the &ldquo;markdown:&rdquo; hint prefix, files ending
+in &ldquo;.md&rdquo; extension or URL content with the content type returned as &ldquo;text/markdown&rdquo; (i.e.
+content type of &ldquo;text/plain&rdquo; mean the markdown process is not run and the content is
+treated as plain
+text).</p>
 
 </section>
 

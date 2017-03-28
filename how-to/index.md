@@ -7,6 +7,7 @@ working with Go based text/templates.
 
 ## Evolving a _mkpage_ project
 
++ [The Basics](the-basics.html) -- a quick intro do working with Go text templates
 + [One element](one-element/) -- turning a markdown document into HTML
 + [Simple](simple/) -- Setting a page's CSS path, Title and Content area
 + [Simple w/Nav](simple-with-nav/) -- A simple page include navigation from Markdown
