@@ -55,7 +55,7 @@ mkpage \
 	page.tmpl >docs/index.html
 
 for SCRIPT_NAME in $(findfile -s .bash docs); do
-	echo "Running how-to/$SCRIPT_NAME"
+	echo "Running docs/$SCRIPT_NAME"
 	"docs/$SCRIPT_NAME"
 done
 

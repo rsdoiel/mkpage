@@ -49,7 +49,8 @@
 
 <h2>OPTIONS</h2>
 
-<pre><code>	-h	show help
+<pre><code>	-default-template	Use the default template
+	-h	show help
 	-help	show help
 	-l	show license
 	-license	show license
@@ -71,28 +72,33 @@
     
     The current weather is
 
-    {{.weather}}
+    {{index .weatherForecast.data.weather 0}}
 
     Thank you
 
-	{{.signature}}
+    {{.signature}}
 </code></pre>
 
-<p>Render the template above (i.e. myformletter.template) would be accomplished from the following
-data sources&ndash;</p>
+<p>Render the template above (i.e. examples/weather.tmpl) would be accomplished from
+the following data sources&ndash;</p>
 
 <ul>
 <li>&ldquo;now&rdquo; and &ldquo;name&rdquo; are strings</li>
-<li>&ldquo;weatherForcast&rdquo; comes from a URL</li>
-<li>&ldquo;license&rdquo; comes from a file in our local disc</li>
+<li>&ldquo;weatherForecast&rdquo; is JSON data retrieved from a URL
+
+<ul>
+<li>&rdquo;.data.weather&rdquo; is a data path inside the JSON document</li>
+<li>&ldquo;index&rdquo; let&rsquo;s us pull our the &ldquo;0&rdquo;-th element (i.e. the initial element of the array)</li>
+</ul></li>
+<li>&ldquo;signature&rdquo; comes from a file in our local disc (i.e. examples/signature.txt)</li>
 </ul>
 
 <p>That would be expressed on the command line as follows</p>
 
-<pre><code class="language-shell">	mkpage &quot;now=text:$(date)&quot; &quot;name=text:Little Frieda&quot; \
-		&quot;weather=http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&amp;lon=144.74977715100056&amp;FcstType=json&quot; \
-		signature=testdata/signature.txt \
-		testdata/myformletter.template
+<pre><code class="language-shell">    mkpage &quot;now=text:$(date)&quot; &quot;name=text:Little Frieda&quot; \
+        &quot;weatherForecast=http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&amp;lon=144.74977715100056&amp;FcstType=json&quot; \
+        signature=examples/signature.txt \
+        examples/weather.tmpl     
 </code></pre>
 
 <p>Golang&rsquo;s text/template docs can be found at</p>

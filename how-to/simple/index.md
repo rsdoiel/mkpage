@@ -25,6 +25,73 @@ directory.
 
 Point your webbrowser at http://localhost:8000 and view this page.
 
+### Template example
+
+```template
+    <!DOCTYPE html>
+    <html>
+    <head>
+        {{with .Title -}}<title>{{- . -}}</title>{{- end }}
+        {{with .CSSPath -}}<link rel="stylesheet" href="{{- . -}}">{{- end}}
+    </head>
+    <body>
+        <header>
+            {{with .Title -}}<h1>{{- . -}}</h1>{{- end}}
+        </header>
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="../">Up</a></li>
+            </ul>
+        </nav>
+        {{with .Content}}<section>{{- . -}}</section>{{- end}}
+        <footer>Simple is a theme that works with  three elements Title, CSSPath, and Content</footer>
+    </body>
+    </html>
+```
+
+### Bash script
+
+```shell
+    #!/bin/bash
+
+    START="$(pwd)"
+    cd "$(dirname "$0")"
+
+    function SoftwareCheck() {
+    	for NAME in "$@"; do
+    		APP_NAME="$(which "$NAME")"
+    		if [ "$APP_NAME" = "" ] && [ ! -f "./bin/$NAME" ]; then
+    			echo "Missing $NAME"
+    			exit 1
+    		fi
+    	done
+    }
+
+    echo "Checking necessary software is installed"
+    SoftwareCheck mkpage reldocpath ws
+    if [ "$WEBSITE_TITLE" = "" ]; then
+    	WEBSITE_TITLE="Simple Theme Demo"
+    fi
+
+    echo "Converting Markdown files to HTML supporting a relative document path to the CSS file"
+    for MARKDOWN_FILE in $(find . -type f | grep -E "\.md$"); do
+    	# Caltechlate DOCPath
+    	DOCPath="$(dirname "$MARKDOWN_FILE")"
+    	# Calculate the HTML filename
+    	HTML_FILE="$DOCPath/$(basename "$MARKDOWN_FILE" .md).html"
+    	CSSPath="$(reldocpath "$DOCPath" css)"
+    	mkpage \
+    		"Title=text:$WEBSITE_TITLE" \
+    		"CSSPath=text:$CSSPath/site.css" \
+    		"Content=$MARKDOWN_FILE" \
+    		page.tmpl >"$HTML_FILE"
+    done
+
+    cd "$START"
+```
+
+
 ## Improvements over one-element
 
 The Title value can be set for the whole site by modifying by setting an

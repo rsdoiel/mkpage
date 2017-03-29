@@ -37,6 +37,86 @@ directory.</p>
 
 <p>Point your webbrowser at <a href="http://localhost:8000">http://localhost:8000</a> and view this page.</p>
 
+<h3>Template Example</h3>
+
+<pre><code class="language-template">    &lt;!DOCTYPE html&gt;
+    &lt;html&gt;
+    &lt;head&gt;
+        {{with .Title -}}&lt;title&gt;{{- . -}}&lt;/title&gt;{{- end }}
+        {{with .CSSPath -}}&lt;link rel=&quot;stylesheet&quot; href=&quot;{{- . -}}&quot;&gt;{{- end}}
+        {{with .CSS -}}&lt;style&gt;{{- . -}}&lt;/style&gt;{{- end }} 
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;header&gt;
+            {{with .Title -}}&lt;h1&gt;{{- . -}}&lt;/h1&gt;{{- end}}
+        &lt;/header&gt;
+        {{with .Nav}}&lt;nav&gt;{{- . -}}&lt;/nav&gt;{{- end}}
+        {{with .Content}}&lt;section&gt;{{- . -}}&lt;/section&gt;{{- end}}
+        {{with .Footer -}}&lt;footer&gt;{{- . -}}&lt;/footer&gt;{{- end -}}
+    &lt;/body&gt;
+    &lt;/html&gt;
+</code></pre>
+
+<h3>Bash Script</h3>
+
+<pre><code class="language-shell">    #!/bin/bash
+
+    START=$(pwd)
+    cd &quot;$(dirname &quot;$0&quot;)&quot;
+
+    function SoftwareCheck() {
+    	for NAME in &quot;$@&quot;; do
+    		APP_NAME=&quot;$(which &quot;$NAME&quot;)&quot;
+    		if [ &quot;$APP_NAME&quot; = &quot;&quot; ] &amp;&amp; [ ! -f &quot;./bin/$NAME&quot; ]; then
+    			echo &quot;Missing $NAME&quot;
+    			exit 1
+    		fi
+    	done
+    }
+
+    function GenerateNav() {
+    	echo &quot;+ [Home](/)&quot; &gt;nav.md
+    	echo &quot;+ [Up](../)&quot; &gt;&gt;nav.md
+    	for FNAME in $(find . -type f | grep -E &quot;\.md$&quot;); do
+    		title=&quot;$(titleline -i &quot;$FNAME&quot;)&quot;
+    		docpath=&quot;$(dirname &quot;$FNAME&quot;)&quot;
+    		html_filename=&quot;$(basename &quot;$FNAME&quot; .md).html&quot;
+    		if [ &quot;$html_filename&quot; != &quot;nav.html&quot; ]; then
+    			echo &quot;+ [$title]($docpath/$html_filename)&quot; &gt;&gt;nav.md
+    		fi
+    	done
+    }
+
+    echo &quot;Checking necessary software is installed&quot;
+    SoftwareCheck mkpage reldocpath titleline ws
+
+    echo &quot;Generating nav.md from current Markdown files found&quot;
+    GenerateNav
+
+    echo &quot;Converting Markdown files to HTML supporting a relative document path to the CSS file&quot;
+    for MARKDOWN_FILE in $(find . -type f | grep -E &quot;\.md$&quot;); do
+    	# Get filename
+    	FNAME=&quot;$(basename &quot;$MARKDOWN_FILE&quot;)&quot;
+    	if [ &quot;$FNAME&quot; != &quot;nav.md&quot; ]; then
+    		# Caltechlate DOCPath
+    		DOCPath=&quot;$(dirname &quot;$MARKDOWN_FILE&quot;)&quot;
+    		# Calculate the HTML filename
+    		HTML_FILE=&quot;$(basename &quot;$MARKDOWN_FILE&quot; .md).html&quot;
+    		CSSPath=&quot;$(reldocpath &quot;$DOCPath&quot; css)&quot;
+    		WEBSITE_TITLE=&quot;$(titleline -i &quot;$MARKDOWN_FILE&quot;)&quot;
+    		echo &quot;Generating $WEBSITE_TITLE from $MARKDOWN_FILE&quot;
+    		mkpage \
+    			&quot;Title=text:$WEBSITE_TITLE&quot; \
+    			&quot;CSSPath=text:$CSSPath/site.css&quot; \
+    			&quot;Nav=nav.md&quot; \
+    			&quot;Content=$MARKDOWN_FILE&quot; \
+    			page.tmpl &gt;&quot;$DOCPath/$HTML_FILE&quot;
+    	fi
+    done
+
+    cd &quot;$START&quot;
+</code></pre>
+
 <h2>Improvements over one-element</h2>
 
 <ul>
