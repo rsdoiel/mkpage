@@ -1,5 +1,5 @@
 
-# mkpage templates and Markdown
+# The Basics
 
 _mkpage_ uses Go's text/templates for rendering content. This template system was inspired by
 simple templates like [Mustache](https://mustache.github.io/) and [Handlebars](http://handlebarsjs.com/).
