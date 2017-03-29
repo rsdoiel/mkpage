@@ -25,7 +25,7 @@ process that best fits your needs.
 The following command line tools come with _mkpage_ 
 
 + [mkpage](docs/mkpage.html) -- a single page renderer with support for Markdown, JSON and Go text templates
-+ [mkslides](dosc/mkslides.html) -- a HTML slide generator based on the approach in _mkpage_
++ [mkslides](docs/mkslides.html) -- a HTML slide generator based on the approach in _mkpage_
 + [mkrss](docs/mkrss.html) -- an RSS feed generator for content authored in Markdown and rendered to HTML
 + [sitemapper](docs/sitemapper.html) -- an XML Sitemap generator
 + [byline](docs/byline.html) -- a tool for extracting bylines from Markdown files
