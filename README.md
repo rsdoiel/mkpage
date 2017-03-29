@@ -29,7 +29,7 @@ The following command line tools come with _mkpage_
 + [mkrss](docs/mkrss.html) -- an RSS feed generator for content authored in Markdown and rendered to HTML
 + [sitemapper](docs/sitemapper.html) -- an XML Sitemap generator
 + [byline](docs/byline.html) -- a tool for extracting bylines from Markdown files
-+ [titleline](docs/titleline) -- a tool for extracting the first title (H1) in a Markdown document
++ [titleline](docs/titleline.html) -- a tool for extracting the first title (H1) in a Markdown document
 + [reldocpath](docs/reldocpath.html) -- a relative path calculator, useful for pathing hrefs and src attributes in a website
 + [ws](docs/ws.html) -- a fast, small, web server for site development or deployment
 
