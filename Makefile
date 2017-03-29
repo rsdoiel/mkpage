@@ -148,8 +148,18 @@ release: dist/linux-amd64 dist/windows-amd64 dist/macosx-amd64 dist/raspbian-arm
 	cp -v README.md dist/
 	cp -v LICENSE dist/
 	cp -v INSTALL.md dist/
-	cp -v docs/*.md dist/
-	cp -v how-to/*.md md dist/
+	cp -v docs/byline.md dist/
+	cp -v docs/mkpage.md dist/
+	cp -v docs/mkrss.md dist/
+	cp -v docs/mkslides.md dist/
+	cp -v docs/reldocpath.md dist/
+	cp -v docs/sitemapper.md dist/
+	cp -v docs/titleline.md dist/
+	cp -v docs/urldecode.md dist/
+	cp -v docs/urlencode.md dist/
+	cp -v docs/ws.md dist/
+	cp -v how-to/go-template-recipes.md dist/
+	cp -v how-to/the-basics.md dist/
 	cp -vR templates dist/
 	zip -r $(PROJECT)-$(VERSION)-release.zip dist/*
 

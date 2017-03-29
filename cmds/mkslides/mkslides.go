@@ -160,8 +160,8 @@ func main() {
 	// Configure app
 	cfg := cli.New(appName, "MKPAGE", fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version), mkpage.Version)
 	cfg.UsageText = fmt.Sprintf(usage, appName)
-	cfg.DescriptionText = fmt.Sprintf(description, appName)
-	cfg.ExampleText = fmt.Sprintf(examples, appName, appName, appName, appName, appName)
+	cfg.DescriptionText = fmt.Sprintf(description, appName, appName)
+	cfg.ExampleText = fmt.Sprintf(examples, appName, appName, appName, appName, appName, appName, appName)
 
 	// Process flags and update the environment as needed.
 	if showHelp == true {
