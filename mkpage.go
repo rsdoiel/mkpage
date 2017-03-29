@@ -584,8 +584,9 @@ var (
 `
 )
 
-// MarkdownToSlides turns a markdown file into one or more Slide using the fname, title and cssPath provided
-func MarkdownToSlides(fname, title, cssPath, jsPath string, mdSource []byte) []*Slide {
+// MarkdownToSlides turns a markdown file into one or more Slide structs
+// Which populate predefined key/value pairs for later rendering in Markdown
+func MarkdownToSlides(fname string, mdSource []byte) []*Slide {
 	var slides []*Slide
 
 	// Note: handle legacy CR/LF endings as well as normal LF line endings
@@ -597,7 +598,6 @@ func MarkdownToSlides(fname, title, cssPath, jsPath string, mdSource []byte) []*
 
 	lastSlide := len(mdSlides) - 1
 	for i, s := range mdSlides {
-		data := blackfriday.MarkdownCommon(s)
 		slides = append(slides, &Slide{
 			FName:   strings.TrimSuffix(path.Base(fname), path.Ext(fname)),
 			CurNo:   i,
@@ -605,29 +605,40 @@ func MarkdownToSlides(fname, title, cssPath, jsPath string, mdSource []byte) []*
 			NextNo:  (i + 1),
 			FirstNo: 0,
 			LastNo:  lastSlide,
-			Title:   title,
-			Content: string(data),
-			CSSPath: cssPath,
-			JSPath:  jsPath,
+			Content: fmt.Sprintf("%s", s),
 		})
 	}
 	return slides
 }
 
-// MakeSlide this takes a io.Writer, a template and slide and executes the template.
-func MakeSlide(wr io.Writer, tmpl *template.Template, slide *Slide) error {
-	return tmpl.Execute(wr, slide)
+// MakeSlide this takes a io.Writer, a template, key/value map pairs and Slide struct.
+// It resolves the data int key/value pairs, merges the prefined mapping from Slide struct
+// then executes the template.
+func MakeSlide(wr io.Writer, tmpl *template.Template, keyValues map[string]string, slide *Slide) error {
+	data, err := ResolveData(keyValues)
+	if err != nil {
+		return fmt.Errorf("Can't resolve data source %s", err)
+	}
+	// Merge the slide metadata into data pairs for template
+	data["FName"] = slide.FName
+	data["CurNo"] = slide.CurNo
+	data["PrevNo"] = slide.PrevNo
+	data["NextNo"] = slide.NextNo
+	data["FirstNo"] = slide.FirstNo
+	data["LastNo"] = slide.LastNo
+	data["Content"] = slide.Content
+	return tmpl.Execute(wr, data)
 }
 
 // MakeSlideFile this takes a template and slide and renders the results to a file.
-func MakeSlideFile(tmpl *template.Template, slide *Slide) error {
+func MakeSlideFile(tmpl *template.Template, keyValues map[string]string, slide *Slide) error {
 	sname := fmt.Sprintf(`%02d-%s.html`, slide.CurNo, strings.TrimSuffix(path.Base(slide.FName), path.Ext(slide.FName)))
 	fp, err := os.Create(sname)
 	if err != nil {
 		return fmt.Errorf("%s %s", sname, err)
 	}
 	defer fp.Close()
-	err = MakeSlide(fp, tmpl, slide)
+	err = MakeSlide(fp, tmpl, keyValues, slide)
 	if err != nil {
 		return fmt.Errorf("%s %s", sname, err)
 	}
@@ -635,10 +646,10 @@ func MakeSlideFile(tmpl *template.Template, slide *Slide) error {
 }
 
 // MakeSlideString this takes a template and slide and renders the results to a string
-func MakeSlideString(tmpl *template.Template, slide *Slide) (string, error) {
+func MakeSlideString(tmpl *template.Template, keyValues map[string]string, slide *Slide) (string, error) {
 	var buf bytes.Buffer
 	wr := io.Writer(&buf)
-	err := MakeSlide(wr, tmpl, slide)
+	err := MakeSlide(wr, tmpl, keyValues, slide)
 	return buf.String(), err
 }
 

@@ -21,7 +21,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	//"io/ioutil"
+	"io/ioutil"
 	"os"
 	"path"
 	"strings"
@@ -176,10 +176,26 @@ func main() {
 		}
 	}
 
+	// Setup our template function map
 	tmplFuncs := tmplfn.Join(tmplfn.TimeMap, tmplfn.PageMap)
+
 	// Assemble the template(s)
 	if len(templateSources) == 0 {
-		tmpl, err = template.New("default.tmpl").Funcs(tmplFuncs).Parse(mkpage.DefaultTemplateSource)
+		var templateSource string
+		// NOTE: If we have content coming from a pipe then treat it as template default.tmpl
+		if cli.IsPipe(os.Stdin) == true {
+			buf, err := ioutil.ReadAll(os.Stdin)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "%s\n", err)
+				os.Exit(1)
+			}
+			templateSource = string(buf)
+		} else {
+			// we have data from a console session, assume default template
+			templateSource = mkpage.DefaultTemplateSource
+		}
+
+		tmpl, err = template.New("default.tmpl").Funcs(tmplFuncs).Parse(templateSource)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Template parsing failed, %s\n", err)
 			os.Exit(1)

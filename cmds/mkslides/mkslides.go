@@ -35,29 +35,47 @@ import (
 )
 
 const (
-	usage = `USAGE: %s [OPTIONS] [FILES]`
+	usage = `USAGE: %s [OPTIONS] [KEY/VALUE DATA PAIRS] MARKDOWN_FILE [TEMPLATE_FILENAMES]`
 
 	description = `
 SYNOPSIS
 
-%s converts a Markdown file into a sequence of HTML5 slides.
+%s converts a Markdown file into a sequence of HTML5 slides using the
+key/value pairs to populate the templates and render to stdout.
+
+Features
 
 + Use Markdown to write your presentation in one file
 + Separate slides by "--" and a new line (e.g. \n versus \r\n)
-+ Apply the simple default template or use your own
++ Apply the default template or use your own
 + Control Layout and display with HTML5 and CSS
+
+%s is based on mkpage with the difference that multiple pages
+result from a single Markdown file. To manage the linkage between
+slides some predefined template variables is used.
+
++ Title which would hold the page title for presentation
++ CSSPath which would hold the path to your CSS File.
++ Content holds the extracted for each slide
++ CurNo which holds the current page number
++ FirstNo which holds the first slide's page number (e.g. 00)
++ LastNo which holds the last slides page number (e..g length of slide deck minus one)
++ PrevNo which holds the previous slide number if CurNo is create than 0
++ NextNo which holds the next slide number if CurNo is not the last slide
++ FName is the filename for presentation
+
+In your custom templates these should be exist to link everything together
+as expected.  In addition you may want to include JavaScript to allow mapping
+actions like "next slide" to the space bar or mourse click.
 
 CONFIGURATION
 
-+ MKSLIDES_CSS - specify the CSS file to include
-+ MKSLIDES_JS - specify the JS file to include
-+ MKSLIDES_MARKDOWN - the markdown file to process
-+ MKSLIDES_PRESENTATION_TITLE - specify the title of the presentation
-+ MKSLIDES_TEMPLATES - specify where to find the templates to use 
++ MKPAGE_TEMPLATES - specify where to find the template(s) to use for slides
 `
 	examples = `
 EXAMPLE
 
+In this example we're using the default slide template.
 Here's an example of a three slide presentation
 
     Welcome to [%s](../)
@@ -77,14 +95,23 @@ Here's an example of a three slide presentation
 
     Hope you enjoy [%s](https://github.com/caltechlbrary/%s)
 
+If you saved this as presentation.md you can run the following
+command to generate slides
 
-If you save this as presentation.md and run "%s presentation.md" it would
-generate the following webpages
+    %s "Title=text:My Presentation" \
+	    "CSSPath=text:css/slides.css" presentation.md
+
+Using a custom template would look like
+
+    %s -t custom-slides.tmpl \
+        "Title=text:My Presentation" \
+	    "CSSPath=text:css/slides.css" presentation.md
+
+This would result in the following webpages
 
 + 00-presentation.html
 + 01-presentation.html
 + 02-presentation.html
-
 `
 )
 
@@ -99,7 +126,6 @@ var (
 	presentationTitle string
 	showTemplate      bool
 	templateFNames    string
-	templateSource    = mkpage.DefaultSlideTemplateSource
 )
 
 func init() {
@@ -132,11 +158,10 @@ func main() {
 	args := flag.Args()
 
 	// Configure app
-	cfg := cli.New(appName, "MKSLIDES", fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version), mkpage.Version)
+	cfg := cli.New(appName, "MKPAGE", fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version), mkpage.Version)
 	cfg.UsageText = fmt.Sprintf(usage, appName)
 	cfg.DescriptionText = fmt.Sprintf(description, appName)
-	cfg.OptionsText = "OPTIONS\n"
-	cfg.ExampleText = fmt.Sprintf(examples, appName, appName, appName, appName, appName, appName)
+	cfg.ExampleText = fmt.Sprintf(examples, appName, appName, appName, appName, appName)
 
 	// Process flags and update the environment as needed.
 	if showHelp == true {
@@ -157,29 +182,42 @@ func main() {
 		os.Exit(0)
 	}
 
-	// Find the markdown/template filename if one is given on the command line
-	for _, arg := range args {
-		switch path.Ext(arg) {
-		case ".md":
-			mdFName = arg
-		case ".css":
-			cssPath = arg
-		case ".js":
-			jsPath = arg
-		default:
-			if len(templateFNames) > 0 {
-				templateFNames = strings.Join([]string{templateFNames, arg}, ":")
-			} else {
-				templateFNames = arg
-			}
+	var (
+		// This holds the template sources
+		templateSources []string
+		// NOTE: Now we assemble everything with this template variable.
+		tmpl           *template.Template
+		templateSource string
+		// Setup our template function map
+		tmplFuncs = tmplfn.Join(tmplfn.TimeMap, tmplfn.PageMap)
+	)
+
+	// Make sure we have a configured command to run
+	templateFNames = cfg.MergeEnv("templates", templateFNames)
+	if len(templateFNames) > 0 {
+		for _, fname := range strings.Split(templateFNames, ":") {
+			templateSources = append(templateSources, fname)
 		}
 	}
 
-	// Make sure we have a configured command to run after populating from command line args
-	mdFName = cfg.CheckOption("markdown", cfg.MergeEnv("markdown", mdFName), true)
-	templateFNames = cfg.MergeEnv("templates", templateFNames)
-	cssPath = cfg.MergeEnv("css", cssPath)
-	jsPath = cfg.MergeEnv("js", jsPath)
+	data := make(map[string]string)
+	for i, arg := range args {
+		switch {
+		case strings.Contains(arg, "=") == true:
+			// Update data map
+			pair := strings.SplitN(arg, "=", 2)
+			if len(pair) != 2 {
+				fmt.Fprintf(os.Stderr, "Can't read pair (%d) %s\n", i+1, arg)
+				os.Exit(1)
+			}
+			data[pair[0]] = pair[1]
+		case path.Ext(arg) == ".md":
+			mdFName = arg
+		default:
+			// Must be the template source
+			templateSources = append(templateSources, arg)
+		}
+	}
 
 	// Read in the Markdown file
 	mdSrc, err := ioutil.ReadFile(mdFName)
@@ -188,17 +226,28 @@ func main() {
 		os.Exit(1)
 	}
 
-	var (
-		tmpl      *template.Template
-		tmplFuncs = tmplfn.Join(tmplfn.TimeMap, tmplfn.PageMap)
-	)
-
 	//NOTE: If template is provided, read it in and replace templateSource content
-	if len(templateFNames) > 0 {
+	if len(templateSources) == 0 {
+		// NOTE: If we have content coming from a pipe then treat it as template default.tmpl
+		if cli.IsPipe(os.Stdin) == true {
+			buf, err := ioutil.ReadAll(os.Stdin)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "%s\n", err)
+				os.Exit(1)
+			}
+			templateSource = string(buf)
+		} else {
+			// we have data from a console session, assume default template
+			templateSource = mkpage.DefaultSlideTemplateSource
+		}
+		tmpl, err = template.New("default.tmpl").Funcs(tmplFuncs).Parse(templateSource)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Template parsing failed, %s\n", err)
+			os.Exit(1)
+		}
+	} else {
 		templateSources := strings.Split(templateFNames, ":")
 		tmpl, err = tmplfn.Assemble(tmplFuncs, templateSources...)
-	} else {
-		tmpl, err = tmplfn.Assemble(tmplFuncs, templateSource)
 	}
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%s\n", err)
@@ -206,10 +255,11 @@ func main() {
 	}
 
 	// Build the slides
-	slides := mkpage.MarkdownToSlides(mdFName, presentationTitle, cssPath, jsPath, mdSrc)
+	slides := mkpage.MarkdownToSlides(mdFName, mdSrc)
 	// Render the slides
 	for i, slide := range slides {
-		err := mkpage.MakeSlideFile(tmpl, slide)
+		// Merge slide data with rest of command line map (e.g. "Title=text:My Presentation" "CSSPath=text:css/slides.css")
+		err := mkpage.MakeSlideFile(tmpl, data, slide)
 		if err == nil {
 			// Note: Give some feed back when slide written successful
 			fmt.Fprintf(os.Stdout, "Wrote %02d-%s.html\n", slide.CurNo, strings.TrimSuffix(path.Base(slide.FName), path.Ext(slide.FName)))

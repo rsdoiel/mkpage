@@ -176,13 +176,15 @@ This is slide three, just a random paragraph of text. Blah, blah, blah, blah, bl
 		"<h2>Slide Three</h2>",
 	}
 
-	slides := MarkdownToSlides("test.html", "This is just a test", "", "", []byte(src))
+	slides := MarkdownToSlides("test.html", []byte(src))
 	if len(slides) != 3 {
 		t.Errorf("Was expected three slides %+v\n", slides)
 	}
 
+	keyVals := map[string]string{}
 	for i, slide := range slides {
-		s, err := MakeSlideString(tmpl, slide)
+		keyVals["Title"] = "text:" + titles[i]
+		s, err := MakeSlideString(tmpl, keyVals, slide)
 		if err != nil {
 			t.Errorf("MakeSlideString() failed %d - %s", i, err)
 		}

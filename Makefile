@@ -75,7 +75,7 @@ status:
 	git status
 
 save:
-	git commit -am "Quick Save"
+	if [ "$(msg)" != "" ]; then git commit -am "$(msg)"; else git commit -am "Quick Save"; fi
 	git push origin $(BRANCH)
 
 clean:
@@ -148,17 +148,9 @@ release: dist/linux-amd64 dist/windows-amd64 dist/macosx-amd64 dist/raspbian-arm
 	cp -v README.md dist/
 	cp -v LICENSE dist/
 	cp -v INSTALL.md dist/
-	cp -v byline.md dist/
-	cp -v go-template-recipes.md dist/
-	cp -v mkpage.md dist/
-	cp -v mkrss.md dist/
-	cp -v mkslides.md dist/
-	cp -v reldocpath.md dist/
-	cp -v sitemapper.md dist/
-	cp -v titleline.md dist/
-	cp -v urldecode.md dist/
-	cp -v urlencode.md dist/
-	cp -v ws.md dist/
+	cp -v docs/*.md dist/
+	cp -v how-to/*.md md dist/
+	cp -vR templates dist/
 	zip -r $(PROJECT)-$(VERSION)-release.zip dist/*
 
 website:

@@ -18,6 +18,7 @@ You can set a local default template path by using environment variables.
 ## OPTIONS
 
 ```
+	-default-template	Use the default template
 	-h	show help
 	-help	show help
 	-l	show license
@@ -41,27 +42,29 @@ Template
     
     The current weather is
 
-    {{.weather}}
+    {{index .weatherForecast.data.weather 0}}
 
     Thank you
 
-	{{.signature}}
+    {{.signature}}
 ```
 
-Render the template above (i.e. myformletter.template) would be accomplished from the following
-data sources--
+Render the template above (i.e. examples/weather.tmpl) would be accomplished from 
+the following data sources--
 
- + "now" and "name" are strings
- + "weatherForcast" comes from a URL
- + "license" comes from a file in our local disc
++ "now" and "name" are strings
++ "weatherForecast" is JSON data retrieved from a URL
+ 	+ ".data.weather" is a data path inside the JSON document
+	+ "index" let's us pull our the "0"-th element (i.e. the initial element of the array)
++ "signature" comes from a file in our local disc (i.e. examples/signature.txt)
 
 That would be expressed on the command line as follows
 
 ```shell
-	mkpage "now=text:$(date)" "name=text:Little Frieda" \
-		"weather=http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&lon=144.74977715100056&FcstType=json" \
-		signature=testdata/signature.txt \
-		testdata/myformletter.template
+    mkpage "now=text:$(date)" "name=text:Little Frieda" \
+        "weatherForecast=http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&lon=144.74977715100056&FcstType=json" \
+        signature=examples/signature.txt \
+        examples/weather.tmpl     
 ```
 
 Golang's text/template docs can be found at 
