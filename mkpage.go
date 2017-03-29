@@ -3,7 +3,7 @@
 //
 // @author R. S. Doiel, <rsdoiel@caltech.edu>
 //
-// Copyright (c) 2016, Caltech
+// Copyright (c) 2017, Caltech
 // All rights not granted herein are expressly reserved by Caltech.
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,7 +39,7 @@ import (
 
 const (
 	// Version of the mkpage package.
-	Version = "v0.0.16"
+	Version = "v0.0.17"
 
 	// LicenseText provides a string template for rendering cli license info
 	LicenseText = `
