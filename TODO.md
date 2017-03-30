@@ -1,5 +1,11 @@
+# Action Items
 
-# Someday, maybe
+## Next
+
++ [ ] mkpage, mkslides should accept a default template from stdin
++ [ ] normalize the options and behaviors of mkslides to align with mkpage
+
+## Someday, maybe
 
 + implement a mkriver tool that takes an OPML file and renders a 
   markdown file representing a river of news in the manner of Dave
