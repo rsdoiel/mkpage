@@ -1,57 +1,64 @@
 <!DOCTYPE html>
 <html>
 <head>
-    
-    <style>
+	
+	<style>
     body {
-        width: 100%;
-        height: 100%;
-        margin: 10%;
-        padding: 0;
-        font-size: calc(2em+1vw);
-        font-family: sans-serif;
+    	width: 100%;
+    	height: 100%;
+    	margin: 10%;
+    	padding: 0;
+    	font-size: 24px;
+    	font-family: sans-serif;
     }
     
     ul {
-        list-style: disc;
-        text-indent: 0.25em;
+    	list-style: circle;
+    	text-indent: 0.25em;
     }
     
     nav {
-        position: absolute;
-        top: 0em; 
-        margin:0;
-        padding:0.24em;
-        width: 100%;
-        height: 4em;
-        text-align: left;
-        font-size: 60%;
+    	position: absolute;
+    	top: 0em; 
+    	margin:0;
+    	padding:0.24em;
+    	width: 100%;
+    	height: 4em;
+    	text-align: left;
+    	font-size: 60%;
     }
     
-    section {
-        width: 100%;
-        height: auto;
-    }
+	section, p {
+		max-width: 85%;
+		padding: 0.24em;
+		margin: 0.24em;
+	}
+
+	code {
+		color: teal;
+	}
 </style>
 </head>
 <body>
-    <nav>
+	<nav>
 <a id="start-slide" href="00-presentation.html">Home</a>
-<a id="prev-slide" href="04-presentation.html">Prev</a>
+<a id="previ-slide" href="04-presentation.html">Prev</a>
 <a id="next-slide" href="06-presentation.html">Next</a>
-    </nav>
-    <section><h1>Customization - Default Template</h1>
+	</nav>
+	<section>
+# Customization - Default Template
 
-<p>Here is an example template</p>
+Here is an example template
 
-<pre><code class="language-text">    &lt;!DOCTYPE html&gt;
-    &lt;html&gt;
-    &lt;head&gt;
-        {{if .Title -}}&lt;title&gt;{{- .Title -}}&lt;/title&gt;{{- end}}
+```text
+    <!DOCTYPE html>
+    <html>
+    <head>
+        {{if .Title -}}<title>{{- .Title -}}</title>{{- end}}
         {{if .CSSPath -}}
-    &lt;link href=&quot;{{ .CSSPath }}&quot; rel=&quot;stylesheet&quot; /&gt;
+    <link href="{{ .CSSPath }}" rel="stylesheet" />
        {{else -}}
-    &lt;style&gt;
+    <style>
         body {
             width: 100%;
             height: 100%;
@@ -81,24 +88,24 @@
             width: 100%;
             height: auto;
         }
-    &lt;/style&gt;
+    </style>
     {{- end }}
-    &lt;/head&gt;
-    &lt;body&gt;
-        &lt;nav&gt;
+    </head>
+    <body>
+        <nav>
     {{ if ne .CurNo .FirstNo -}}
-    &lt;a id=&quot;start-slide&quot; href=&quot;{{printf &quot;%02d-%s.html&quot; .FirstNo .FName}}&quot;&gt;Home&lt;/a&gt;
+    <a id="start-slide" href="{{printf "%02d-%s.html" .FirstNo .FName}}">Home</a>
     {{- end}}
     {{ if gt .CurNo .FirstNo -}} 
-    &lt;a id=&quot;prev-slide&quot; href=&quot;{{printf &quot;%02d-%s.html&quot; .PrevNo .FName}}&quot;&gt;Prev&lt;/a&gt;
+    <a id="prev-slide" href="{{printf "%02d-%s.html" .PrevNo .FName}}">Prev</a>
     {{- end}}
     {{ if lt .CurNo .LastNo -}} 
-    &lt;a id=&quot;next-slide&quot; href=&quot;{{printf &quot;%02d-%s.html&quot; .NextNo .FName}}&quot;&gt;Next&lt;/a&gt;
+    <a id="next-slide" href="{{printf "%02d-%s.html" .NextNo .FName}}">Next</a>
     {{- end}}
-        &lt;/nav&gt;
-        &lt;section&gt;{{ .Content }}&lt;/section&gt;
-    {{with .JSPath}}&lt;script src=&quot;{{.}}&quot;&gt;&lt;/script&gt;{{end}}
-    &lt;script&gt;
+        </nav>
+        <section>{{ .Content }}</section>
+    {{with .JSPath}}<script src="{{.}}"></script>{{end}}
+    <script>
     (function (document, window) {
         'use strict';
         var start = document.getElementById('start-slide'),
@@ -131,12 +138,11 @@
             }
         };
     }(document, window));
-    &lt;/script&gt;
-    &lt;/body&gt;
-    &lt;/html&gt;
-</code></pre>
+    </script>
+    </body>
+    </html>
+```
 </section>
-
 <script>
 (function (document, window) {
     'use strict';
@@ -150,22 +156,16 @@
             /* case 32: */
             case 37:
             // Previous: left arrow
-                if (prev) {
-                    prev.click();
-                }
+                prev.click();
                 break;
             case 39:
                 // Next: right arrow
-                if (next) {
-                    next.click();
-                }
+                next.click();
                 break;
             case 72:
             case 83:
                 // Home/Start: h, s
-                if (start) {
-                    start.click();
-                }
+                start.click();
                 break;
         }
     };
