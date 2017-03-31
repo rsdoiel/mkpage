@@ -1,22 +1,8 @@
 
-
 + [Home](/)
 + [README](./)
 + [LICENSE](license.html)
 + [INSTALL](install.html)
-+ [mkpage](mkpage.html)
-+ [mkslides](mkslides.html)
-+ [sitemapper](sitemapper.html)
-+ [mkrss](mkrss.html)
-+ [reldocpath](reldocpath.html)
-+ [titleline](titleline.html)
-+ [byline](byline.html)
-+ [urlencode](urlencode.html)
-+ [urldecode](urldecode.html)
-+ [ws](ws.html)
-+ [Template Recipes](go-template-recipes.html)
-+ [Demo/One element](demo/one-element)
-+ [Demo/Simple](demo/simple)
-+ [Demo/Simple with Navigation](demo/simple-with-nav)
++ [Documentation](docs/)
 + [Github](https://github.com/rsdoiel/mkpage)
 
