@@ -1,68 +1,68 @@
 <!DOCTYPE html>
 <html>
 <head>
-	
-	<style>
+    
+    <style>
     body {
-    	width: 100%;
-    	height: 100%;
-    	margin: 10%;
-    	padding: 0;
-    	font-size: 24px;
-    	font-family: sans-serif;
+        width: 100%;
+        height: 100%;
+        margin: 10%;
+        padding: 0;
+        font-size: calc(2em+1vw);
+        font-family: sans-serif;
     }
     
     ul {
-    	list-style: circle;
-    	text-indent: 0.25em;
+        list-style: disc;
+        text-indent: 0.25em;
     }
     
     nav {
-    	position: absolute;
-    	top: 0em; 
-    	margin:0;
-    	padding:0.24em;
-    	width: 100%;
-    	height: 4em;
-    	text-align: left;
-    	font-size: 60%;
+        position: absolute;
+        top: 0em; 
+        margin:0;
+        padding:0.24em;
+        width: 100%;
+        height: 4em;
+        text-align: left;
+        font-size: 60%;
     }
     
-	section, p {
-		max-width: 85%;
-		padding: 0.24em;
-		margin: 0.24em;
-	}
-
-	code {
-		color: teal;
-	}
+    section {
+        width: 100%;
+        height: auto;
+    }
 </style>
 </head>
 <body>
-	<nav>
+    <nav>
 <a id="start-slide" href="00-presentation.html">Home</a>
-<a id="previ-slide" href="03-presentation.html">Prev</a>
+<a id="prev-slide" href="03-presentation.html">Prev</a>
 <a id="next-slide" href="05-presentation.html">Next</a>
-	</nav>
-	<section>
-# Customization - Templates
+    </nav>
+    <section><h1>Customization - Templates</h1>
 
-+ The template engine is a simplied one similar to [Hugo](https://gohugo.io)
-+ It is based on Go's text template
-+ The following fields are provided to the template for each slide
-    + .CurNo - the current slide number of the page
-    + .PrevNo - the previous slide number (0 if at the beginning)
-    + .NextNo - the number of the next slide (0 if at the end)
-    + .FirstNo - the first slide number 
-    + .LastNo - the number of the last slide
-    + .FName - presentation file's basename (e.g. presention for presentation.md)
-    + .Title - title of presentation
-    + .Heading - the first H tag found in the slide (used when generating a table of contents)
-    + .Content - the Markdown content transformed into HTML
-    + .CSSPath - if a custom CSS file is preferred, this is the link
-    + .JSPath - if custom JavaScript needs to be included, this is the link
+<ul>
+<li>The template engine is a simplied one similar to <a href="https://gohugo.io">Hugo</a></li>
+<li>It is based on Go&rsquo;s text template</li>
+<li>The following fields are provided to the template for each slide
+
+<ul>
+<li>.CurNo - the current slide number of the page</li>
+<li>.PrevNo - the previous slide number (0 if at the beginning)</li>
+<li>.NextNo - the number of the next slide (0 if at the end)</li>
+<li>.FirstNo - the first slide number</li>
+<li>.LastNo - the number of the last slide</li>
+<li>.FName - presentation file&rsquo;s basename (e.g. presention for presentation.md)</li>
+<li>.Title - title of presentation</li>
+<li>.Heading - the first H tag found in the slide (used when generating a table of contents)</li>
+<li>.Content - the Markdown content transformed into HTML</li>
+<li>.CSSPath - if a custom CSS file is preferred, this is the link</li>
+<li>.JSPath - if custom JavaScript needs to be included, this is the link</li>
+</ul></li>
+</ul>
 </section>
+
 <script>
 (function (document, window) {
     'use strict';
@@ -76,16 +76,22 @@
             /* case 32: */
             case 37:
             // Previous: left arrow
-                prev.click();
+                if (prev) {
+                    prev.click();
+                }
                 break;
             case 39:
                 // Next: right arrow
-                next.click();
+                if (next) {
+                    next.click();
+                }
                 break;
             case 72:
             case 83:
                 // Home/Start: h, s
-                start.click();
+                if (start) {
+                    start.click();
+                }
                 break;
         }
     };
