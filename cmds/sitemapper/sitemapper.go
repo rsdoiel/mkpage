@@ -80,14 +80,17 @@ type ExcludeList []string
 
 // Set returns the len of the new DirList array based on spliting the passed in string
 func (dirList ExcludeList) Set(s string) int {
-	dirList = strings.Split(s, ":")
+	if len(strings.TrimSpace(s)) > 0 {
+		dirList = strings.Split(s, ":")
+	}
 	return len(dirList)
 }
 
 // Exclude returns true if a fname fragment is included in set of dirList
 func (dirList ExcludeList) Exclude(p string) bool {
 	for _, item := range dirList {
-		if len(p) > 0 && strings.Contains(p, item) == true {
+		log.Printf("DEBUG exclude (%d): %q\n", len(item), item)
+		if len(item) > 0 && len(p) > 0 && strings.Contains(p, item) == true {
 			log.Printf("Skipping %q", p)
 			return true
 		}
