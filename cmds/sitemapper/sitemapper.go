@@ -22,6 +22,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"net/url"
 	"os"
 	"path"
 	"path/filepath"
@@ -89,7 +90,6 @@ func (dirList ExcludeList) Set(s string) int {
 // Exclude returns true if a fname fragment is included in set of dirList
 func (dirList ExcludeList) Exclude(p string) bool {
 	for _, item := range dirList {
-		log.Printf("DEBUG exclude (%d): %q\n", len(item), item)
 		if len(item) > 0 && len(p) > 0 && strings.Contains(p, item) == true {
 			log.Printf("Skipping %q", p)
 			return true
@@ -164,6 +164,12 @@ func main() {
 		changefreq = "daily"
 	}
 
+	site, err := url.Parse(siteURL)
+	if err != nil {
+		fmt.Printf("Invalid site URL: %q, %s\n", siteURL, err)
+		os.Exit(1)
+	}
+
 	excludeDirs := ExcludeList(strings.Split(excludeList, ":"))
 
 	log.Printf("Starting map of %s\n", htdocs)
@@ -173,7 +179,10 @@ func main() {
 			//NOTE: You can skip the eror pages, and excluded directories in the sitemap
 			if strings.HasPrefix(fname, "50") == false && strings.HasPrefix(p, "40") == false && excludeDirs.Exclude(p) == false {
 				finfo := new(locInfo)
-				finfo.Loc = fmt.Sprintf("%s%s", siteURL, strings.TrimPrefix(p, htdocs))
+				//FIXME: should use the parsed URL and append to path
+				page, _ := url.Parse(site.String())
+				page.Path = path.Join(page.Path, strings.TrimPrefix(p, htdocs))
+				finfo.Loc = page.String()
 				yr, mn, dy := info.ModTime().Date()
 				finfo.LastMod = fmt.Sprintf("%d-%0.2d-%0.2d", yr, mn, dy)
 				log.Printf("Adding %s\n", finfo.Loc)
