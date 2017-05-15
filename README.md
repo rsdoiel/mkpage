@@ -1,5 +1,6 @@
+If you're here you're probably looking for the Caltech Library's [mkpage](https://github.com/CaltechLibrary/mkpage).  This repository is a historical artifact from before adoption by Caltech.
 
-    Your deconstructed web content system, something is sure to change
+>    Your deconstructed web content system, something is sure to change
 
 # mkpage project
 
