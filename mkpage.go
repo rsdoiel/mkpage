@@ -78,11 +78,16 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 )
 
 var (
-
 	// DefaultTemplateSource is defined in init by Defaults["/templates/page.tmpl"]
 	// Defaults is a map to assets defined in assets.go which is build with pkgasset and
 	// the contents of the defaults folder in this repository.
-	DefaultTemplateSource = ""
+	DefaultTemplateSource string
+
+	// DefaultSlideTemplateSource provides the default HTML template for mkslides package,
+	// you probably want to override this... is defined in init by Defaults["/templates/slides.tmpl"]
+	// Defaults is a map to assets defined in assets.go which is build with pkgasset and
+	// the contents of the defaults folder in this repository.
+	DefaultSlideTemplateSource string
 )
 
 // ResolveData takes a data map and reads in the files and URL sources
@@ -226,14 +231,6 @@ type Slide struct {
 	CSSPath string
 	JSPath  string
 }
-
-var (
-	// DefaultSlideTemplateSource provides the default HTML template for mkslides package,
-	// you probably want to override this... is defined in init by Defaults["/templates/slides.tmpl"]
-	// Defaults is a map to assets defined in assets.go which is build with pkgasset and
-	// the contents of the defaults folder in this repository.
-	DefaultSlideTemplateSource = ""
-)
 
 // MarkdownToSlides turns a markdown file into one or more Slide structs
 // Which populate predefined key/value pairs for later rendering in Markdown
