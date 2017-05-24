@@ -69,284 +69,20 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 	// SOMEDAY: should add XML, BibTeX, YaML support...
 
-	// DefaultTemplateSource holds the default HTML provided by mkpage package, you probably want to override this...
-	DefaultTemplateSource = `<!DOCTYPE html>
-<html>
-<head>
-  {{if .title -}}<title>{{- .title -}}</title>{{- end}}
-  {{if .csspath -}}<link href="{{ .csspath }}" rel="stylesheet" />{{else -}}
-  <style>
-/**
- * site.css - stylesheet for the Library's Digital Library Development Group's sandbox.
- *
- * orange: #FF6E1E;
- *
- * Secondary pallet:
- *
- * lightgrey: #C8C8C8
- * grey: #76777B
- * darkgrey: #616265
- * slategrey: #AAA99F
- *
- * Impact Pallete see: http://identity.caltech.edu/web/colors
- */
-body {
-     margin: 0;
-     border: 0;
-     padding: 0;
-     width: 100%;
-     height: 100%;
-     color: black;
-     background-color: white;
-     /*
-     color: #FF6E1E;
-     background-color: #AAA99F; /* #76777B;*/
-     */
-     font-family: Open Sans, Helvetica, Sans-Serif;
-     font-size: 16px;
-}
-
-header {
-     position: relative;
-     display: block;
-     color: white;
-     background-color: white;
-     z-index: 2;
-     height: 105px;
-     vertical-align: middle;
-}
-
-header img {
-     position: relative;
-     display: inline;
-     padding-left: 20px;
-     margin: 0;
-     height: 42px;
-     padding-top: 32px;
-}
-
-header h1 {
-     position: relative;
-     display: inline-block;
-     margin: 0;
-     border: 0;
-     padding: 0;
-     font-size: 3em;
-     font-weight: normal;
-     vertical-align: 0.78em;
-     color: #FF6E1E;
-}
-
-header a, header a:link, header a:visited, header a:active, header a:hover, header a:focus {
-     color: #FF6E1E;
-     background-color: inherit;
-}
-
-
-a, a:link, a:visited {
-     color: #76777B;
-     background-color: inherit;
-     text-decoration: none;
-}
-
-a:active, a:hover, a:focus {
-    color: #FF6E1E;
-    font-weight: bolder;
-}
-
-nav {
-     position: relative;
-     display: block;
-     width: 100%;
-     margin: 0;
-     padding: 0;
-     font-size: 0.78em;
-     vertical-align: middle;
-     color: black;
-     background-color: #AAA99F; /* #76777B;*/
-     text-align: left;
-}
-
-nav div {
-     display: inline-block;
-     /* padding-left: 10em; */
-     margin-left: 10em;
-     margin-right: 0;
-}
-
-nav a, nav a:link, nav a:visited, nav a:active {
-     color: white;
-     background-color: inherit;
-     text-decoration: none;
-}
-
-nav a:hover, nav a:focus {
-     color: #FF6E1E;
-     background-color: inherit;
-     text-decoration: none;
-}
-
-
-nav div h2 {
-     position: relative;
-     display: block;
-     min-width: 20%;
-     margin: 0;
-     font-size: 1.24em;
-     font-style: normal;
-}
-
-nav div > ul {
-     display: none;
-     padding-left: 0.24em;
-     text-align: left;
-}
-
-nav ul {
-     display: inline-block;
-     padding-left: 0.24em;
-     list-style-type: none;
-     text-align: left;
-     text-decoration: none; 
-}
-
-nav ul li {
-     display: inline;
-     padding: 1em;
-}
-
-section {
-     position: relative;
-     display: inline-block;
-     width: 100%;
-     min-height: 84%;
-     color: black;
-     background-color: white;
-     margin: 0;
-     padding-top 0;
-     padding-bottom: 2em;
-     padding-left: 1em;
-     padding-right: 0;
-}
-
-section h1 {
-    font-size: 1.32em;
-}
-
-section h2 {
-    font-size: 1.12em;
-    font-weight: italic;
-}
-
-section h3 {
-    font-size: 1em;
-    text-transform: uppercase;
-}
-
-section ul {
-    display: block;
-    list-style: inside;
-    list-style-type: square;
-    margin: 0;
-    padding-left: 1.24em;
-}
-
-aside {
-     margin: 0;
-     border: 0;
-     padding-left: 1em;
-     position: relative;
-     display: inline-block;
-     text-align: right;
-}
-
-aside h2 {
-     font-size: 1em;
-     text-transform: uppercase;
-}
-
-aside h2 > a {
-     font-style: normal;
-}
-
-aside ul {
-     margin: 0;
-     padding: 0;
-     display: block;
-     list-style-type: none;
-}
-
-aside ul li {
-     font-size: 0.82em;
-}
-
-aside ul > ul {
-     padding-left: 1em;
-     font-size: 0.72em;
-}
-
-footer {
-     position: fixed;
-     bottom: 0;
-     display: block;
-     width: 100%;
-     height: 2em;
-     color: white;
-     background-color: #616265;
-
-     font-size: 80%;
-     text-align: left;
-     vertical-align: middle;
-     z-index: 2;
-}
-
-footer h1, footer span, footer address {
-     position: relative;
-     display: inline-block;
-     margin: 0;
-     padding-left: 0.24em;
-     font-family: Open Sans, Helvetica, Sans-Serif;
-     font-size: 1em;
-}
-
-footer h1 {
-     font-weight: normal;
-}
-
-footer a, footer a:link, footer a:visited, footer a:active, footer a:focus, footer a:hover {
-     padding: 0;
-     display: inline;
-     margin: 0;
-     color: #FF6E1E;
-     text-decoration: none;
-}
-
-  </style>
-  {{- end }}
-</head>
-<body>
-  {{if .header -}}
-  <header>{{- .header -}}</header>
-  {{end}}
-  {{if .nav -}}
-  <nav>{{- .nav -}}</nav>
-  {{end}}
-  {{if .content -}}
-  <section>{{ .content }}</section>
-  {{end}}
-  {{if .footer -}}
-  <footer>{{ .footer }}</footer>
-  {{end}}
-</body>
-</html>
-`
-
 	// DateExp is the default format used by mkpage utilities for date exp
 	DateExp = `[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]`
 	// BylineExp is the default format used by mkpage utilities
 	BylineExp = (`^[B|b]y\s+(\w|\s|.)+` + DateExp + "$")
 	// TitleExp is the default format used by mkpage utilities
 	TitleExp = `^#\s+(\w|\s|.)+$`
+)
+
+var (
+
+	// DefaultTemplateSource is defined in init by Defaults["/templates/page.tmpl"]
+	// Defaults is a map to assets defined in assets.go which is build with pkgasset and
+	// the contents of the defaults folder in this repository.
+	DefaultTemplateSource = ""
 )
 
 // ResolveData takes a data map and reads in the files and URL sources
@@ -492,96 +228,11 @@ type Slide struct {
 }
 
 var (
-	// DefaultSlideTemplateSource provides the default HTML template for mkslides package, you probably want to override this...
-	DefaultSlideTemplateSource = `<!DOCTYPE html>
-<html>
-<head>
-	{{if .Title -}}<title>{{- .Title -}}</title>{{- end}}
-	{{if .CSSPath -}}
-<link href="{{ .CSSPath }}" rel="stylesheet" />
-   {{else -}}
-<style>
-    body {
-    	width: 100%;
-    	height: 100%;
-    	margin: 10%;
-    	padding: 0;
-    	font-size: 24px;
-    	font-family: sans-serif;
-    }
-    
-    ul {
-    	list-style: circle;
-    	text-indent: 0.25em;
-    }
-    
-    nav {
-    	position: absolute;
-    	top: 0em; 
-    	margin:0;
-    	padding:0.24em;
-    	width: 100%;
-    	height: 4em;
-    	text-align: left;
-    	font-size: 60%;
-    }
-    
-	section, p {
-		max-width: 85%;
-		padding: 0.24em;
-		margin: 0.24em;
-	}
-
-	code {
-		color: teal;
-	}
-</style>
-{{- end }}
-</head>
-<body>
-	<nav>
-{{ if ne .CurNo .FirstNo -}}
-<a id="start-slide" href="{{printf "%02d-%s.html" .FirstNo .FName}}">Home</a>
-{{- end}}
-{{ if gt .CurNo .FirstNo -}} 
-<a id="previ-slide" href="{{printf "%02d-%s.html" .PrevNo .FName}}">Prev</a>
-{{- end}}
-{{ if lt .CurNo .LastNo -}} 
-<a id="next-slide" href="{{printf "%02d-%s.html" .NextNo .FName}}">Next</a>
-{{- end}}
-	</nav>
-	<section>{{ .Content }}</section>
-<script>
-(function (document, window) {
-    'use strict';
-    var start = document.getElementById('start-slide'),
-        prev = document.getElementById('prev-slide'),
-        next = document.getElementById('next-slide');
-    
-    
-    document.onkeydown = function(e) {
-        switch (e.keyCode) {
-            /* case 32: */
-            case 37:
-            // Previous: left arrow
-                prev.click();
-                break;
-            case 39:
-                // Next: right arrow
-                next.click();
-                break;
-            case 72:
-            case 83:
-                // Home/Start: h, s
-                start.click();
-                break;
-        }
-    };
-}(document, window));
-</script>
-</body>
-</html>
-`
+	// DefaultSlideTemplateSource provides the default HTML template for mkslides package,
+	// you probably want to override this... is defined in init by Defaults["/templates/slides.tmpl"]
+	// Defaults is a map to assets defined in assets.go which is build with pkgasset and
+	// the contents of the defaults folder in this repository.
+	DefaultSlideTemplateSource = ""
 )
 
 // MarkdownToSlides turns a markdown file into one or more Slide structs
@@ -701,4 +352,13 @@ func Grep(exp string, src string) string {
 		}
 	}
 	return ""
+}
+
+func init() {
+	if bString, ok := Defaults["/templates/page.tmpl"]; ok == true {
+		DefaultTemplateSource = fmt.Sprintf("%s", bString)
+	}
+	if bString, ok := Defaults["/templates/slides.tmpl"]; ok == true {
+		DefaultSlideTemplateSource = fmt.Sprintf("%s", bString)
+	}
 }
