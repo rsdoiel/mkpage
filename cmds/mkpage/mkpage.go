@@ -177,7 +177,7 @@ func main() {
 	}
 
 	// Setup our template function map
-	tmplFuncs := tmplfn.Join(tmplfn.TimeMap, tmplfn.PageMap)
+	tmplFuncs := tmplfn.Join(tmplfn.AllFuncs())
 
 	// Assemble the template(s)
 	if len(templateSources) == 0 {

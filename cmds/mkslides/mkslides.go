@@ -189,7 +189,7 @@ func main() {
 		tmpl           *template.Template
 		templateSource string
 		// Setup our template function map
-		tmplFuncs = tmplfn.Join(tmplfn.TimeMap, tmplfn.PageMap)
+		tmplFuncs = tmplfn.Join(tmplfn.AllFuncs())
 	)
 
 	// Make sure we have a configured command to run
