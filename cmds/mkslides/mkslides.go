@@ -26,7 +26,6 @@ import (
 	"os"
 	"path"
 	"strings"
-	"text/template"
 
 	// Caltech Library packages
 	"github.com/caltechlibrary/cli"
@@ -182,17 +181,8 @@ func main() {
 		os.Exit(0)
 	}
 
-	var (
-		// This holds the template sources
-		templateSources []string
-		// NOTE: Now we assemble everything with this template variable.
-		tmpl           *template.Template
-		templateSource string
-		// Setup our template function map
-		tmplFuncs = tmplfn.Join(tmplfn.AllFuncs())
-	)
-
 	// Make sure we have a configured command to run
+	templateSources := []string{}
 	templateFNames = cfg.MergeEnv("templates", templateFNames)
 	if len(templateFNames) > 0 {
 		for _, fname := range strings.Split(templateFNames, ":") {
@@ -200,7 +190,7 @@ func main() {
 		}
 	}
 
-	data := make(map[string]string)
+	data := map[string]string{}
 	for i, arg := range args {
 		switch {
 		case strings.Contains(arg, "=") == true:
@@ -226,29 +216,37 @@ func main() {
 		os.Exit(1)
 	}
 
-	//NOTE: If template is provided, read it in and replace templateSource content
-	if len(templateSources) == 0 {
-		// NOTE: If we have content coming from a pipe then treat it as template default.tmpl
-		if cli.IsPipe(os.Stdin) == true {
-			buf, err := ioutil.ReadAll(os.Stdin)
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "%s\n", err)
-				os.Exit(1)
-			}
-			templateSource = string(buf)
-		} else {
-			// we have data from a console session, assume default template
-			templateSource = mkpage.DefaultSlideTemplateSource
-		}
-		tmpl, err = template.New("default.tmpl").Funcs(tmplFuncs).Parse(templateSource)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Template parsing failed, %s\n", err)
+	// Create our Tmpl with its function map
+	tmpl := tmplfn.New(tmplfn.AllFuncs())
+
+	/*
+		// Load our default template maps
+		if err := tmpl.Merge(mkpage.Defaults); err != nil {
+			fmt.Fprintf(os.Stderr, "%s\n", err)
 			os.Exit(1)
 		}
-	} else {
-		templateSources := strings.Split(templateFNames, ":")
-		tmpl, err = tmplfn.Assemble(tmplFuncs, templateSources...)
+	*/
+
+	// Load ant user supplied templates
+	if len(templateSources) > 0 {
+		if err := tmpl.ReadFiles(templateSources...); err != nil {
+			fmt.Fprintf(os.Stderr, "%s\n", err)
+			os.Exit(1)
+		}
 	}
+
+	// Read any templates from stdin that might be present
+	if cli.IsPipe(os.Stdin) == true {
+		buf, err := ioutil.ReadAll(os.Stdin)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "%s\n", err)
+			os.Exit(1)
+		}
+		tmpl.Add("stdin", buf)
+	}
+
+	// Assemble our templates
+	t, err := tmpl.Assemble()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%s\n", err)
 		os.Exit(1)
@@ -256,10 +254,11 @@ func main() {
 
 	// Build the slides
 	slides := mkpage.MarkdownToSlides(mdFName, mdSrc)
+
 	// Render the slides
 	for i, slide := range slides {
 		// Merge slide data with rest of command line map (e.g. "Title=text:My Presentation" "CSSPath=text:css/slides.css")
-		err := mkpage.MakeSlideFile(tmpl, data, slide)
+		err := mkpage.MakeSlideFile(t, data, slide)
 		if err == nil {
 			// Note: Give some feed back when slide written successful
 			fmt.Fprintf(os.Stdout, "Wrote %02d-%s.html\n", slide.CurNo, strings.TrimSuffix(path.Base(slide.FName), path.Ext(slide.FName)))

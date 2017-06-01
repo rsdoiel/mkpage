@@ -25,7 +25,6 @@ import (
 	"os"
 	"path"
 	"strings"
-	"text/template"
 
 	// Caltech Library packages
 	"github.com/caltechlibrary/cli"
@@ -113,10 +112,6 @@ func init() {
 }
 
 func main() {
-	var (
-		err error
-	)
-
 	appName := path.Base(os.Args[0])
 	flag.Parse()
 	args := flag.Args()
@@ -145,14 +140,8 @@ func main() {
 		os.Exit(0)
 	}
 
-	var (
-		// This holds the template sources
-		templateSources []string
-		// NOTE: Now we assemble everything with this template variable.
-		tmpl *template.Template
-	)
-
 	// Make sure we have a configured command to run
+	templateSources := []string{}
 	templateFNames = cfg.MergeEnv("templates", templateFNames)
 	if len(templateFNames) > 0 {
 		for _, fname := range strings.Split(templateFNames, ":") {
@@ -160,7 +149,7 @@ func main() {
 		}
 	}
 
-	data := make(map[string]string)
+	data := map[string]string{}
 	for i, arg := range args {
 		if strings.Contains(arg, "=") == true {
 			// Update data map
@@ -176,39 +165,42 @@ func main() {
 		}
 	}
 
-	// Setup our template function map
-	tmplFuncs := tmplfn.Join(tmplfn.AllFuncs())
+	// Create our Tmpl struct with our function map
+	tmpl := tmplfn.New(tmplfn.AllFuncs())
 
-	// Assemble the template(s)
-	if len(templateSources) == 0 {
-		var templateSource string
-		// NOTE: If we have content coming from a pipe then treat it as template default.tmpl
-		if cli.IsPipe(os.Stdin) == true {
-			buf, err := ioutil.ReadAll(os.Stdin)
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "%s\n", err)
-				os.Exit(1)
-			}
-			templateSource = string(buf)
-		} else {
-			// we have data from a console session, assume default template
-			templateSource = mkpage.DefaultTemplateSource
-		}
+	// Load our default template maps
+	if err := tmpl.Merge(mkpage.Defaults); err != nil {
+		fmt.Fprintf(os.Stderr, "%s\n", err)
+		os.Exit(1)
+	}
 
-		tmpl, err = template.New("default.tmpl").Funcs(tmplFuncs).Parse(templateSource)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Template parsing failed, %s\n", err)
-			os.Exit(1)
-		}
-	} else {
-		tmpl, err = tmplfn.Assemble(tmplFuncs, templateSources...)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Template parsing failed, %s\n", err)
+	// Load ant user supplied templates
+	if len(templateSources) > 0 {
+		if err := tmpl.ReadFiles(templateSources...); err != nil {
+			fmt.Fprintf(os.Stderr, "%s\n", err)
 			os.Exit(1)
 		}
 	}
+
+	// Read any templates from stdin that might be present
+	if cli.IsPipe(os.Stdin) == true {
+		buf, err := ioutil.ReadAll(os.Stdin)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "%s\n", err)
+			os.Exit(1)
+		}
+		tmpl.Add("stdin", buf)
+	}
+
+	// Build a template and send to MakePage
+	t, err := tmpl.Assemble()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%s\n", err)
+		os.Exit(1)
+	}
+
 	// Make the page
-	if err := mkpage.MakePage(os.Stdout, tmpl, data); err != nil {
+	if err := mkpage.MakePage(os.Stdout, t, data); err != nil {
 		fmt.Fprintf(os.Stderr, "%s\n", err)
 		os.Exit(1)
 	}

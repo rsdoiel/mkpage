@@ -8,6 +8,8 @@ VERSION = $(shell grep -m1 "Version = " $(PROJECT).go | cut -d\" -f 2)
 
 BRANCH = $(shell git branch | grep "* " | cut -d\   -f 2)
 
+PKGASSETS = $(shell which pkgassets)
+
 build: bin/mkpage bin/mkslides bin/mkrss bin/sitemapper bin/byline bin/titleline bin/reldocpath bin/urlencode bin/urldecode bin/ws 
 
 assets.go:
@@ -84,6 +86,7 @@ save:
 	git push origin $(BRANCH)
 
 clean:
+	if [ "$(PKGASSETS)" != "" ]; then rm assets.go; fi
 	if [ -d bin ]; then rm -fR bin; fi
 	if [ -d dist ]; then rm -fR dist; fi
 	if [ -f $(PROJECT)-$(VERSION)-release.zip ]; then rm -f $(PROJECT)-$(VERSION)-release.zip; fi
