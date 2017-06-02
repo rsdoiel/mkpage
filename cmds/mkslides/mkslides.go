@@ -219,30 +219,28 @@ func main() {
 	// Create our Tmpl with its function map
 	tmpl := tmplfn.New(tmplfn.AllFuncs())
 
-	/*
-		// Load our default template maps
-		if err := tmpl.Merge(mkpage.Defaults); err != nil {
-			fmt.Fprintf(os.Stderr, "%s\n", err)
-			os.Exit(1)
-		}
-	*/
-
 	// Load ant user supplied templates
 	if len(templateSources) > 0 {
 		if err := tmpl.ReadFiles(templateSources...); err != nil {
 			fmt.Fprintf(os.Stderr, "%s\n", err)
 			os.Exit(1)
 		}
-	}
-
-	// Read any templates from stdin that might be present
-	if cli.IsPipe(os.Stdin) == true {
-		buf, err := ioutil.ReadAll(os.Stdin)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "%s\n", err)
-			os.Exit(1)
+	} else {
+		// Read any templates from stdin that might be present
+		if cli.IsPipe(os.Stdin) == true {
+			buf, err := ioutil.ReadAll(os.Stdin)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "%s\n", err)
+				os.Exit(1)
+			}
+			tmpl.Add("stdin", buf)
+		} else {
+			// Load our default template maps
+			if err := tmpl.Add("slides.tmpl", mkpage.Defaults["/templates/slides.tmpl"]); err != nil {
+				fmt.Fprintf(os.Stderr, "%s\n", err)
+				os.Exit(1)
+			}
 		}
-		tmpl.Add("stdin", buf)
 	}
 
 	// Assemble our templates

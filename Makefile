@@ -12,10 +12,10 @@ PKGASSETS = $(shell which pkgassets)
 
 build: bin/mkpage bin/mkslides bin/mkrss bin/sitemapper bin/byline bin/titleline bin/reldocpath bin/urlencode bin/urldecode bin/ws 
 
+mkpage.go: assets.go
+
 assets.go:
 	pkgassets -o assets.go -p mkpage Defaults defaults
-
-mkpage.go: assets.go
 
 bin/mkpage: mkpage.go cmds/mkpage/mkpage.go
 	go build -o bin/mkpage cmds/mkpage/mkpage.go

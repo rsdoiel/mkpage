@@ -33,7 +33,7 @@ import (
 )
 
 var (
-	usage = `USAGE: %s [OPTION] [KEY/VALUE DATA PAIRS] TEMPLATE_FILENAME [TEMPLATE_FILENAMES]`
+	usage = `USAGE: %s [OPTION] [KEY/VALUE DATA PAIRS] [TEMPLATE_FILENAMES]`
 
 	description = `
 SYNOPSIS
@@ -44,7 +44,7 @@ CONFIGURATION
 
 You can set a local default template path by using environment variables.
 
-+ MKPAGE_TEMPLATES - is the colon delimited list of template paths
++ MKPAGE_TEMPLATES - (optional) is the colon delimited list of template paths
 `
 
 	examples = `
@@ -168,29 +168,31 @@ func main() {
 	// Create our Tmpl struct with our function map
 	tmpl := tmplfn.New(tmplfn.AllFuncs())
 
-	// Load our default template maps
-	if err := tmpl.Merge(mkpage.Defaults); err != nil {
-		fmt.Fprintf(os.Stderr, "%s\n", err)
-		os.Exit(1)
-	}
-
 	// Load ant user supplied templates
 	if len(templateSources) > 0 {
 		if err := tmpl.ReadFiles(templateSources...); err != nil {
 			fmt.Fprintf(os.Stderr, "%s\n", err)
 			os.Exit(1)
 		}
+	} else {
+		// Read any templates from stdin that might be present
+		if cli.IsPipe(os.Stdin) == true {
+			buf, err := ioutil.ReadAll(os.Stdin)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "%s\n", err)
+				os.Exit(1)
+			}
+			tmpl.Add("stdin", buf)
+		} else {
+			// Load our default template maps
+			if err := tmpl.Add("page.tmpl", mkpage.Defaults["/templates/page.tmpl"]); err != nil {
+				fmt.Fprintf(os.Stderr, "%s\n", err)
+				os.Exit(1)
+			}
+		}
 	}
 
-	// Read any templates from stdin that might be present
-	if cli.IsPipe(os.Stdin) == true {
-		buf, err := ioutil.ReadAll(os.Stdin)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "%s\n", err)
-			os.Exit(1)
-		}
-		tmpl.Add("stdin", buf)
-	}
+	//FIXME: add support for showTemplates here...
 
 	// Build a template and send to MakePage
 	t, err := tmpl.Assemble()
