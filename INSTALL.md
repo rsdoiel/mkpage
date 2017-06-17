@@ -24,12 +24,13 @@ and Rapsberry Pi (ARM7 processor, raspbian-arm7).
 | Linux/Intel | mkpage-VERSION_NUMBER-linux-amd64.zip   | linux_amd64            |
 | Raspbery Pi | mkpage-VERSION_NUMBER-raspbian-arm7.zip | raspbian_arm7          |
 
-## Basic installation process
+## The basic recipe 
 
 + Download the zip file matching your platform 
 + Unzip it 
 + Copy the contents of the "bin" folder to a folder in your shell's path (e.g. $HOME/bin). 
-+ test to see if it worked, adjust your PATH if needed
++ Adjust you PATH if needed
++ test to see if it worked
 
 
 ### Mac OS X
