@@ -89,7 +89,6 @@ clean:
 	if [ "$(PKGASSETS)" != "" ]; then rm assets.go; fi
 	if [ -d bin ]; then rm -fR bin; fi
 	if [ -d dist ]; then rm -fR dist; fi
-	if [ -f $(PROJECT)-$(VERSION)-release.zip ]; then rm -f $(PROJECT)-$(VERSION)-release.zip; fi
 
 install:
 	env GOBIN=$(HOME)/bin go install cmds/mkpage/mkpage.go
@@ -105,71 +104,88 @@ install:
 
 
 dist/linux-amd64:
-	env  GOOS=linux GOARCH=amd64 go build -o dist/linux-amd64/mkpage cmds/mkpage/mkpage.go
-	env  GOOS=linux GOARCH=amd64 go build -o dist/linux-amd64/mkslides cmds/mkslides/mkslides.go
-	env  GOOS=linux GOARCH=amd64 go build -o dist/linux-amd64/mkrss cmds/mkrss/mkrss.go
-	env  GOOS=linux GOARCH=amd64 go build -o dist/linux-amd64/sitemapper cmds/sitemapper/sitemapper.go
-	env  GOOS=linux GOARCH=amd64 go build -o dist/linux-amd64/byline cmds/byline/byline.go
-	env  GOOS=linux GOARCH=amd64 go build -o dist/linux-amd64/titleline cmds/titleline/titleline.go
-	env  GOOS=linux GOARCH=amd64 go build -o dist/linux-amd64/reldocpath cmds/reldocpath/reldocpath.go
-	env  GOOS=linux GOARCH=amd64 go build -o dist/linux-amd64/urlencode cmds/urlencode/urlencode.go
-	env  GOOS=linux GOARCH=amd64 go build -o dist/linux-amd64/urldecode cmds/urldecode/urldecode.go
-	env  GOOS=linux GOARCH=amd64 go build -o dist/linux-amd64/ws cmds/ws/ws.go
+	mkdir -p dist/bin
+	env  GOOS=linux GOARCH=amd64 go build -o dist/bin/mkpage cmds/mkpage/mkpage.go
+	env  GOOS=linux GOARCH=amd64 go build -o dist/bin/mkslides cmds/mkslides/mkslides.go
+	env  GOOS=linux GOARCH=amd64 go build -o dist/bin/mkrss cmds/mkrss/mkrss.go
+	env  GOOS=linux GOARCH=amd64 go build -o dist/bin/sitemapper cmds/sitemapper/sitemapper.go
+	env  GOOS=linux GOARCH=amd64 go build -o dist/bin/byline cmds/byline/byline.go
+	env  GOOS=linux GOARCH=amd64 go build -o dist/bin/titleline cmds/titleline/titleline.go
+	env  GOOS=linux GOARCH=amd64 go build -o dist/bin/reldocpath cmds/reldocpath/reldocpath.go
+	env  GOOS=linux GOARCH=amd64 go build -o dist/bin/urlencode cmds/urlencode/urlencode.go
+	env  GOOS=linux GOARCH=amd64 go build -o dist/bin/urldecode cmds/urldecode/urldecode.go
+	env  GOOS=linux GOARCH=amd64 go build -o dist/bin/ws cmds/ws/ws.go
+	cd dist && zip -r $(PROJECT)-$(VERSION)-linux-amd64.zip README.md LICENSE INSTALL.md bin/* docs/* how-to/* templates/*
+	rm -fR dist/bin/*
+
+
 
 dist/windows-amd64:
-	env  GOOS=windows GOARCH=amd64 go build -o dist/windows-amd64/mkpage.exe cmds/mkpage/mkpage.go
-	env  GOOS=windows GOARCH=amd64 go build -o dist/windows-amd64/mkslides.exe cmds/mkslides/mkslides.go
-	env  GOOS=windows GOARCH=amd64 go build -o dist/windows-amd64/mkrss.exe cmds/mkrss/mkrss.go
-	env  GOOS=windows GOARCH=amd64 go build -o dist/windows-amd64/sitemapper.exe cmds/sitemapper/sitemapper.go
-	env  GOOS=windows GOARCH=amd64 go build -o dist/windows-amd64/byline.exe cmds/byline/byline.go
-	env  GOOS=windows GOARCH=amd64 go build -o dist/windows-amd64/titleline.exe cmds/titleline/titleline.go
-	env  GOOS=windows GOARCH=amd64 go build -o dist/windows-amd64/reldocpath.exe cmds/reldocpath/reldocpath.go
-	env  GOOS=windows GOARCH=amd64 go build -o dist/windows-amd64/urlencode.exe cmds/urlencode/urlencode.go
-	env  GOOS=windows GOARCH=amd64 go build -o dist/windows-amd64/urldecode.exe cmds/urldecode/urldecode.go
-	env  GOOS=windows GOARCH=amd64 go build -o dist/windows-amd64/ws.exe cmds/ws/ws.go
+	mkdir -p dist/bin
+	env  GOOS=windows GOARCH=amd64 go build -o dist/bin/mkpage.exe cmds/mkpage/mkpage.go
+	env  GOOS=windows GOARCH=amd64 go build -o dist/bin/mkslides.exe cmds/mkslides/mkslides.go
+	env  GOOS=windows GOARCH=amd64 go build -o dist/bin/mkrss.exe cmds/mkrss/mkrss.go
+	env  GOOS=windows GOARCH=amd64 go build -o dist/bin/sitemapper.exe cmds/sitemapper/sitemapper.go
+	env  GOOS=windows GOARCH=amd64 go build -o dist/bin/byline.exe cmds/byline/byline.go
+	env  GOOS=windows GOARCH=amd64 go build -o dist/bin/titleline.exe cmds/titleline/titleline.go
+	env  GOOS=windows GOARCH=amd64 go build -o dist/bin/reldocpath.exe cmds/reldocpath/reldocpath.go
+	env  GOOS=windows GOARCH=amd64 go build -o dist/bin/urlencode.exe cmds/urlencode/urlencode.go
+	env  GOOS=windows GOARCH=amd64 go build -o dist/bin/urldecode.exe cmds/urldecode/urldecode.go
+	env  GOOS=windows GOARCH=amd64 go build -o dist/bin/ws.exe cmds/ws/ws.go
+	cd dist && zip -r $(PROJECT)-$(VERSION)-windows-amd64.zip README.md LICENSE INSTALL.md bin/* docs/* how-to/* templates/*
+	rm -fR dist/bin/*
 
 dist/macosx-amd64:
-	env  GOOS=darwin GOARCH=amd64 go build -o dist/macosx-amd64/mkpage cmds/mkpage/mkpage.go
-	env  GOOS=darwin GOARCH=amd64 go build -o dist/macosx-amd64/mkslides cmds/mkslides/mkslides.go
-	env  GOOS=darwin GOARCH=amd64 go build -o dist/macosx-amd64/mkrss cmds/mkrss/mkrss.go
-	env  GOOS=darwin GOARCH=amd64 go build -o dist/macosx-amd64/sitemapper cmds/sitemapper/sitemapper.go
-	env  GOOS=darwin GOARCH=amd64 go build -o dist/macosx-amd64/byline cmds/byline/byline.go
-	env  GOOS=darwin GOARCH=amd64 go build -o dist/macosx-amd64/titleline cmds/titleline/titleline.go
-	env  GOOS=darwin GOARCH=amd64 go build -o dist/macosx-amd64/reldocpath cmds/reldocpath/reldocpath.go
-	env  GOOS=darwin GOARCH=amd64 go build -o dist/macosx-amd64/urlencode cmds/urlencode/urlencode.go
-	env  GOOS=darwin GOARCH=amd64 go build -o dist/macosx-amd64/urldecode cmds/urldecode/urldecode.go
-	env  GOOS=darwin GOARCH=amd64 go build -o dist/macosx-amd64/ws cmds/ws/ws.go
+	mkdir -p dist/bin
+	env  GOOS=darwin GOARCH=amd64 go build -o dist/bin/mkpage cmds/mkpage/mkpage.go
+	env  GOOS=darwin GOARCH=amd64 go build -o dist/bin/mkslides cmds/mkslides/mkslides.go
+	env  GOOS=darwin GOARCH=amd64 go build -o dist/bin/mkrss cmds/mkrss/mkrss.go
+	env  GOOS=darwin GOARCH=amd64 go build -o dist/bin/sitemapper cmds/sitemapper/sitemapper.go
+	env  GOOS=darwin GOARCH=amd64 go build -o dist/bin/byline cmds/byline/byline.go
+	env  GOOS=darwin GOARCH=amd64 go build -o dist/bin/titleline cmds/titleline/titleline.go
+	env  GOOS=darwin GOARCH=amd64 go build -o dist/bin/reldocpath cmds/reldocpath/reldocpath.go
+	env  GOOS=darwin GOARCH=amd64 go build -o dist/bin/urlencode cmds/urlencode/urlencode.go
+	env  GOOS=darwin GOARCH=amd64 go build -o dist/bin/urldecode cmds/urldecode/urldecode.go
+	env  GOOS=darwin GOARCH=amd64 go build -o dist/bin/ws cmds/ws/ws.go
+	cd dist && zip -r $(PROJECT)-$(VERSION)-macosx-amd64.zip README.md LICENSE INSTALL.md bin/* docs/* how-to/* templates/*
+	rm -fR dist/bin/*
 
 dist/raspbian-arm7:
-	env  GOOS=linux GOARCH=arm GOARM=7 go build -o dist/raspbian-arm7/mkpage cmds/mkpage/mkpage.go
-	env  GOOS=linux GOARCH=arm GOARM=7 go build -o dist/raspbian-arm7/mkslides cmds/mkslides/mkslides.go
-	env  GOOS=linux GOARCH=arm GOARM=7 go build -o dist/raspbian-arm7/mkrss cmds/mkrss/mkrss.go
-	env  GOOS=linux GOARCH=arm GOARM=7 go build -o dist/raspbian-arm7/sitemapper cmds/sitemapper/sitemapper.go
-	env  GOOS=linux GOARCH=arm GOARM=7 go build -o dist/raspbian-arm7/byline cmds/byline/byline.go
-	env  GOOS=linux GOARCH=arm GOARM=7 go build -o dist/raspbian-arm7/titleline cmds/titleline/titleline.go
-	env  GOOS=linux GOARCH=arm GOARM=7 go build -o dist/raspbian-arm7/reldocpath cmds/reldocpath/reldocpath.go
-	env  GOOS=linux GOARCH=arm GOARM=7 go build -o dist/raspbian-arm7/urlencode cmds/urlencode/urlencode.go
-	env  GOOS=linux GOARCH=arm GOARM=7 go build -o dist/raspbian-arm7/urldecode cmds/urldecode/urldecode.go
-	env  GOOS=linux GOARCH=arm GOARM=7 go build -o dist/raspbian-arm7/ws cmds/ws/ws.go
+	mkdir -p dist/bin
+	env  GOOS=linux GOARCH=arm GOARM=7 go build -o dist/bin/mkpage cmds/mkpage/mkpage.go
+	env  GOOS=linux GOARCH=arm GOARM=7 go build -o dist/bin/mkslides cmds/mkslides/mkslides.go
+	env  GOOS=linux GOARCH=arm GOARM=7 go build -o dist/bin/mkrss cmds/mkrss/mkrss.go
+	env  GOOS=linux GOARCH=arm GOARM=7 go build -o dist/bin/sitemapper cmds/sitemapper/sitemapper.go
+	env  GOOS=linux GOARCH=arm GOARM=7 go build -o dist/bin/byline cmds/byline/byline.go
+	env  GOOS=linux GOARCH=arm GOARM=7 go build -o dist/bin/titleline cmds/titleline/titleline.go
+	env  GOOS=linux GOARCH=arm GOARM=7 go build -o dist/bin/reldocpath cmds/reldocpath/reldocpath.go
+	env  GOOS=linux GOARCH=arm GOARM=7 go build -o dist/bin/urlencode cmds/urlencode/urlencode.go
+	env  GOOS=linux GOARCH=arm GOARM=7 go build -o dist/bin/urldecode cmds/urldecode/urldecode.go
+	env  GOOS=linux GOARCH=arm GOARM=7 go build -o dist/bin/ws cmds/ws/ws.go
+	cd dist && zip -r $(PROJECT)-$(VERSION)-raspbian-arm7.zip README.md LICENSE INSTALL.md bin/* docs/* how-to/* templates/*
+	rm -fR dist/bin/*
 
-release: dist/linux-amd64 dist/windows-amd64 dist/macosx-amd64 dist/raspbian-arm7
+distribute_docs:
+	mkdir -p dist/docs
+	mkdir -p dist/how-to
 	cp -v README.md dist/
 	cp -v LICENSE dist/
 	cp -v INSTALL.md dist/
-	cp -v docs/byline.md dist/
-	cp -v docs/mkpage.md dist/
-	cp -v docs/mkrss.md dist/
-	cp -v docs/mkslides.md dist/
-	cp -v docs/reldocpath.md dist/
-	cp -v docs/sitemapper.md dist/
-	cp -v docs/titleline.md dist/
-	cp -v docs/urldecode.md dist/
-	cp -v docs/urlencode.md dist/
-	cp -v docs/ws.md dist/
-	cp -v how-to/go-template-recipes.md dist/
-	cp -v how-to/the-basics.md dist/
+	cp -v docs/byline.md dist/docs/
+	cp -v docs/mkpage.md dist/docs/
+	cp -v docs/mkrss.md dist/docs
+	cp -v docs/mkslides.md dist/docs/
+	cp -v docs/reldocpath.md dist/docs/
+	cp -v docs/sitemapper.md dist/docs/
+	cp -v docs/titleline.md dist/docs/
+	cp -v docs/urldecode.md dist/docs/
+	cp -v docs/urlencode.md dist/docs/
+	cp -v docs/ws.md dist/docs/
+	cp -v how-to/go-template-recipes.md dist/how-to/
+	cp -v how-to/the-basics.md dist/how-to/
 	cp -vR templates dist/
-	zip -r $(PROJECT)-$(VERSION)-release.zip dist/*
+
+release: assets.go distribute_docs dist/linux-amd64 dist/windows-amd64 dist/macosx-amd64 dist/raspbian-arm7
 
 website:
 	./mk-website.bash
