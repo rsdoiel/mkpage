@@ -116,7 +116,7 @@ dist/linux-amd64:
 	env  GOOS=linux GOARCH=amd64 go build -o dist/bin/urldecode cmds/urldecode/urldecode.go
 	env  GOOS=linux GOARCH=amd64 go build -o dist/bin/ws cmds/ws/ws.go
 	cd dist && zip -r $(PROJECT)-$(VERSION)-linux-amd64.zip README.md LICENSE INSTALL.md bin/* docs/* how-to/* templates/*
-	rm -fR dist/bin/*
+	rm -fR dist/bin
 
 
 
@@ -133,7 +133,7 @@ dist/windows-amd64:
 	env  GOOS=windows GOARCH=amd64 go build -o dist/bin/urldecode.exe cmds/urldecode/urldecode.go
 	env  GOOS=windows GOARCH=amd64 go build -o dist/bin/ws.exe cmds/ws/ws.go
 	cd dist && zip -r $(PROJECT)-$(VERSION)-windows-amd64.zip README.md LICENSE INSTALL.md bin/* docs/* how-to/* templates/*
-	rm -fR dist/bin/*
+	rm -fR dist/bin
 
 dist/macosx-amd64:
 	mkdir -p dist/bin
@@ -148,7 +148,7 @@ dist/macosx-amd64:
 	env  GOOS=darwin GOARCH=amd64 go build -o dist/bin/urldecode cmds/urldecode/urldecode.go
 	env  GOOS=darwin GOARCH=amd64 go build -o dist/bin/ws cmds/ws/ws.go
 	cd dist && zip -r $(PROJECT)-$(VERSION)-macosx-amd64.zip README.md LICENSE INSTALL.md bin/* docs/* how-to/* templates/*
-	rm -fR dist/bin/*
+	rm -fR dist/bin
 
 dist/raspbian-arm7:
 	mkdir -p dist/bin
@@ -163,7 +163,7 @@ dist/raspbian-arm7:
 	env  GOOS=linux GOARCH=arm GOARM=7 go build -o dist/bin/urldecode cmds/urldecode/urldecode.go
 	env  GOOS=linux GOARCH=arm GOARM=7 go build -o dist/bin/ws cmds/ws/ws.go
 	cd dist && zip -r $(PROJECT)-$(VERSION)-raspbian-arm7.zip README.md LICENSE INSTALL.md bin/* docs/* how-to/* templates/*
-	rm -fR dist/bin/*
+	rm -fR dist/bin
 
 distribute_docs:
 	mkdir -p dist/docs
