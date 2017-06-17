@@ -17,12 +17,13 @@ Compiled versions are available for Mac OS X (amd64 processor, macosx-amd64),
 Linux (amd64 processor, linux-amd64), Windows (amd64 processor, windows-amd64) 
 and Rapsberry Pi (ARM7 processor, raspbian-arm7).
 
-| Platform    | Zip Filename                            | Folder for executables |
-|-------------|-----------------------------------------|------------------------|
-| Windows     | mkpage-VERSION_NUMBER-windows-amd64.zip | windows_amd64          |
-| Mac OS X    | mkpage-VERSION_NUMBER-macosx-amd64.zip  | macosx_amd64           |
-| Linux/Intel | mkpage-VERSION_NUMBER-linux-amd64.zip   | linux_amd64            |
-| Raspbery Pi | mkpage-VERSION_NUMBER-raspbian-arm7.zip | raspbian_arm7          |
+| Platform    | Zip Filename                            |
+|-------------|-----------------------------------------|
+| Windows     | mkpage-VERSION_NUMBER-windows-amd64.zip |
+| Mac OS X    | mkpage-VERSION_NUMBER-macosx-amd64.zip  |
+| Linux/Intel | mkpage-VERSION_NUMBER-linux-amd64.zip   |
+| Raspbery Pi | mkpage-VERSION_NUMBER-raspbian-arm7.zip |
+
 
 ## The basic recipe 
 

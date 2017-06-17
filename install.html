@@ -50,7 +50,6 @@ and Rapsberry Pi (ARM7 processor, raspbian-arm7).</p>
 <tr>
 <th>Platform</th>
 <th>Zip Filename</th>
-<th>Folder for executables</th>
 </tr>
 </thead>
 
@@ -58,36 +57,33 @@ and Rapsberry Pi (ARM7 processor, raspbian-arm7).</p>
 <tr>
 <td>Windows</td>
 <td>mkpage-VERSION_NUMBER-windows-amd64.zip</td>
-<td>windows_amd64</td>
 </tr>
 
 <tr>
 <td>Mac OS X</td>
 <td>mkpage-VERSION_NUMBER-macosx-amd64.zip</td>
-<td>macosx_amd64</td>
 </tr>
 
 <tr>
 <td>Linux/Intel</td>
 <td>mkpage-VERSION_NUMBER-linux-amd64.zip</td>
-<td>linux_amd64</td>
 </tr>
 
 <tr>
 <td>Raspbery Pi</td>
 <td>mkpage-VERSION_NUMBER-raspbian-arm7.zip</td>
-<td>raspbian_arm7</td>
 </tr>
 </tbody>
 </table>
 
-<h2>Basic installation process</h2>
+<h2>The basic recipe</h2>
 
 <ul>
 <li>Download the zip file matching your platform</li>
 <li>Unzip it</li>
 <li>Copy the contents of the &ldquo;bin&rdquo; folder to a folder in your shell&rsquo;s path (e.g. $HOME/bin).</li>
-<li>test to see if it worked, adjust your PATH if needed</li>
+<li>Adjust you PATH if needed</li>
+<li>test to see if it worked</li>
 </ul>
 
 <h3>Mac OS X</h3>
@@ -105,7 +101,7 @@ zip file.</p>
 <pre><code class="language-shell">    cd Downloads/
     unzip mkpage-*-macosx-amd64.zip
     mkdir -p $HOME/bin
-    cp -v macosx_amd64/* $HOME/bin/
+    cp -v bin/* $HOME/bin/
     export PATH=$HOME/bin:$PATH
     mkpage -version
 </code></pre>
@@ -125,7 +121,7 @@ downloading the zip file.</p>
 <pre><code class="language-shell">    cd Downloads/
     unzip mkpage-*-windows-amd64.zip
     mkdir -p $HOME/bin
-    cp -v windows_amd64/* $HOME/bin/
+    cp -v bin/* $HOME/bin/
     export PATH=$HOME/bin:$PATH
     mkpage -version
 </code></pre>
@@ -145,7 +141,7 @@ downloading the zip file.</p>
 <pre><code class="language-shell">    cd Downloads/
     unzip mkpage-*-linux-amd64.zip
     mkdir -p $HOME/bin
-    cp -v linux_amd64/* $HOME/bin/
+    cp -v bin/* $HOME/bin/
     export PATH=$HOME/bin:$PATH
     mkpage -version
 </code></pre>
@@ -167,7 +163,7 @@ downloading the zip file.</p>
 <pre><code class="language-shell">    cd Downloads/
     unzip mkpage-*-raspbian-arm7.zip
     mkdir -p $HOME/bin
-    cp -v raspbian_arm7/* $HOME/bin/
+    cp -v bin/* $HOME/bin/
     export PATH=$HOME/bin:$PATH
     mkpage -version
 </code></pre>
