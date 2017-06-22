@@ -87,7 +87,6 @@ save:
 	git push origin $(BRANCH)
 
 clean:
-	if [ "$(PKGASSETS)" != "" ] && [ -f assets.go ]; then rm assets.go; fi
 	if [ -d bin ]; then rm -fR bin; fi
 	if [ -d dist ]; then rm -fR dist; fi
 
