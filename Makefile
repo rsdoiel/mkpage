@@ -87,6 +87,7 @@ save:
 	git push origin $(BRANCH)
 
 clean:
+	if [ $(PKGASSETS) != "" ]; then rm assets.go; pkgassets -o assets.go -p mkpage Defaults defaults; git add assets.go; fi
 	if [ -d bin ]; then rm -fR bin; fi
 	if [ -d dist ]; then rm -fR dist; fi
 
