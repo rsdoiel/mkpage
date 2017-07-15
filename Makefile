@@ -10,6 +10,8 @@ BRANCH = $(shell git branch | grep "* " | cut -d\   -f 2)
 
 PKGASSETS = $(shell which pkgassets)
 
+build: bin/mkpage bin/mkslides bin/mkrss bin/sitemapper bin/byline bin/titleline bin/reldocpath bin/urlencode bin/urldecode bin/ws 
+
 mkpage.go: assets.go
 
 assets.go:
@@ -46,7 +48,6 @@ bin/urldecode: cmds/urldecode/urldecode.go
 bin/ws: mkpage.go ws.go cmds/ws/ws.go
 	go build -o bin/ws cmds/ws/ws.go
 
-build: bin/mkpage bin/mkslides bin/mkrss bin/sitemapper bin/byline bin/titleline bin/reldocpath bin/urlencode bin/urldecode bin/ws 
 
 lint:
 	golint mkpage.go
