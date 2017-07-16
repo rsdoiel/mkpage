@@ -176,6 +176,7 @@ func main() {
 
 	http.Handle("/", http.FileServer(http.Dir(docRoot)))
 	if letsEncrypt == true {
+		//FIXME: I can use a autocert manager, define the server passed to serve with the port indicated on commandline
 		err := http.Serve(autocert.NewListener(u.Host), mkpage.RequestLogger(mkpage.StaticRouter(http.DefaultServeMux)))
 		if err != nil {
 			log.Fatalf("%s", err)

@@ -37,17 +37,17 @@
 
 <h2>SYNOPSIS</h2>
 
-<pre><code>a nimble web server
+<pre><code>	a nimble web server
 </code></pre>
 
-<p>ws is a command line utility for developing and testing static websites.
+<p><em>ws</em> is a command line utility for developing and testing static websites.
 It uses Go&rsquo;s standard http libraries and can supports both http 1 and 2
 out of the box.  It is intended as a minimal wrapper for Go&rsquo;s standard
 http libraries supporting http/https versions 1 and 2 out of the box.</p>
 
 <h2>CONFIGURATION</h2>
 
-<p>ws can be configurated through environment settings. The following are
+<p><em>ws</em> can be configurated through environment settings. The following are
 supported.</p>
 
 <ul>
@@ -59,7 +59,8 @@ supported.</p>
 
 <h2>OPTIONS</h2>
 
-<pre><code>	-c	Set the path for the SSL Cert
+<pre><code>	-acme	Enable Let's Encypt ACME TLS support
+	-c	Set the path for the SSL Cert
 	-cert	Set the path for the SSL Cert
 	-d	Set the htdocs path
 	-docs	Set the htdocs path
@@ -87,6 +88,18 @@ supported.</p>
 
 <pre><code>   ws /www/htdocs
 </code></pre>
+
+<p>Running web server using ACME TLS support (i.e. Let&rsquo;s Encrypt).
+Note will only include the hostname as the ACME setup is for
+listenning on port 443. This may require privilaged account
+and will require that the hostname listed matches the public
+DNS for the machine (this is need by the ACME protocol to
+issue the cert, see <a href="https://letsencrypt.org">https://letsencrypt.org</a> for details)</p>
+
+<pre><code>   ws -acme -url www.example.org /www/htdocs
+</code></pre>
+
+<p>ws v0.0.17</p>
 
 </section>
 
