@@ -193,6 +193,7 @@ func main() {
 			Handler:   mkpage.RequestLogger(mkpage.StaticRouter(http.DefaultServeMux)),
 		}
 		log.Fatal(s.ListenAndServeTLS("", ""))
+		//FIXME: net to redirect Port 80 to Port 443
 	} else if u.Scheme == "https" {
 		err := http.ListenAndServeTLS(u.Host, sslCert, sslKey, mkpage.RequestLogger(mkpage.StaticRouter(http.DefaultServeMux)))
 		if err != nil {
