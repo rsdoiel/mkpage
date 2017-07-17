@@ -19,6 +19,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"flag"
 	"fmt"
 	"log"
@@ -176,11 +177,22 @@ func main() {
 
 	http.Handle("/", http.FileServer(http.Dir(docRoot)))
 	if letsEncrypt == true {
-		//FIXME: I can use a autocert manager, define the server passed to serve with the port indicated on commandline
-		err := http.Serve(autocert.NewListener(u.Host), mkpage.RequestLogger(mkpage.StaticRouter(http.DefaultServeMux)))
-		if err != nil {
-			log.Fatalf("%s", err)
+		// Note: use a sensible value for data directory
+		// this is where cached certificates are stored
+		//hostName := "226-25.caltech.edu"
+		cacheDir := "etc/acme"
+		os.MkdirAll(cacheDir, 0700)
+		m := autocert.Manager{
+			Prompt:     autocert.AcceptTOS,
+			HostPolicy: autocert.HostWhitelist(u.Host),
+			Cache:      autocert.DirCache(cacheDir),
 		}
+		s := &http.Server{
+			Addr:      ":https",
+			TLSConfig: &tls.Config{GetCertificate: m.GetCertificate},
+			Handler:   mkpage.RequestLogger(mkpage.StaticRouter(http.DefaultServeMux)),
+		}
+		log.Fatal(s.ListenAndServeTLS("", ""))
 	} else if u.Scheme == "https" {
 		err := http.ListenAndServeTLS(u.Host, sslCert, sslKey, mkpage.RequestLogger(mkpage.StaticRouter(http.DefaultServeMux)))
 		if err != nil {
