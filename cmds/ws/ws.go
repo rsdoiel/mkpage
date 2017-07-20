@@ -27,6 +27,7 @@ import (
 	"net/url"
 	"os"
 	"path"
+	"strings"
 
 	// Caltech Library packages
 	"github.com/caltechlibrary/cli"
@@ -179,7 +180,13 @@ func main() {
 	if letsEncrypt == true {
 		// Note: use a sensible value for data directory
 		// this is where cached certificates are stored
-		//hostName := "226-25.caltech.edu"
+		cwd, err := os.Getwd()
+		if err != nil {
+			log.Fatal("Can't determine current working directory before creating etc/acme")
+		}
+		if docRoot == "." || docRoot == cwd {
+			log.Fatal("Can't create etc/acme in shared document root")
+		}
 		cacheDir := "etc/acme"
 		os.MkdirAll(cacheDir, 0700)
 		m := autocert.Manager{
@@ -187,20 +194,36 @@ func main() {
 			HostPolicy: autocert.HostWhitelist(u.Host),
 			Cache:      autocert.DirCache(cacheDir),
 		}
-		svr := &http.Server{
+		sSvr := &http.Server{
 			Addr:      ":https",
 			TLSConfig: &tls.Config{GetCertificate: m.GetCertificate},
 			Handler:   mkpage.RequestLogger(mkpage.StaticRouter(http.DefaultServeMux)),
 		}
 		// Launch the TLS version
 		go func() {
-			log.Fatal(svr.ListenAndServeTLS("", ""))
+			log.Fatal(sSvr.ListenAndServeTLS("", ""))
 		}()
 
-		// Launch the redirect service from port http to port https
-		log.Fatal(http.ListenAndServe(":80", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			http.Redirect(w, r, u.String(), http.StatusMovedPermanently)
-		})))
+		rmux := http.NewServeMux()
+		rmux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+			var target string
+			if strings.HasPrefix(r.URL.Path, "/") == false {
+				target = u.String() + "/" + r.URL.Path
+			} else {
+				target = u.String() + r.URL.Path
+			}
+			if len(r.URL.RawQuery) > 0 {
+				target += "?" + r.URL.RawQuery
+			}
+			log.Printf("Request from %s redirecting %s to %s", r.RemoteAddr, r.URL.String(), target)
+			http.Redirect(w, r, target, http.StatusTemporaryRedirect)
+		})
+		pSvr := &http.Server{
+			Addr:    ":http",
+			Handler: mkpage.RequestLogger(rmux),
+		}
+		log.Printf("Redirecting http://%s to to %s", u.Host, u.String())
+		log.Fatal(pSvr.ListenAndServe())
 	} else if u.Scheme == "https" {
 		err := http.ListenAndServeTLS(u.Host, sslCert, sslKey, mkpage.RequestLogger(mkpage.StaticRouter(http.DefaultServeMux)))
 		if err != nil {
