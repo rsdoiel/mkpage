@@ -215,7 +215,7 @@ func main() {
 			if len(r.URL.RawQuery) > 0 {
 				target += "?" + r.URL.RawQuery
 			}
-			log.Printf("Request from %s redirecting %s to %s", r.RemoteAddr, r.URL.String(), target)
+			mkpage.ResponseLogger(r, http.StatusTemporaryRedirect, fmt.Errorf("redirecting %s to %s", r.URL.String(), target))
 			http.Redirect(w, r, target, http.StatusTemporaryRedirect)
 		})
 		pSvr := &http.Server{
