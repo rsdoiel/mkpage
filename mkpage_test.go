@@ -110,6 +110,7 @@ func TestMakePage(t *testing.T) {
 	}
 
 	src := `
+{{define "Hello"}}
 Hello {{.hello}}
 
 Nav: {{.nav}}
@@ -117,6 +118,7 @@ Nav: {{.nav}}
 Content: {{.content}}
 
 Weather: {{.weather.data.text}}
+{{end}}
 `
 
 	keyValues := map[string]string{
@@ -127,7 +129,7 @@ Weather: {{.weather.data.text}}
 	}
 
 	tmpl := template.Must(template.New("test.tmpl").Parse(src))
-	out, err := MakePageString(tmpl, keyValues)
+	out, err := MakePageString("Hello", tmpl, keyValues)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -184,7 +186,7 @@ This is slide three, just a random paragraph of text. Blah, blah, blah, blah, bl
 	keyVals := map[string]string{}
 	for i, slide := range slides {
 		keyVals["Title"] = "text:" + titles[i]
-		s, err := MakeSlideString(tmpl, keyVals, slide)
+		s, err := MakeSlideString("test.tmpl", tmpl, keyVals, slide)
 		if err != nil {
 			t.Errorf("MakeSlideString() failed %d - %s", i, err)
 		}

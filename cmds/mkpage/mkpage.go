@@ -140,6 +140,9 @@ func main() {
 		os.Exit(0)
 	}
 
+	// Default template name is page.tmpl
+	templateName := "page.tmpl"
+
 	// Make sure we have a configured command to run
 	templateSources := []string{}
 	templateFNames = cfg.MergeEnv("templates", templateFNames)
@@ -174,6 +177,7 @@ func main() {
 			fmt.Fprintf(os.Stderr, "%s\n", err)
 			os.Exit(1)
 		}
+		templateName = path.Base(templateSources[0])
 	} else {
 		// Read any templates from stdin that might be present
 		if cli.IsPipe(os.Stdin) == true {
@@ -182,17 +186,15 @@ func main() {
 				fmt.Fprintf(os.Stderr, "%s\n", err)
 				os.Exit(1)
 			}
-			tmpl.Add("stdin", buf)
+			tmpl.Add(templateName, buf)
 		} else {
 			// Load our default template maps
-			if err := tmpl.Add("page.tmpl", mkpage.Defaults["/templates/page.tmpl"]); err != nil {
+			if err := tmpl.Add(templateName, mkpage.Defaults["/templates/page.tmpl"]); err != nil {
 				fmt.Fprintf(os.Stderr, "%s\n", err)
 				os.Exit(1)
 			}
 		}
 	}
-
-	//FIXME: add support for showTemplates here...
 
 	// Build a template and send to MakePage
 	t, err := tmpl.Assemble()
@@ -202,7 +204,7 @@ func main() {
 	}
 
 	// Make the page
-	if err := mkpage.MakePage(os.Stdout, t, data); err != nil {
+	if err := mkpage.MakePage(os.Stdout, templateName, t, data); err != nil {
 		fmt.Fprintf(os.Stderr, "%s\n", err)
 		os.Exit(1)
 	}

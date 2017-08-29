@@ -216,6 +216,9 @@ func main() {
 		os.Exit(1)
 	}
 
+	// Default Template Name is slides.tmpl
+	templateName := "slides.tmpl"
+
 	// Create our Tmpl with its function map
 	tmpl := tmplfn.New(tmplfn.AllFuncs())
 
@@ -225,6 +228,7 @@ func main() {
 			fmt.Fprintf(os.Stderr, "%s\n", err)
 			os.Exit(1)
 		}
+		templateName = templateSources[0]
 	} else {
 		// Read any templates from stdin that might be present
 		if cli.IsPipe(os.Stdin) == true {
@@ -233,10 +237,10 @@ func main() {
 				fmt.Fprintf(os.Stderr, "%s\n", err)
 				os.Exit(1)
 			}
-			tmpl.Add("stdin", buf)
+			tmpl.Add(templateName, buf)
 		} else {
 			// Load our default template maps
-			if err := tmpl.Add("slides.tmpl", mkpage.Defaults["/templates/slides.tmpl"]); err != nil {
+			if err := tmpl.Add(templateName, mkpage.Defaults["/templates/slides.tmpl"]); err != nil {
 				fmt.Fprintf(os.Stderr, "%s\n", err)
 				os.Exit(1)
 			}
@@ -256,7 +260,7 @@ func main() {
 	// Render the slides
 	for i, slide := range slides {
 		// Merge slide data with rest of command line map (e.g. "Title=text:My Presentation" "CSSPath=text:css/slides.css")
-		err := mkpage.MakeSlideFile(t, data, slide)
+		err := mkpage.MakeSlideFile(templateName, t, data, slide)
 		if err == nil {
 			// Note: Give some feed back when slide written successful
 			fmt.Fprintf(os.Stdout, "Wrote %02d-%s.html\n", slide.CurNo, strings.TrimSuffix(path.Base(slide.FName), path.Ext(slide.FName)))

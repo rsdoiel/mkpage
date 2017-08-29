@@ -39,7 +39,7 @@ import (
 
 const (
 	// Version of the mkpage package.
-	Version = "v0.0.17"
+	Version = "v0.0.18"
 
 	// LicenseText provides a string template for rendering cli license info
 	LicenseText = `
@@ -172,20 +172,20 @@ func ResolveData(data map[string]string) (map[string]interface{}, error) {
 	return out, nil
 }
 
-// MakePage applies the key/value map to the template and renders to writer and returns an error if something goes wrong
-func MakePage(wr io.Writer, tmpl *template.Template, keyValues map[string]string) error {
+// MakePage applies the key/value map to the named template in tmpl and renders to writer and returns an error if something goes wrong
+func MakePage(wr io.Writer, templateName string, tmpl *template.Template, keyValues map[string]string) error {
 	data, err := ResolveData(keyValues)
 	if err != nil {
 		return fmt.Errorf("Can't resolve data source %s", err)
 	}
-	return tmpl.Execute(wr, data)
+	return tmpl.ExecuteTemplate(wr, templateName, data)
 }
 
-// MakePageString applies the key/value map to the template and renders the results to a string and error if someting goes wrong
-func MakePageString(tmpl *template.Template, keyValues map[string]string) (string, error) {
+// MakePageString applies the key/value map to the named template tmpl and renders the results to a string and error if someting goes wrong
+func MakePageString(templateName string, tmpl *template.Template, keyValues map[string]string) (string, error) {
 	var buf bytes.Buffer
 	wr := io.Writer(&buf)
-	err := MakePage(wr, tmpl, keyValues)
+	err := MakePage(wr, templateName, tmpl, keyValues)
 	return buf.String(), err
 }
 
@@ -262,7 +262,7 @@ func MarkdownToSlides(fname string, mdSource []byte) []*Slide {
 // MakeSlide this takes a io.Writer, a template, key/value map pairs and Slide struct.
 // It resolves the data int key/value pairs, merges the prefined mapping from Slide struct
 // then executes the template.
-func MakeSlide(wr io.Writer, tmpl *template.Template, keyValues map[string]string, slide *Slide) error {
+func MakeSlide(wr io.Writer, templateName string, tmpl *template.Template, keyValues map[string]string, slide *Slide) error {
 	data, err := ResolveData(keyValues)
 	if err != nil {
 		return fmt.Errorf("Can't resolve data source %s", err)
@@ -275,18 +275,18 @@ func MakeSlide(wr io.Writer, tmpl *template.Template, keyValues map[string]strin
 	data["FirstNo"] = slide.FirstNo
 	data["LastNo"] = slide.LastNo
 	data["Content"] = slide.Content
-	return tmpl.Execute(wr, data)
+	return tmpl.ExecuteTemplate(wr, templateName, data)
 }
 
 // MakeSlideFile this takes a template and slide and renders the results to a file.
-func MakeSlideFile(tmpl *template.Template, keyValues map[string]string, slide *Slide) error {
+func MakeSlideFile(templateName string, tmpl *template.Template, keyValues map[string]string, slide *Slide) error {
 	sname := fmt.Sprintf(`%02d-%s.html`, slide.CurNo, strings.TrimSuffix(path.Base(slide.FName), path.Ext(slide.FName)))
 	fp, err := os.Create(sname)
 	if err != nil {
 		return fmt.Errorf("%s %s", sname, err)
 	}
 	defer fp.Close()
-	err = MakeSlide(fp, tmpl, keyValues, slide)
+	err = MakeSlide(fp, templateName, tmpl, keyValues, slide)
 	if err != nil {
 		return fmt.Errorf("%s %s", sname, err)
 	}
@@ -294,10 +294,10 @@ func MakeSlideFile(tmpl *template.Template, keyValues map[string]string, slide *
 }
 
 // MakeSlideString this takes a template and slide and renders the results to a string
-func MakeSlideString(tmpl *template.Template, keyValues map[string]string, slide *Slide) (string, error) {
+func MakeSlideString(templateName string, tmpl *template.Template, keyValues map[string]string, slide *Slide) (string, error) {
 	var buf bytes.Buffer
 	wr := io.Writer(&buf)
-	err := MakeSlide(wr, tmpl, keyValues, slide)
+	err := MakeSlide(wr, templateName, tmpl, keyValues, slide)
 	return buf.String(), err
 }
 
