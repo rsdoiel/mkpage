@@ -47,6 +47,7 @@ and integrating data from the [NOAA weather website](http://weather.gov).
 ### a basic template
 
 ```template
+    {{ define "weather.tmpl" }}
     Date: {{ .now}}
 
     Hello {{ .name -}},
@@ -58,6 +59,7 @@ and integrating data from the [NOAA weather website](http://weather.gov).
     Thank you
 
     {{.signature}}
+    {{ end }}
 ```
 
 To render the template above (i.e. [forecast.tmpl](examples/forecast.tmpl)) is expecting values from various data sources.

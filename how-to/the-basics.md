@@ -13,13 +13,13 @@ Like Mustache and Handlebars Go text/templates use double curly brackets to indi
 element which is to be replace.  A template that says "Hello" would look something like this
 
 ```
-    Hello {{ .World }}
+    {{ define "hello-world.tmpl" }}Hello {{ .World }}{{ end }}
 ```
 
 We can use the template to say Hello to "Georgina"
 
 ```shell
-    echo 'Hello {{ .World }}' > hello-world.tmpl
+    echo '{{ define "hello-world.tmpl" }}Hello {{ .World }}{{ end }}' > hello-world.tmpl
     mkpage "World=text:Georgina" hello-world.tmpl
 ```
 
@@ -85,8 +85,10 @@ Let's create a template file with both these statements called _title-demo.tmpl_
 _mkpage_ command.
 
 ```shell
-    echo "{{if .title}}If this title: {{.title}}{{end}}" > title-demo.tmpl
+    echo '{{ define "title-demo.tmpl" }}' > title-demo.tmpl
+    echo "{{if .title}}If this title: {{.title}}{{end}}" >> title-demo.tmpl
     echo "{{with .title}}With this title: {{ . }}{{end}}" >> title-demo.tmpl 
+    echo '{{ end }}' >> title-demo.tmpl
     mkpage "title=text:This is a title demo" title-demo.tmpl
 ```
 
@@ -137,11 +139,13 @@ render to stdout by *mkpage*.
 Here is what *page.tmpl* would look like
 
 ```go
+    {{ define "page.tmpl" }}
     {{template "header" . }}
 
         {{.content}}
 
     {{template "footer" . }}
+    {{ end }}
 ```
 
 The header and footer are then defined in their own template files (though they also could be combined into one
@@ -189,6 +193,7 @@ Content type is evaluated, transformed (if necessary), and sent to the Go text/t
 Create a template called _data-source-demo.tmpl_. It would look like
 
 ```
+    {{ define "data-source-demo.tmpl" }}
     This is a plain text string: "{{ .string }}"
 
     Below is a an included file:
@@ -196,6 +201,7 @@ Create a template called _data-source-demo.tmpl_. It would look like
     
     Finally below is data from a URL:
     {{ .url }}
+    {{ end }}
 ```
 
 Create a text file named _hello.md_.

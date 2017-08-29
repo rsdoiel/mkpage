@@ -121,12 +121,19 @@ _mkpage_ is "go gettable".  Use the "go get" command to download the dependant p
 as well as _mkpage_'s source code.
 
 ```shell
+    go get -u github.com/caltechlibrary/pkgassets/...
     go get -u github.com/caltechlibrary/mkpage/...
 ```
 
 Or clone the repstory and then compile
 
 ```shell
+    cd
+    git clone https://github.com/caltechlibrary/pkgassets src/github.com/caltechlibrary/pkgassets
+    cd src/github.com/caltechlibrary/pkgassets
+    make
+    make test
+    make install
     cd
     git clone https://github.com/caltechlibrary/mkpage src/github.com/caltechlibrary/mkpage
     cd src/github.com/caltechlibrary/mkpage

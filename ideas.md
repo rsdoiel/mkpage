@@ -14,4 +14,4 @@
     + JSON export as an array of rows containing objects with column ID (e.g. A, B, C) as attribute name
     + JSON export as an array of columns contianing array row ordered cells (e.g. 0, 1, 2)
     + JSON export as a array of objects where the header row is used as attribute name and cell value as the object value
-+ Look at how [caddy](https://github.com/mholt/caddy) and see how FastCGI was implemented, evaluate if that makes sense for _ws_
++ Look at how [caddy](https://github.com/mholt/caddy) and [xerver](https://github.com/alash3al/xerver) to see how FastCGI was implemented, evaluate if that makes sense for _ws_

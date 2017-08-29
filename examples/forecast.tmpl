@@ -1,4 +1,5 @@
-{{with $co := .forecast.currentobservation}}
+{{ define "forecast.tmpl" }}
+{{- with $co := .forecast.currentobservation }}
 Current Observation:
 
 + {{ $co.name }}
@@ -14,9 +15,11 @@ Current Observation:
 + Gust: {{ $co.Gust }}
 + Visibility: {{ $co.Visibility }}
 
-{{end}}
+{{ end }}
 
 Forecast:
-{{range .forecast.data.text }}
+{{ range .forecast.data.text }}
       + {{ . -}}
-{{end}}
+{{ end }}
+
+{{ end }}

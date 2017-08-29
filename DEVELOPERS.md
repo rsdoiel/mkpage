@@ -3,7 +3,7 @@
 
 ## Requirements
 
-+ go 1.8.x or better
++ go 1.8.3 or better
 + _make_ if you want to the _Makefile_ to build the project.
 + [pkgassets](https://github.com/caltechlibrary/pkgassets) for generating a new _assets.go_
 + Caltech Library Go Packages
@@ -18,6 +18,7 @@
 Using _go get_
 
 ```shell
+    go get -u github.com/caltechlibrary/pkgassets/...
     go get -u github.com/caltechlibrary/mkpage/...
 ```
 

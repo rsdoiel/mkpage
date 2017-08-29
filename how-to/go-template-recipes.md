@@ -35,6 +35,7 @@ This is a minimal example of using *mkpage* to render a Markdown file as an HTML
 It features no navigation, just a wrapping HTML document head (with link to CSS file) and body.
 
 ```
+    {{ define "page.tmpl" }}
     <!DOCTYPE html>
     <html>
         <head><link rel="stylesheet" href="/css/site.css"></head>
@@ -42,12 +43,13 @@ It features no navigation, just a wrapping HTML document head (with link to CSS 
         {{ .Content }}
         </body>
     </html>
+    {{ end }}
 ```
 
 Rendering a markdown document named _myfile.md_ as _myfile.html_ would look like
 
 ```shell
-    mkpage Content=myfile.md > myfile.html
+    mkpage Content=myfile.md page.tmpl > myfile.html
 ```
 
 
@@ -59,6 +61,7 @@ In this example we want to add a name to a simple get well message.
 Our template is called **get-well.tmpl**. It looks like 
 
 ```go
+    {{ define "get-well.tmpl" }}
     Dear {{ .name -}},
 
     Hope you are feeling better today.
@@ -66,6 +69,8 @@ Our template is called **get-well.tmpl**. It looks like
     Sencerly,
 
     Mojo Sam
+    
+    {{ end }}
 ```
 
 On the command line we can run *mkpage* with the following options
@@ -84,6 +89,7 @@ The output would look like
     Sencerly,
 
     Mojo Sam
+
 ```
 
 #### Explanation
@@ -103,9 +109,11 @@ The command envokation looks like
 The template is a simple range construct
 
 ```go
+    {{ define "blob.tmpl" }}
     {{range $key,$val := .blob }}
         Key: {{ $key }} Value: {{ $val -}}
     {{end}}
+    {{ end }}
 ```
 
 Results in text like
@@ -128,6 +136,7 @@ We use the range function to iterate over the key/value pairs of our JSON object
 In this example we want to embed a "story" in a simple HTML document. The *story* is written in Markdown format. Here's the simple template
 
 ```go
+    {{ define "simple-page.tmpl" }}
     <!DOCTYPE html>
     <html>
         <head><title>Stories</title></head>
@@ -135,6 +144,7 @@ In this example we want to embed a "story" in a simple HTML document. The *story
         {{ .story }}
         </body>
     </html>
+    {{ end }}
 ```
 
 The command line would look something like
@@ -159,6 +169,7 @@ In this example we get the current weather forecast for Guam.  The source of the
 Our template will be call **forecast.tmpl**. It will be used to produce a Markdown file of weather related information obtained from the JSON response.
 
 ```go
+    {{ define "forecast.tmpl" }}
     {{with $co := .forecast.currentobservation}}
     Current Observation:
 
@@ -181,6 +192,8 @@ Our template will be call **forecast.tmpl**. It will be used to produce a Markdo
     {{range .forecast.data.text }}
         + {{ . -}}
     {{end}}
+
+    {{ end }}
 ```
 
 The command line for *mkpage* would look like
@@ -277,6 +290,7 @@ We have a _signature.tmpl_ and _postscript.tmpl_ files as sub templates to _lett
 #### letter.tmpl
 
 ```
+    {{ define "letter.tmpl" }}
     Dear {{ .ToName }},
 
     Hope all is well.  I will be with you shortly though not necessarily
@@ -285,21 +299,26 @@ We have a _signature.tmpl_ and _postscript.tmpl_ files as sub templates to _lett
     {{template "signature.tmpl" .}}
 
     {{template "postscript.tmpl" .}}
+    {{ end }}
 ```
 
 #### signature.tmpl
 
 ```
+    {{ define "signature.tmpl" }}
     Sincerly,
 
     {{ .Name }}, somewhere next door to reality
 
+    {{ end }}
 ```   
 
 #### postscript.tmpl
 
 ```
+    {{ define "postscript.tmpl" }}
     (P.S. What is comming at you is coming from you, {{rfc3339 "now"}})
+    {{ end }}
 ```
 
 #### Putting it all together
