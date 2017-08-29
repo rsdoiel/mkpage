@@ -74,5 +74,3 @@ issue the cert, see https://letsencrypt.org for details)
    ws -acme -url www.example.org /www/htdocs
 ```
 
-
-ws v0.0.17

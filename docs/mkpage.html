@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -13,16 +14,16 @@
 <ul>
 <li><a href="/">Home</a></li>
 <li><a href="../">Up</a></li>
-<li><a href="./urldecode.html">urldecode</a></li>
-<li><a href="./ws.html">ws</a></li>
 <li><a href="./byline.html">byline</a></li>
 <li><a href="./mkpage.html">mkpage</a></li>
-<li><a href="./titleline.html">titleline</a></li>
-<li><a href="./sitemapper.html">sitemapper</a></li>
-<li><a href="./reldocpath.html">reldocpath</a></li>
-<li><a href="./mkslides.html">mkslides</a></li>
 <li><a href="./mkrss.html">mkrss</a></li>
+<li><a href="./mkslides.html">mkslides</a></li>
+<li><a href="./reldocpath.html">reldocpath</a></li>
+<li><a href="./sitemapper.html">sitemapper</a></li>
+<li><a href="./titleline.html">titleline</a></li>
+<li><a href="./urldecode.html">urldecode</a></li>
 <li><a href="./urlencode.html">urlencode</a></li>
+<li><a href="./ws.html">ws</a></li>
 </ul>
 
 </nav>
@@ -64,9 +65,10 @@
 
 <h2>EXAMPLE</h2>
 
-<p>Template</p>
+<p>Template (named &ldquo;examples/weather.tmpl&rdquo;)</p>
 
-<pre><code>    Date: {{- .now}}
+<pre><code>    {{ define &quot;weather.tmpl&quot; }}
+    Date: {{- .now}}
 
     Hello {{.name -}},
     
@@ -77,6 +79,7 @@
     Thank you
 
     {{.signature}}
+    {{ end }}
 </code></pre>
 
 <p>Render the template above (i.e. examples/weather.tmpl) would be accomplished from

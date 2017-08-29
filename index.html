@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -71,7 +72,8 @@ and integrating data from the <a href="http://weather.gov">NOAA weather website<
 
 <h3>a basic template</h3>
 
-<pre><code class="language-template">    Date: {{ .now}}
+<pre><code class="language-template">    {{ define &quot;weather.tmpl&quot; }}
+    Date: {{ .now}}
 
     Hello {{ .name -}},
     
@@ -82,6 +84,7 @@ and integrating data from the <a href="http://weather.gov">NOAA weather website<
     Thank you
 
     {{.signature}}
+    {{ end }}
 </code></pre>
 
 <p>To render the template above (i.e. <a href="examples/forecast.tmpl">forecast.tmpl</a>) is expecting values from various data sources.

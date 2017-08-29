@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -36,12 +37,12 @@ with <em>mkpage</em> and <em>mkslides</em>.</p>
 <p>Like Mustache and Handlebars Go text/templates use double curly brackets to indicate an
 element which is to be replace.  A template that says &ldquo;Hello&rdquo; would look something like this</p>
 
-<pre><code>    Hello {{ .World }}
+<pre><code>    {{ define &quot;hello-world.tmpl&quot; }}Hello {{ .World }}{{ end }}
 </code></pre>
 
 <p>We can use the template to say Hello to &ldquo;Georgina&rdquo;</p>
 
-<pre><code class="language-shell">    echo 'Hello {{ .World }}' &gt; hello-world.tmpl
+<pre><code class="language-shell">    echo '{{ define &quot;hello-world.tmpl&quot; }}Hello {{ .World }}{{ end }}' &gt; hello-world.tmpl
     mkpage &quot;World=text:Georgina&quot; hello-world.tmpl
 </code></pre>
 
@@ -99,8 +100,10 @@ using the &ldquo;if&rdquo; function.</p>
 <p>Let&rsquo;s create a template file with both these statements called <em>title-demo.tmpl</em> and run the
 <em>mkpage</em> command.</p>
 
-<pre><code class="language-shell">    echo &quot;{{if .title}}If this title: {{.title}}{{end}}&quot; &gt; title-demo.tmpl
+<pre><code class="language-shell">    echo '{{ define &quot;title-demo.tmpl&quot; }}' &gt; title-demo.tmpl
+    echo &quot;{{if .title}}If this title: {{.title}}{{end}}&quot; &gt;&gt; title-demo.tmpl
     echo &quot;{{with .title}}With this title: {{ . }}{{end}}&quot; &gt;&gt; title-demo.tmpl 
+    echo '{{ end }}' &gt;&gt; title-demo.tmpl
     mkpage &quot;title=text:This is a title demo&quot; title-demo.tmpl
 </code></pre>
 
@@ -145,11 +148,13 @@ render to stdout by <em>mkpage</em>.</p>
 
 <p>Here is what <em>page.tmpl</em> would look like</p>
 
-<pre><code class="language-go">    {{template &quot;header&quot; . }}
+<pre><code class="language-go">    {{ define &quot;page.tmpl&quot; }}
+    {{template &quot;header&quot; . }}
 
         {{.content}}
 
     {{template &quot;footer&quot; . }}
+    {{ end }}
 </code></pre>
 
 <p>The header and footer are then defined in their own template files (though they also could be combined into one
@@ -196,13 +201,15 @@ or even be defined in the main template file itself).</p>
 
 <p>Create a template called <em>data-source-demo.tmpl</em>. It would look like</p>
 
-<pre><code>    This is a plain text string: &quot;{{ .string }}&quot;
+<pre><code>    {{ define &quot;data-source-demo.tmpl&quot; }}
+    This is a plain text string: &quot;{{ .string }}&quot;
 
     Below is a an included file:
     {{ .file }}
     
     Finally below is data from a URL:
     {{ .url }}
+    {{ end }}
 </code></pre>
 
 <p>Create a text file named <em>hello.md</em>.</p>

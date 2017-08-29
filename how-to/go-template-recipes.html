@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -58,18 +59,20 @@
 <p>This is a minimal example of using <em>mkpage</em> to render a Markdown file as an HTML page.
 It features no navigation, just a wrapping HTML document head (with link to CSS file) and body.</p>
 
-<pre><code>    &lt;!DOCTYPE html&gt;
+<pre><code>    {{ define &quot;page.tmpl&quot; }}
+    &lt;!DOCTYPE html&gt;
     &lt;html&gt;
         &lt;head&gt;&lt;link rel=&quot;stylesheet&quot; href=&quot;/css/site.css&quot;&gt;&lt;/head&gt;
         &lt;body&gt;
         {{ .Content }}
         &lt;/body&gt;
     &lt;/html&gt;
+    {{ end }}
 </code></pre>
 
 <p>Rendering a markdown document named <em>myfile.md</em> as <em>myfile.html</em> would look like</p>
 
-<pre><code class="language-shell">    mkpage Content=myfile.md &gt; myfile.html
+<pre><code class="language-shell">    mkpage Content=myfile.md page.tmpl &gt; myfile.html
 </code></pre>
 
 <h3>explicit stings, a get well card</h3>
@@ -78,13 +81,16 @@ It features no navigation, just a wrapping HTML document head (with link to CSS 
 
 <p>Our template is called <strong>get-well.tmpl</strong>. It looks like</p>
 
-<pre><code class="language-go">    Dear {{ .name -}},
+<pre><code class="language-go">    {{ define &quot;get-well.tmpl&quot; }}
+    Dear {{ .name -}},
 
     Hope you are feeling better today.
 
     Sencerly,
 
     Mojo Sam
+    
+    {{ end }}
 </code></pre>
 
 <p>On the command line we can run <em>mkpage</em> with the following options</p>
@@ -101,6 +107,7 @@ It features no navigation, just a wrapping HTML document head (with link to CSS 
     Sencerly,
 
     Mojo Sam
+
 </code></pre>
 
 <h4>Explanation</h4>
@@ -118,9 +125,11 @@ It features no navigation, just a wrapping HTML document head (with link to CSS 
 
 <p>The template is a simple range construct</p>
 
-<pre><code class="language-go">    {{range $key,$val := .blob }}
+<pre><code class="language-go">    {{ define &quot;blob.tmpl&quot; }}
+    {{range $key,$val := .blob }}
         Key: {{ $key }} Value: {{ $val -}}
     {{end}}
+    {{ end }}
 </code></pre>
 
 <p>Results in text like</p>
@@ -141,13 +150,15 @@ It features no navigation, just a wrapping HTML document head (with link to CSS 
 
 <p>In this example we want to embed a &ldquo;story&rdquo; in a simple HTML document. The <em>story</em> is written in Markdown format. Here&rsquo;s the simple template</p>
 
-<pre><code class="language-go">    &lt;!DOCTYPE html&gt;
+<pre><code class="language-go">    {{ define &quot;simple-page.tmpl&quot; }}
+    &lt;!DOCTYPE html&gt;
     &lt;html&gt;
         &lt;head&gt;&lt;title&gt;Stories&lt;/title&gt;&lt;/head&gt;
         &lt;body&gt;
         {{ .story }}
         &lt;/body&gt;
     &lt;/html&gt;
+    {{ end }}
 </code></pre>
 
 <p>The command line would look something like</p>
@@ -171,7 +182,8 @@ It features no navigation, just a wrapping HTML document head (with link to CSS 
 
 <p>Our template will be call <strong>forecast.tmpl</strong>. It will be used to produce a Markdown file of weather related information obtained from the JSON response.</p>
 
-<pre><code class="language-go">    {{with $co := .forecast.currentobservation}}
+<pre><code class="language-go">    {{ define &quot;forecast.tmpl&quot; }}
+    {{with $co := .forecast.currentobservation}}
     Current Observation:
 
         + {{ $co.name }}
@@ -193,6 +205,8 @@ It features no navigation, just a wrapping HTML document head (with link to CSS 
     {{range .forecast.data.text }}
         + {{ . -}}
     {{end}}
+
+    {{ end }}
 </code></pre>
 
 <p>The command line for <em>mkpage</em> would look like</p>
@@ -283,7 +297,8 @@ We have a <em>signature.tmpl</em> and <em>postscript.tmpl</em> files as sub temp
 
 <h4>letter.tmpl</h4>
 
-<pre><code>    Dear {{ .ToName }},
+<pre><code>    {{ define &quot;letter.tmpl&quot; }}
+    Dear {{ .ToName }},
 
     Hope all is well.  I will be with you shortly though not necessarily
     on the same plane of existance.
@@ -291,19 +306,24 @@ We have a <em>signature.tmpl</em> and <em>postscript.tmpl</em> files as sub temp
     {{template &quot;signature.tmpl&quot; .}}
 
     {{template &quot;postscript.tmpl&quot; .}}
+    {{ end }}
 </code></pre>
 
 <h4>signature.tmpl</h4>
 
-<pre><code>    Sincerly,
+<pre><code>    {{ define &quot;signature.tmpl&quot; }}
+    Sincerly,
 
     {{ .Name }}, somewhere next door to reality
 
+    {{ end }}
 </code></pre>
 
 <h4>postscript.tmpl</h4>
 
-<pre><code>    (P.S. What is comming at you is coming from you, {{rfc3339 &quot;now&quot;}})
+<pre><code>    {{ define &quot;postscript.tmpl&quot; }}
+    (P.S. What is comming at you is coming from you, {{rfc3339 &quot;now&quot;}})
+    {{ end }}
 </code></pre>
 
 <h4>Putting it all together</h4>

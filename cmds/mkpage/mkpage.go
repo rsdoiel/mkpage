@@ -50,8 +50,9 @@ You can set a local default template path by using environment variables.
 	examples = `
 EXAMPLE
 
-Template
+Template (named "examples/weather.tmpl")
 
+    {{ define "weather.tmpl" }}
     Date: {{- .now}}
 
     Hello {{.name -}},
@@ -63,6 +64,7 @@ Template
     Thank you
 
     {{.signature}}
+	{{ end }}
 
 Render the template above (i.e. examples/weather.tmpl) would be accomplished from 
 the following data sources--

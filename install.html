@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -173,12 +174,19 @@ downloading the zip file.</p>
 <p><em>mkpage</em> is &ldquo;go gettable&rdquo;.  Use the &ldquo;go get&rdquo; command to download the dependant packages
 as well as <em>mkpage</em>&rsquo;s source code.</p>
 
-<pre><code class="language-shell">    go get -u github.com/caltechlibrary/mkpage/...
+<pre><code class="language-shell">    go get -u github.com/caltechlibrary/pkgassets/...
+    go get -u github.com/caltechlibrary/mkpage/...
 </code></pre>
 
 <p>Or clone the repstory and then compile</p>
 
 <pre><code class="language-shell">    cd
+    git clone https://github.com/caltechlibrary/pkgassets src/github.com/caltechlibrary/pkgassets
+    cd src/github.com/caltechlibrary/pkgassets
+    make
+    make test
+    make install
+    cd
     git clone https://github.com/caltechlibrary/mkpage src/github.com/caltechlibrary/mkpage
     cd src/github.com/caltechlibrary/mkpage
     make
