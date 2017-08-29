@@ -1,5 +1,7 @@
-{{template "header" . }}
+{{ define "page.tmpl" }}
+{{ template "header" . }}
 
     {{.content}}
 
-{{template "footer" . }}
+{{ template "footer" . }}
+{{ end }}

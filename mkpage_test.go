@@ -166,7 +166,7 @@ This is slide three, just a random paragraph of text. Blah, blah, blah, blah, bl
 
 `
 
-	tmpl, err := template.New("test.tmpl").Parse(DefaultSlideTemplateSource)
+	tmpl, err := template.New("slides.tmpl").Parse(DefaultSlideTemplateSource)
 	if err != nil {
 		t.Errorf("Can't parse DefaultTemplateSource templates %s", err)
 		t.FailNow()
@@ -186,7 +186,7 @@ This is slide three, just a random paragraph of text. Blah, blah, blah, blah, bl
 	keyVals := map[string]string{}
 	for i, slide := range slides {
 		keyVals["Title"] = "text:" + titles[i]
-		s, err := MakeSlideString("test.tmpl", tmpl, keyVals, slide)
+		s, err := MakeSlideString("slides.tmpl", tmpl, keyVals, slide)
 		if err != nil {
 			t.Errorf("MakeSlideString() failed %d - %s", i, err)
 		}
