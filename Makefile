@@ -93,16 +93,16 @@ clean:
 	if [ -d dist ]; then rm -fR dist; fi
 
 install:
-	env GOBIN=$(HOME)/bin go install cmds/mkpage/mkpage.go
-	env GOBIN=$(HOME)/bin go install cmds/mkslides/mkslides.go
-	env GOBIN=$(HOME)/bin go install cmds/mkrss/mkrss.go
-	env GOBIN=$(HOME)/bin go install cmds/sitemapper/sitemapper.go
-	env GOBIN=$(HOME)/bin go install cmds/byline/byline.go
-	env GOBIN=$(HOME)/bin go install cmds/titleline/titleline.go
-	env GOBIN=$(HOME)/bin go install cmds/reldocpath/reldocpath.go
-	env GOBIN=$(HOME)/bin go install cmds/urlencode/urlencode.go
-	env GOBIN=$(HOME)/bin go install cmds/urldecode/urldecode.go
-	env GOBIN=$(HOME)/bin go install cmds/ws/ws.go
+	env GOBIN=$(GOPATH)/bin go install cmds/mkpage/mkpage.go
+	env GOBIN=$(GOPATH)/bin go install cmds/mkslides/mkslides.go
+	env GOBIN=$(GOPATH)/bin go install cmds/mkrss/mkrss.go
+	env GOBIN=$(GOPATH)/bin go install cmds/sitemapper/sitemapper.go
+	env GOBIN=$(GOPATH)/bin go install cmds/byline/byline.go
+	env GOBIN=$(GOPATH)/bin go install cmds/titleline/titleline.go
+	env GOBIN=$(GOPATH)/bin go install cmds/reldocpath/reldocpath.go
+	env GOBIN=$(GOPATH)/bin go install cmds/urlencode/urlencode.go
+	env GOBIN=$(GOPATH)/bin go install cmds/urldecode/urldecode.go
+	env GOBIN=$(GOPATH)/bin go install cmds/ws/ws.go
 
 
 dist/linux-amd64:
