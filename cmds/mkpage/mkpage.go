@@ -91,6 +91,7 @@ Golang's text/template docs can be found at
 	showHelp    bool
 	showVersion bool
 	showLicense bool
+	outputFName string
 
 	// Application Options
 	templateFNames string
@@ -105,6 +106,8 @@ func init() {
 	flag.BoolVar(&showVersion, "version", false, "show version")
 	flag.BoolVar(&showLicense, "l", false, "show license")
 	flag.BoolVar(&showLicense, "license", false, "show license")
+	flag.StringVar(&outputFName, "o", "", "output filename")
+	flag.StringVar(&outputFName, "output", "", "output filename")
 
 	// Application specific options
 	flag.BoolVar(&showTemplate, "s", false, "display the default template")
@@ -141,6 +144,13 @@ func main() {
 		fmt.Println(mkpage.DefaultTemplateSource)
 		os.Exit(0)
 	}
+
+	out, err := cli.Create(outputFName, os.Stdout)
+	if err != nil {
+		fmt.Printf("%s\n", err)
+		os.Exit(1)
+	}
+	defer cli.CloseFile(outputFName, out)
 
 	// Default template name is page.tmpl
 	templateName := "page.tmpl"
@@ -206,7 +216,7 @@ func main() {
 	}
 
 	// Make the page
-	if err := mkpage.MakePage(os.Stdout, templateName, t, data); err != nil {
+	if err := mkpage.MakePage(out, templateName, t, data); err != nil {
 		fmt.Fprintf(os.Stderr, "%s\n", err)
 		os.Exit(1)
 	}
