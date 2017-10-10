@@ -53,12 +53,13 @@ EXAMPLE
     %s htdocs htdocs/sitemap.xml http://eprints.example.edu
 `
 
-	// Standard cli options
-	showHelp    bool
-	showVersion bool
-	showLicense bool
+	// Standard options
+	showHelp     bool
+	showVersion  bool
+	showLicense  bool
+	showExamples bool
 
-	// App specific options
+	// App options
 	htdocs       string
 	siteURL      string
 	excludeList  string
@@ -105,10 +106,11 @@ func init() {
 	// Setup options
 	flag.BoolVar(&showHelp, "h", false, "display help")
 	flag.BoolVar(&showHelp, "help", false, "display help")
-	flag.BoolVar(&showVersion, "v", false, "display version")
-	flag.BoolVar(&showVersion, "version", false, "display version")
 	flag.BoolVar(&showLicense, "l", false, "display license")
 	flag.BoolVar(&showLicense, "license", false, "display license")
+	flag.BoolVar(&showVersion, "v", false, "display version")
+	flag.BoolVar(&showVersion, "version", false, "display version")
+	flag.BoolVar(&showExamples, "example", false, "display example(s)")
 
 	// App specific options
 	flag.StringVar(&changefreq, "u", "daily", "Set the change frequencely value, e.g. daily, weekly, monthly")
@@ -120,17 +122,33 @@ func init() {
 func main() {
 	appName := path.Base(os.Args[0])
 	flag.Parse()
+	args := flag.Args()
 
-	cfg := cli.New(appName, "MKPAGE", fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version), mkpage.Version)
+	cfg := cli.New(appName, "MKPAGE", mkpage.Version)
+	cfg.LicenseText = fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version)
 	cfg.UsageText = fmt.Sprintf(usage, appName)
 	cfg.DescriptionText = fmt.Sprintf(description, appName)
+	cfg.OptionText = "OPTIONS"
 	cfg.ExampleText = fmt.Sprintf(examples, appName)
 
-	args := flag.Args()
 	if showHelp == true {
-		fmt.Println(cfg.Usage())
+		if len(args) > 0 {
+			fmt.Println(cfg.Help(args...))
+		} else {
+			fmt.Println(cfg.Usage())
+		}
 		os.Exit(0)
 	}
+
+	if showExamples == true {
+		if len(args) > 0 {
+			fmt.Println(cfg.Example(args...))
+		} else {
+			fmt.Println(cfg.ExampleText)
+		}
+		os.Exit(0)
+	}
+
 	if showVersion == true {
 		fmt.Println(cfg.Version())
 		os.Exit(0)

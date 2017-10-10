@@ -52,18 +52,22 @@ would output
     .../css/site.css
 `
 
-	showHelp    bool
-	showVersion bool
-	showLicense bool
+	// Standard options
+	showHelp     bool
+	showVersion  bool
+	showLicense  bool
+	showExamples bool
 )
 
 func init() {
+	// Standard options
 	flag.BoolVar(&showHelp, "h", false, "display help")
 	flag.BoolVar(&showHelp, "help", false, "display help")
 	flag.BoolVar(&showLicense, "l", false, "display license")
 	flag.BoolVar(&showLicense, "license", false, "display license")
 	flag.BoolVar(&showVersion, "v", false, "display version")
 	flag.BoolVar(&showVersion, "version", false, "display version")
+	flag.BoolVar(&showExamples, "example", false, "display example(s)")
 }
 
 func main() {
@@ -72,15 +76,31 @@ func main() {
 	args := flag.Args()
 
 	// Configuration and command line interation
-	cfg := cli.New(appName, "MKPAGE", fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version), mkpage.Version)
+	cfg := cli.New(appName, "MKPAGE", mkpage.Version)
+	cfg.LicenseText = fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version)
 	cfg.UsageText = fmt.Sprintf(usage, appName)
 	cfg.DescriptionText = description
+	cfg.OptionText = "OPTIONS"
 	cfg.ExampleText = fmt.Sprintf(examples, appName)
 
 	if showHelp == true {
-		fmt.Println(cfg.Usage())
+		if len(args) > 0 {
+			fmt.Println(cfg.Help(args...))
+		} else {
+			fmt.Println(cfg.Usage())
+		}
 		os.Exit(0)
 	}
+
+	if showExamples == true {
+		if len(args) > 0 {
+			fmt.Println(cfg.Example(args...))
+		} else {
+			fmt.Println(cfg.ExampleText)
+		}
+		os.Exit(0)
+	}
+
 	if showLicense == true {
 		fmt.Println(cfg.License())
 		os.Exit(0)

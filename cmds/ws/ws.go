@@ -85,9 +85,10 @@ issue the cert, see https://letsencrypt.org for details)
 `
 
 	// Standard options
-	showHelp    bool
-	showVersion bool
-	showLicense bool
+	showHelp     bool
+	showVersion  bool
+	showLicense  bool
+	showExamples bool
 
 	// local app options
 	uri         string
@@ -112,12 +113,16 @@ func init() {
 	defaultDocRoot := "."
 	defaultURL := "http://localhost:8000"
 
-	flag.BoolVar(&showHelp, "h", false, "Display this help message")
-	flag.BoolVar(&showHelp, "help", false, "Display this help message")
-	flag.BoolVar(&showVersion, "v", false, "Should version info")
-	flag.BoolVar(&showVersion, "version", false, "Should version info")
-	flag.BoolVar(&showLicense, "l", false, "Should license info")
-	flag.BoolVar(&showLicense, "license", false, "Should license info")
+	// Standard Options
+	flag.BoolVar(&showHelp, "h", false, "display help")
+	flag.BoolVar(&showHelp, "help", false, "display help")
+	flag.BoolVar(&showLicense, "l", false, "display license")
+	flag.BoolVar(&showLicense, "license", false, "display license")
+	flag.BoolVar(&showVersion, "v", false, "display version")
+	flag.BoolVar(&showVersion, "version", false, "display version")
+	flag.BoolVar(&showExamples, "example", false, "display example(s)")
+
+	// Application Options
 	flag.StringVar(&docRoot, "d", defaultDocRoot, "Set the htdocs path")
 	flag.StringVar(&docRoot, "docs", defaultDocRoot, "Set the htdocs path")
 	flag.StringVar(&uri, "u", defaultURL, "The protocal and hostname listen for as a URL")
@@ -135,16 +140,32 @@ func main() {
 	args := flag.Args()
 
 	// Configuration and command line interation
-	cfg := cli.New(appName, "MKPAGE", fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version), mkpage.Version)
+	cfg := cli.New(appName, "MKPAGE", mkpage.Version)
+	cfg.LicenseText = fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version)
 	cfg.UsageText = fmt.Sprintf(usage, appName)
 	cfg.DescriptionText = fmt.Sprintf(description, appName, appName)
+	cfg.OptionText = "OPTIONS"
 	cfg.ExampleText = fmt.Sprintf(examples, appName, appName, appName)
 
 	// Process flags and update the environment as needed.
 	if showHelp == true {
-		fmt.Println(cfg.Usage())
+		if len(args) > 0 {
+			fmt.Println(cfg.Help(args...))
+		} else {
+			fmt.Println(cfg.Usage())
+		}
 		os.Exit(0)
 	}
+
+	if showExamples == true {
+		if len(args) > 0 {
+			fmt.Println(cfg.Example(args...))
+		} else {
+			fmt.Println(cfg.ExampleText)
+		}
+		os.Exit(0)
+	}
+
 	if showLicense == true {
 		fmt.Println(cfg.License())
 		os.Exit(0)

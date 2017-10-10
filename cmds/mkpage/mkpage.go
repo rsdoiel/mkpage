@@ -88,10 +88,11 @@ Golang's text/template docs can be found at
 `
 
 	// Standard Options
-	showHelp    bool
-	showVersion bool
-	showLicense bool
-	outputFName string
+	showHelp     bool
+	showVersion  bool
+	showLicense  bool
+	showExamples bool
+	outputFName  string
 
 	// Application Options
 	templateFNames string
@@ -100,12 +101,13 @@ Golang's text/template docs can be found at
 
 func init() {
 	// Standard Options
-	flag.BoolVar(&showHelp, "h", false, "show help")
-	flag.BoolVar(&showHelp, "help", false, "show help")
-	flag.BoolVar(&showVersion, "v", false, "show version")
-	flag.BoolVar(&showVersion, "version", false, "show version")
-	flag.BoolVar(&showLicense, "l", false, "show license")
-	flag.BoolVar(&showLicense, "license", false, "show license")
+	flag.BoolVar(&showHelp, "h", false, "display help")
+	flag.BoolVar(&showHelp, "help", false, "display help")
+	flag.BoolVar(&showVersion, "v", false, "display version")
+	flag.BoolVar(&showVersion, "version", false, "display version")
+	flag.BoolVar(&showExamples, "example", false, "display example(s)")
+	flag.BoolVar(&showLicense, "l", false, "display license")
+	flag.BoolVar(&showLicense, "license", false, "display license")
 	flag.StringVar(&outputFName, "o", "", "output filename")
 	flag.StringVar(&outputFName, "output", "", "output filename")
 
@@ -121,16 +123,32 @@ func main() {
 	flag.Parse()
 	args := flag.Args()
 
-	cfg := cli.New(appName, "MKPAGE", fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version), mkpage.Version)
+	cfg := cli.New(appName, "MKPAGE", mkpage.Version)
+	cfg.LicenseText = fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version)
 	cfg.UsageText = fmt.Sprintf(usage, appName)
 	cfg.DescriptionText = fmt.Sprintf(description)
+	cfg.OptionText = "OPTIONS"
 	cfg.ExampleText = fmt.Sprintf(examples, appName)
 
 	// Process flags and update the environment as needed.
 	if showHelp == true {
-		fmt.Println(cfg.Usage())
+		if len(args) > 0 {
+			fmt.Println(cfg.Help(args...))
+		} else {
+			fmt.Println(cfg.Usage())
+		}
 		os.Exit(0)
 	}
+
+	if showExamples == true {
+		if len(args) > 0 {
+			fmt.Println(cfg.Example(args...))
+		} else {
+			fmt.Println(cfg.ExampleText)
+		}
+		os.Exit(0)
+	}
+
 	if showLicense == true {
 		fmt.Println(cfg.License())
 		os.Exit(0)
