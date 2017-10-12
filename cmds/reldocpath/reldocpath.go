@@ -34,13 +34,16 @@ var (
 	usage = `USAGE: %s SOURCE_DOC_PATH TARGET_DOC_PATH `
 
 	description = `
+
 SYNOPSIS
 
 Given a source document path, a target document path calculate and
 the implied common base path calculate the relative path for target.
+
 `
 
 	examples = `
+
 EXAMPLE
 
 Given
@@ -50,6 +53,7 @@ Given
 would output
 
     .../css/site.css
+
 `
 
 	// Standard options

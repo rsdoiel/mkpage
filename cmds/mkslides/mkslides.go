@@ -37,6 +37,7 @@ const (
 	usage = `USAGE: %s [OPTIONS] [KEY/VALUE DATA PAIRS] MARKDOWN_FILE [TEMPLATE_FILENAMES]`
 
 	description = `
+
 SYNOPSIS
 
 %s converts a Markdown file into a sequence of HTML5 slides using the
@@ -70,8 +71,11 @@ actions like "next slide" to the space bar or mourse click.
 CONFIGURATION
 
 + MKPAGE_TEMPLATES - specify where to find the template(s) to use for slides
+
 `
+
 	examples = `
+
 EXAMPLE
 
 In this example we're using the default slide template.
@@ -111,6 +115,7 @@ This would result in the following webpages
 + 00-presentation.html
 + 01-presentation.html
 + 02-presentation.html
+
 `
 )
 

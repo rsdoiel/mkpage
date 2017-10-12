@@ -36,6 +36,7 @@ var (
 	usage = `USAGE: %s [OPTION] [KEY/VALUE DATA PAIRS] [TEMPLATE_FILENAMES]`
 
 	description = `
+
 SYNOPSIS
 
 Using the key/value pairs populate the template(s) and render to stdout.
@@ -45,9 +46,11 @@ CONFIGURATION
 You can set a local default template path by using environment variables.
 
 + MKPAGE_TEMPLATES - (optional) is the colon delimited list of template paths
+
 `
 
 	examples = `
+
 EXAMPLE
 
 Template (named "examples/weather.tmpl")
@@ -85,6 +88,7 @@ That would be expressed on the command line as follows
 Golang's text/template docs can be found at 
 
       https://golang.org/pkg/text/template/
+
 `
 
 	// Standard Options

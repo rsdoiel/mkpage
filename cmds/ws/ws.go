@@ -42,6 +42,7 @@ var (
 	usage = `USAGE: %s [OPTIONS] [DOCROOT]`
 
 	description = `
+
 SYNOPSIS
 
 	a nimble web server
@@ -60,9 +61,11 @@ supported.
 + MKPAGE_DOCROOT - sets the document path to use
 + MKPAGE_SSL_KEY - the path to the SSL key if using https
 + MKPAGE_SSL_CERT - the path to the SSL cert if using https
+
 `
 
 	examples = `
+
 EXAMPLES
 
 Run web server using the content in the current directory
@@ -82,6 +85,7 @@ DNS for the machine (this is need by the ACME protocol to
 issue the cert, see https://letsencrypt.org for details)
 
    %s -acme -url www.example.org /www/htdocs
+
 `
 
 	// Standard options

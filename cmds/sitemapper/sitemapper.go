@@ -42,15 +42,19 @@ var (
 	usage = `USAGE: %s [OPTIONS] HTDOCS_PATH MAP_FILENAME PUBLIC_BASE_URL`
 
 	description = `
+
 SYNOPSIS
 
 %s generates a sitemap for the website.
+
 `
 
 	examples = `
+
 EXAMPLE
 
     %s htdocs htdocs/sitemap.xml http://eprints.example.edu
+
 `
 
 	// Standard options

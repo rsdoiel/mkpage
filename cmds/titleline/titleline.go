@@ -36,19 +36,23 @@ var (
 	usage = `USAGE: %s [OPTIONS]`
 
 	description = `
+
 SYNOPSIS
 
 %s extracts the first title line from a Markdown file. By default it reads
 from standard in and writes to standard out but can read/write
 to specific files using an option.
+
 `
 
 	examples = `
+
 EXAMPLE
 
 cat article.md | %s
 
 This will display the title of an article.md.
+
 `
 
 	// Standard Options

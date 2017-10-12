@@ -34,14 +34,17 @@ var (
 	usage = `USAGE: %s [OPTIONS] [STRING_TO_ENCODE]`
 
 	description = `
+
 SYNOPSIS
 
 %s is a simple command line utility to URL encode content. By default
 it reads from standard input and writes to standard out.  You can
 also specifty the string to encode as a command line parameter.
+
 `
 
 	examples = `
+
 EXAMPLES
 
     echo "This is the string to encode & nothing else!" | %s
@@ -49,6 +52,7 @@ EXAMPLES
 would yield
 
     This%%20is%%20the%%20string%%20to%%20encode%%20&%%20nothing%%20else%%0A
+
 `
 
 	// Standard Options
