@@ -1,5 +1,5 @@
 //
-// Package provides the core library used by cmds/ws/ws.go
+// Package mkpage provides the core library used by cmds/ws/ws.go
 //
 // @author R. S. Doiel, <rsdoiel@caltech.edu>
 //
