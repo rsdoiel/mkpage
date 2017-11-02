@@ -79,7 +79,7 @@ Run web server using a specified directory
 
 Running web server using ACME TLS support (i.e. Let's Encrypt).
 Note will only include the hostname as the ACME setup is for
-listenning on port 443. This may require privilaged account
+listenning on port 443. This may require privileged account
 and will require that the hostname listed matches the public
 DNS for the machine (this is need by the ACME protocol to
 issue the cert, see https://letsencrypt.org for details)
@@ -129,8 +129,8 @@ func init() {
 	// Application Options
 	flag.StringVar(&docRoot, "d", defaultDocRoot, "Set the htdocs path")
 	flag.StringVar(&docRoot, "docs", defaultDocRoot, "Set the htdocs path")
-	flag.StringVar(&uri, "u", defaultURL, "The protocal and hostname listen for as a URL")
-	flag.StringVar(&uri, "url", defaultURL, "The protocal and hostname listen for as a URL")
+	flag.StringVar(&uri, "u", defaultURL, "The protocol and hostname listen for as a URL")
+	flag.StringVar(&uri, "url", defaultURL, "The protocol and hostname listen for as a URL")
 	flag.StringVar(&sslKey, "k", "", "Set the path for the SSL Key")
 	flag.StringVar(&sslKey, "key", "", "Set the path for the SSL Key")
 	flag.StringVar(&sslCert, "c", "", "Set the path for the SSL Cert")

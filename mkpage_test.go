@@ -46,7 +46,6 @@ func TestResolveData(t *testing.T) {
 		} else {
 			return fmt.Errorf("expected %s, missing %s", expected, ky)
 		}
-		return nil
 	}
 
 	keyValues := map[string]string{
