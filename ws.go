@@ -36,6 +36,40 @@ func IsDotPath(p string) bool {
 	return false
 }
 
+type CORSPolicy struct {
+	Origin           string
+	Options          string
+	Headers          string
+	ExposedHeaders   string
+	AllowCredentials string
+}
+
+// CORS handler sets the "cors" headers based on configuration
+func (cors *CORSPolicy) CORSHandler(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if cors.Origin != "" {
+			w.Header().Set("Access-Control-Allow-Origin", cors.Origin)
+		}
+		if cors.Options != "" {
+			w.Header().Set("Access-Control-Allow-Methods", cors.Options)
+		}
+		if cors.Headers != "" {
+			w.Header().Set("Access-Control-Allow-Headers", cors.Headers)
+		}
+		if cors.ExposedHeaders != "" {
+			w.Header().Set("Access-Control-Expose-Headers", cors.ExposedHeaders)
+		}
+		if cors.AllowCredentials != "" {
+			w.Header().Set("Access-Control-Allow-Credentials", cors.AllowCredentials)
+		}
+		// Bailout if we ahve an OPTIONS preflight request
+		if r.Method == "OPTIONS" {
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
 // RequestLogger logs the request based on the request object passed into it.
 func RequestLogger(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

@@ -100,6 +100,7 @@ issue the cert, see https://letsencrypt.org for details)
 	sslKey      string
 	sslCert     string
 	letsEncrypt bool
+	CORSOrigin  string
 )
 
 func logRequest(r *http.Request) {
@@ -136,6 +137,7 @@ func init() {
 	flag.StringVar(&sslCert, "c", "", "Set the path for the SSL Cert")
 	flag.StringVar(&sslCert, "cert", "", "Set the path for the SSL Cert")
 	flag.BoolVar(&letsEncrypt, "acme", false, "Enable Let's Encypt ACME TLS support")
+	flag.StringVar(&CORSOrigin, "cors-origin", "*", "Set the CORS Origin Policy to a specific host or *")
 }
 
 func main() {
@@ -201,7 +203,10 @@ func main() {
 	}
 	log.Printf("Listening for %s", uri)
 
-	http.Handle("/", http.FileServer(http.Dir(docRoot)))
+	cors := mkpage.CORSPolicy{
+		Origin: CORSOrigin,
+	}
+	http.Handle("/", cors.CORSHandler(http.FileServer(http.Dir(docRoot))))
 	if letsEncrypt == true {
 		// Note: use a sensible value for data directory
 		// this is where cached certificates are stored
@@ -229,6 +234,7 @@ func main() {
 			log.Fatal(sSvr.ListenAndServeTLS("", ""))
 		}()
 
+		// Launch http redirect to TLS version
 		rmux := http.NewServeMux()
 		rmux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 			var target string
