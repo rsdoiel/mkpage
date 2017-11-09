@@ -206,7 +206,7 @@ func main() {
 	cors := mkpage.CORSPolicy{
 		Origin: CORSOrigin,
 	}
-	http.Handle("/", cors.CORSHandler(http.FileServer(http.Dir(docRoot))))
+	http.Handle("/", cors.Handle(http.FileServer(http.Dir(docRoot))))
 	if letsEncrypt == true {
 		// Note: use a sensible value for data directory
 		// this is where cached certificates are stored

@@ -44,8 +44,8 @@ type CORSPolicy struct {
 	AllowCredentials string
 }
 
-// CORS handler sets the "cors" headers based on configuration
-func (cors *CORSPolicy) CORSHandler(next http.Handler) http.Handler {
+// Handle accepts an http.Handler and wraps the "CORS" headers based on configuration of the CORSPolicy struct
+func (cors *CORSPolicy) Handle(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if cors.Origin != "" {
 			w.Header().Set("Access-Control-Allow-Origin", cors.Origin)
