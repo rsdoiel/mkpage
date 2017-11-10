@@ -4,7 +4,7 @@
 
 PROJECT = mkpage
 
-VERSION = $(shell grep -m1 "Version = " $(PROJECT).go | cut -d\" -f 2)
+VERSION = $(shell grep -m1 "Version = " $(PROJECT).go | cut -d\` -f 2)
 
 BRANCH = $(shell git branch | grep "* " | cut -d\   -f 2)
 
@@ -186,6 +186,7 @@ distribute_docs:
 	cp -v how-to/go-template-recipes.md dist/how-to/
 	cp -v how-to/the-basics.md dist/how-to/
 	cp -vR templates dist/
+	./package-versions.bash > dist/package-versions.txt
 
 release: assets.go distribute_docs dist/linux-amd64 dist/windows-amd64 dist/macosx-amd64 dist/raspbian-arm7
 
