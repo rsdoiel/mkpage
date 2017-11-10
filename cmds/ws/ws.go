@@ -32,6 +32,7 @@ import (
 	// Caltech Library packages
 	"github.com/caltechlibrary/cli"
 	"github.com/caltechlibrary/mkpage"
+	"github.com/caltechlibrary/wsfn"
 
 	// Other packages
 	"golang.org/x/crypto/acme/autocert"
@@ -203,7 +204,7 @@ func main() {
 	}
 	log.Printf("Listening for %s", uri)
 
-	cors := mkpage.CORSPolicy{
+	cors := wsfn.CORSPolicy{
 		Origin: CORSOrigin,
 	}
 	http.Handle("/", cors.Handle(http.FileServer(http.Dir(docRoot))))
@@ -227,7 +228,7 @@ func main() {
 		sSvr := &http.Server{
 			Addr:      ":https",
 			TLSConfig: &tls.Config{GetCertificate: m.GetCertificate},
-			Handler:   mkpage.RequestLogger(mkpage.StaticRouter(http.DefaultServeMux)),
+			Handler:   wsfn.RequestLogger(wsfn.StaticRouter(http.DefaultServeMux)),
 		}
 		// Launch the TLS version
 		go func() {
@@ -246,22 +247,22 @@ func main() {
 			if len(r.URL.RawQuery) > 0 {
 				target += "?" + r.URL.RawQuery
 			}
-			mkpage.ResponseLogger(r, http.StatusTemporaryRedirect, fmt.Errorf("redirecting %s to %s", r.URL.String(), target))
+			wsfn.ResponseLogger(r, http.StatusTemporaryRedirect, fmt.Errorf("redirecting %s to %s", r.URL.String(), target))
 			http.Redirect(w, r, target, http.StatusTemporaryRedirect)
 		})
 		pSvr := &http.Server{
 			Addr:    ":http",
-			Handler: mkpage.RequestLogger(rmux),
+			Handler: wsfn.RequestLogger(rmux),
 		}
 		log.Printf("Redirecting http://%s to to %s", u.Host, u.String())
 		log.Fatal(pSvr.ListenAndServe())
 	} else if u.Scheme == "https" {
-		err := http.ListenAndServeTLS(u.Host, sslCert, sslKey, mkpage.RequestLogger(mkpage.StaticRouter(http.DefaultServeMux)))
+		err := http.ListenAndServeTLS(u.Host, sslCert, sslKey, wsfn.RequestLogger(wsfn.StaticRouter(http.DefaultServeMux)))
 		if err != nil {
 			log.Fatalf("%s", err)
 		}
 	} else {
-		err := http.ListenAndServe(u.Host, mkpage.RequestLogger(mkpage.StaticRouter(http.DefaultServeMux)))
+		err := http.ListenAndServe(u.Host, wsfn.RequestLogger(wsfn.StaticRouter(http.DefaultServeMux)))
 		if err != nil {
 			log.Fatalf("%s", err)
 		}

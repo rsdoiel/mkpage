@@ -45,7 +45,7 @@ bin/urlencode: cmds/urlencode/urlencode.go
 bin/urldecode: cmds/urldecode/urldecode.go
 	go build -o bin/urldecode cmds/urldecode/urldecode.go
 
-bin/ws: mkpage.go ws.go cmds/ws/ws.go
+bin/ws: mkpage.go cmds/ws/ws.go
 	go build -o bin/ws cmds/ws/ws.go
 
 
