@@ -10,7 +10,17 @@ BRANCH = $(shell git branch | grep "* " | cut -d\   -f 2)
 
 PKGASSETS = $(shell which pkgassets)
 
-build: bin/mkpage bin/mkslides bin/mkrss bin/sitemapper bin/byline bin/titleline bin/reldocpath bin/urlencode bin/urldecode bin/ws 
+OS = $(shell uname)
+
+EXT =
+ifeq ($(OS),Windows)
+	EXT = .exe
+endif
+
+build: bin/mkpage$(EXT) bin/mkslides$(EXT) bin/mkrss$(EXT) \
+	bin/sitemapper$(EXT) bin/byline$(EXT) bin/titleline$(EXT) \
+	bin/reldocpath$(EXT) bin/urlencode$(EXT) bin/urldecode$(EXT) \
+	bin/ws$(EXT) 
 
 mkpage.go: assets.go
 
@@ -18,35 +28,35 @@ assets.go:
 	pkgassets -o assets.go -p mkpage Defaults defaults
 	git add assets.go
 
-bin/mkpage: mkpage.go cmds/mkpage/mkpage.go
-	go build -o bin/mkpage cmds/mkpage/mkpage.go
+bin/mkpage$(EXT): mkpage.go cmds/mkpage/mkpage.go
+	go build -o bin/mkpage$(EXT) cmds/mkpage/mkpage.go
 
-bin/mkslides: mkpage.go cmds/mkslides/mkslides.go
-	go build -o bin/mkslides cmds/mkslides/mkslides.go
+bin/mkslides$(EXT): mkpage.go cmds/mkslides/mkslides.go
+	go build -o bin/mkslides$(EXT) cmds/mkslides/mkslides.go
 
-bin/mkrss: mkpage.go cmds/mkrss/mkrss.go
-	go build -o bin/mkrss cmds/mkrss/mkrss.go
+bin/mkrss$(EXT): mkpage.go cmds/mkrss/mkrss.go
+	go build -o bin/mkrss$(EXT) cmds/mkrss/mkrss.go
 
-bin/sitemapper: mkpage.go cmds/sitemapper/sitemapper.go
-	go build -o bin/sitemapper cmds/sitemapper/sitemapper.go
+bin/sitemapper$(EXT): mkpage.go cmds/sitemapper/sitemapper.go
+	go build -o bin/sitemapper$(EXT) cmds/sitemapper/sitemapper.go
 
-bin/byline: mkpage.go cmds/byline/byline.go
-	go build -o bin/byline cmds/byline/byline.go
+bin/byline$(EXT): mkpage.go cmds/byline/byline.go
+	go build -o bin/byline$(EXT) cmds/byline/byline.go
 
-bin/titleline: mkpage.go cmds/titleline/titleline.go
-	go build -o bin/titleline cmds/titleline/titleline.go
+bin/titleline$(EXT): mkpage.go cmds/titleline/titleline.go
+	go build -o bin/titleline$(EXT) cmds/titleline/titleline.go
 
-bin/reldocpath: cmds/reldocpath/reldocpath.go
-	go build -o bin/reldocpath cmds/reldocpath/reldocpath.go
+bin/reldocpath$(EXT): cmds/reldocpath/reldocpath.go
+	go build -o bin/reldocpath$(EXT) cmds/reldocpath/reldocpath.go
 
-bin/urlencode: cmds/urlencode/urlencode.go
-	go build -o bin/urlencode cmds/urlencode/urlencode.go
+bin/urlencode$(EXT): cmds/urlencode/urlencode.go
+	go build -o bin/urlencode$(EXT) cmds/urlencode/urlencode.go
 
-bin/urldecode: cmds/urldecode/urldecode.go
-	go build -o bin/urldecode cmds/urldecode/urldecode.go
+bin/urldecode$(EXT): cmds/urldecode/urldecode.go
+	go build -o bin/urldecode$(EXT) cmds/urldecode/urldecode.go
 
-bin/ws: mkpage.go cmds/ws/ws.go
-	go build -o bin/ws cmds/ws/ws.go
+bin/ws$(EXT): mkpage.go cmds/ws/ws.go
+	go build -o bin/ws$(EXT) cmds/ws/ws.go
 
 
 lint:
