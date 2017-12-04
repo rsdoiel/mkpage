@@ -20,7 +20,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -34,8 +33,6 @@ import (
 )
 
 const (
-	usage = `USAGE: %s [OPTIONS] [KEY/VALUE DATA PAIRS] MARKDOWN_FILE [TEMPLATE_FILENAMES]`
-
 	description = `
 
 SYNOPSIS
@@ -67,11 +64,6 @@ slides some predefined template variables is used.
 In your custom templates these should be exist to link everything together
 as expected.  In addition you may want to include JavaScript to allow mapping
 actions like "next slide" to the space bar or mourse click.
-
-CONFIGURATION
-
-+ MKPAGE_TEMPLATES - specify where to find the template(s) to use for slides
-
 `
 
 	examples = `
@@ -121,10 +113,14 @@ This would result in the following webpages
 
 var (
 	// Standard Options
-	showHelp     bool
-	showVersion  bool
-	showLicense  bool
-	showExamples bool
+	showHelp             bool
+	showVersion          bool
+	showLicense          bool
+	showExamples         bool
+	inputFName           string
+	outputFName          string
+	quiet                bool
+	generateMarkdownDocs bool
 
 	// Application Options
 	cssPath           string
@@ -135,80 +131,76 @@ var (
 	templateFNames    string
 )
 
-func init() {
+func main() {
+	app := cli.NewCli(mkpage.Version)
+	appName := app.AppName()
+
+	// Document Application Parameters
+	app.AddParams(`[KEY/VALUE DATA PAIRS]`, `MARKDOWN_FILE`, `[TEMPLATE_FILENAMES]`)
+
+	// Add Help Docs
+	app.AddHelp("license", []byte(fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version)))
+	app.AddHelp("description", []byte(fmt.Sprintf(description, appName, appName)))
+	app.AddHelp("examples", []byte(fmt.Sprintf(examples, appName, appName, appName, appName, appName, appName, appName)))
+
+	// Environment options
+	app.EnvStringVar(&templateFNames, "MKPAGE_TEMPLATES", "", "a colon delimiter list of default templates to use")
+
 	// Standard options
-	flag.BoolVar(&showHelp, "h", false, "display help")
-	flag.BoolVar(&showHelp, "help", false, "display help")
-	flag.BoolVar(&showLicense, "l", false, "display license")
-	flag.BoolVar(&showLicense, "license", false, "display license")
-	flag.BoolVar(&showVersion, "v", false, "display version")
-	flag.BoolVar(&showVersion, "version", false, "display version")
-	flag.BoolVar(&showExamples, "example", false, "display example(s)")
+	app.BoolVar(&showHelp, "h", false, "display help")
+	app.BoolVar(&showHelp, "help", false, "display help")
+	app.BoolVar(&showLicense, "l", false, "display license")
+	app.BoolVar(&showLicense, "license", false, "display license")
+	app.BoolVar(&showVersion, "v", false, "display version")
+	app.BoolVar(&showVersion, "version", false, "display version")
+	app.BoolVar(&showExamples, "example", false, "display example(s)")
 
 	// Application specific options
-	flag.StringVar(&cssPath, "c", "", "Specify the CSS file to use")
-	flag.StringVar(&cssPath, "css", "", "Specify the CSS file to use")
-	flag.StringVar(&jsPath, "j", "", "Specify the JavaScript file to use")
-	flag.StringVar(&jsPath, "js", "", "Specify the JavaScript file to use")
-	flag.StringVar(&mdFName, "m", "", "Markdown filename")
-	flag.StringVar(&mdFName, "markdown", "", "Markdown filename")
-	flag.StringVar(&presentationTitle, "p", "", "Presentation title")
-	flag.StringVar(&presentationTitle, "presentation-title", "", "Presentation title")
-	flag.BoolVar(&showTemplate, "s", false, "display the default template")
-	flag.BoolVar(&showTemplate, "show-template", false, "display the default template")
-	flag.StringVar(&templateFNames, "t", "", "A colon delimited list of HTML templates to use")
-	flag.StringVar(&templateFNames, "templates", "", "A colon delimited list of HTML templates to use")
-}
+	app.StringVar(&cssPath, "c", "", "Specify the CSS file to use")
+	app.StringVar(&cssPath, "css", "", "Specify the CSS file to use")
+	app.StringVar(&jsPath, "j", "", "Specify the JavaScript file to use")
+	app.StringVar(&jsPath, "js", "", "Specify the JavaScript file to use")
+	app.StringVar(&mdFName, "m", "", "Markdown filename")
+	app.StringVar(&mdFName, "markdown", "", "Markdown filename")
+	app.StringVar(&presentationTitle, "p", "", "Presentation title")
+	app.StringVar(&presentationTitle, "presentation-title", "", "Presentation title")
+	app.BoolVar(&showTemplate, "s", false, "display the default template")
+	app.BoolVar(&showTemplate, "show-template", false, "display the default template")
+	app.StringVar(&templateFNames, "t", "", "A colon delimited list of HTML templates to use")
+	app.StringVar(&templateFNames, "templates", "", "A colon delimited list of HTML templates to use")
 
-func main() {
-	appName := path.Base(os.Args[0])
-	flag.Parse()
-	args := flag.Args()
+	app.Parse()
+	args := app.Args()
 
-	// Configure app
-	cfg := cli.New(appName, "MKPAGE", mkpage.Version)
-	cfg.LicenseText = fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version)
-	cfg.UsageText = fmt.Sprintf(usage, appName)
-	cfg.DescriptionText = fmt.Sprintf(description, appName, appName)
-	cfg.OptionText = "OPTIONS"
-	cfg.ExampleText = fmt.Sprintf(examples, appName, appName, appName, appName, appName, appName, appName)
-
-	// Process flags and update the environment as needed.
-	if showHelp == true {
+	// Process options and update the environment as needed.
+	if generateMarkdownDocs {
+		app.GenerateMarkdownDocs(app.Out)
+		os.Exit(0)
+	}
+	if showHelp || showExamples {
 		if len(args) > 0 {
-			fmt.Println(cfg.Help(args...))
+			fmt.Fprintf(app.Out, app.Help(args...))
 		} else {
-			fmt.Println(cfg.Usage())
+			app.Usage(app.Out)
 		}
 		os.Exit(0)
 	}
-
-	if showExamples == true {
-		if len(args) > 0 {
-			fmt.Println(cfg.Example(args...))
-		} else {
-			fmt.Println(cfg.ExampleText)
-		}
+	if showLicense {
+		fmt.Fprintln(app.Out, app.License())
+		os.Exit(0)
+	}
+	if showVersion {
+		fmt.Fprintln(app.Out, app.Version())
 		os.Exit(0)
 	}
 
-	if showLicense == true {
-		fmt.Println(cfg.License())
-		os.Exit(0)
-	}
-	if showVersion == true {
-		fmt.Println(cfg.Version())
-		os.Exit(0)
-	}
-
-	if showTemplate == true {
-		fmt.Println(mkpage.DefaultSlideTemplateSource)
+	if showTemplate {
+		fmt.Fprintln(app.Out, mkpage.DefaultSlideTemplateSource)
 		os.Exit(0)
 	}
 
 	// Make sure we have a configured command to run
 	templateSources := []string{}
-	templateFNames = cfg.MergeEnv("templates", templateFNames)
 	if len(templateFNames) > 0 {
 		for _, fname := range strings.Split(templateFNames, ":") {
 			templateSources = append(templateSources, fname)
@@ -237,7 +229,7 @@ func main() {
 	// Read in the Markdown file
 	mdSrc, err := ioutil.ReadFile(mdFName)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "%s, %s\n", mdFName, err)
+		cli.OnError(app.Eout, fmt.Errorf("%s, %s\n", mdFName, err), quiet)
 		os.Exit(1)
 	}
 
@@ -249,35 +241,25 @@ func main() {
 
 	// Load ant user supplied templates
 	if len(templateSources) > 0 {
-		if err := tmpl.ReadFiles(templateSources...); err != nil {
-			fmt.Fprintf(os.Stderr, "%s\n", err)
-			os.Exit(1)
-		}
+		err = tmpl.ReadFiles(templateSources...)
+		cli.ExitOnError(app.Eout, err, quiet)
 		templateName = templateSources[0]
 	} else {
 		// Read any templates from stdin that might be present
 		if cli.IsPipe(os.Stdin) == true {
 			buf, err := ioutil.ReadAll(os.Stdin)
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "%s\n", err)
-				os.Exit(1)
-			}
+			cli.ExitOnError(app.Eout, err, quiet)
 			tmpl.Add(templateName, buf)
 		} else {
 			// Load our default template maps
-			if err := tmpl.Add(templateName, mkpage.Defaults["/templates/slides.tmpl"]); err != nil {
-				fmt.Fprintf(os.Stderr, "%s\n", err)
-				os.Exit(1)
-			}
+			err = tmpl.Add(templateName, mkpage.Defaults["/templates/slides.tmpl"])
+			cli.ExitOnError(app.Eout, err, quiet)
 		}
 	}
 
 	// Assemble our templates
 	t, err := tmpl.Assemble()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "%s\n", err)
-		os.Exit(1)
-	}
+	cli.ExitOnError(app.Eout, err, quiet)
 
 	// Build the slides
 	slides := mkpage.MarkdownToSlides(mdFName, mdSrc)
@@ -285,13 +267,13 @@ func main() {
 	// Render the slides
 	for i, slide := range slides {
 		// Merge slide data with rest of command line map (e.g. "Title=text:My Presentation" "CSSPath=text:css/slides.css")
-		err := mkpage.MakeSlideFile(templateName, t, data, slide)
+		err = mkpage.MakeSlideFile(templateName, t, data, slide)
 		if err == nil {
 			// Note: Give some feed back when slide written successful
-			fmt.Fprintf(os.Stdout, "Wrote %02d-%s.html\n", slide.CurNo, strings.TrimSuffix(path.Base(slide.FName), path.Ext(slide.FName)))
+			fmt.Fprintf(app.Eout, "Wrote %02d-%s.html\n", slide.CurNo, strings.TrimSuffix(path.Base(slide.FName), path.Ext(slide.FName)))
 		} else {
 			// Note: Display an error if we have a problem
-			fmt.Fprintf(os.Stderr, "Can't process slide %d, %s\n", i, err)
+			cli.OnError(app.Eout, fmt.Errorf("Can't process slide %d, %s\n", i, err), quiet)
 		}
 	}
 }

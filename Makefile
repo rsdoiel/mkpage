@@ -87,8 +87,12 @@ format:
 	gofmt -w cmds/urldecode/urldecode.go
 	gofmt -w cmds/ws/ws.go
 
-test:
+test: clean bin/mkpage$(EXT) bin/mkslides$(EXT) bin/mkrss$(EXT) \
+	bin/sitemapper$(EXT) bin/byline$(EXT) bin/titleline$(EXT) \
+	bin/reldocpath$(EXT) bin/urlencode$(EXT) bin/urldecode$(EXT) \
+	bin/ws$(EXT) 
 	go test
+	bash test_cmds.bash
 
 status:
 	git status

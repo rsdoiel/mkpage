@@ -20,13 +20,11 @@ package main
 
 import (
 	"crypto/tls"
-	"flag"
 	"fmt"
 	"log"
 	"net/http"
 	"net/url"
 	"os"
-	"path"
 	"strings"
 
 	// Caltech Library packages
@@ -40,8 +38,6 @@ import (
 
 // Flag options
 var (
-	usage = `USAGE: %s [OPTIONS] [DOCROOT]`
-
 	description = `
 
 SYNOPSIS
@@ -90,10 +86,13 @@ issue the cert, see https://letsencrypt.org for details)
 `
 
 	// Standard options
-	showHelp     bool
-	showVersion  bool
-	showLicense  bool
-	showExamples bool
+	showHelp             bool
+	showVersion          bool
+	showLicense          bool
+	showExamples         bool
+	outputFName          string
+	generateMarkdownDocs bool
+	quiet                bool
 
 	// local app options
 	uri         string
@@ -115,70 +114,81 @@ func logger(next http.Handler) http.Handler {
 	})
 }
 
-func init() {
+func main() {
+	app := cli.NewCli(mkpage.Version)
+	appName := app.AppName()
+
+	// Document non-option parameters
+	app.AddParams(`[DOCROOT]`)
+
+	// Add Help Docs
+	app.AddHelp("license", []byte(fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version)))
+	app.AddHelp("description", []byte(fmt.Sprintf(description, appName, appName)))
+	app.AddHelp("examples", []byte(fmt.Sprintf(examples, appName, appName, appName)))
+
 	defaultDocRoot := "."
 	defaultURL := "http://localhost:8000"
 
+	// Environment Options
+	app.EnvStringVar(&docRoot, "MKPAGE_DOCROOT", "", "set the htdoc root")
+	app.EnvStringVar(&uri, "MKPAGE_URL", "", "set the URL to listen on, defaults to http://localhost:8000")
+	app.EnvStringVar(&sslKey, "MKPAGE_SSL_KEY", "", "set the path to the SSL KEY")
+	app.EnvStringVar(&sslCert, "MKPAGE_SSL_CERT", "", "set the path to the SSL Certificate")
+
 	// Standard Options
-	flag.BoolVar(&showHelp, "h", false, "display help")
-	flag.BoolVar(&showHelp, "help", false, "display help")
-	flag.BoolVar(&showLicense, "l", false, "display license")
-	flag.BoolVar(&showLicense, "license", false, "display license")
-	flag.BoolVar(&showVersion, "v", false, "display version")
-	flag.BoolVar(&showVersion, "version", false, "display version")
-	flag.BoolVar(&showExamples, "example", false, "display example(s)")
+	app.BoolVar(&showHelp, "h", false, "display help")
+	app.BoolVar(&showHelp, "help", false, "display help")
+	app.BoolVar(&showLicense, "l", false, "display license")
+	app.BoolVar(&showLicense, "license", false, "display license")
+	app.BoolVar(&showVersion, "v", false, "display version")
+	app.BoolVar(&showVersion, "version", false, "display version")
+	app.BoolVar(&showExamples, "example", false, "display example(s)")
+	app.BoolVar(&generateMarkdownDocs, "generate-markdown-docs", false, "generate markdown documentation")
+	app.BoolVar(&quiet, "quiet", false, "suppress error messages")
 
 	// Application Options
-	flag.StringVar(&docRoot, "d", defaultDocRoot, "Set the htdocs path")
-	flag.StringVar(&docRoot, "docs", defaultDocRoot, "Set the htdocs path")
-	flag.StringVar(&uri, "u", defaultURL, "The protocol and hostname listen for as a URL")
-	flag.StringVar(&uri, "url", defaultURL, "The protocol and hostname listen for as a URL")
-	flag.StringVar(&sslKey, "k", "", "Set the path for the SSL Key")
-	flag.StringVar(&sslKey, "key", "", "Set the path for the SSL Key")
-	flag.StringVar(&sslCert, "c", "", "Set the path for the SSL Cert")
-	flag.StringVar(&sslCert, "cert", "", "Set the path for the SSL Cert")
-	flag.BoolVar(&letsEncrypt, "acme", false, "Enable Let's Encypt ACME TLS support")
-	flag.StringVar(&CORSOrigin, "cors-origin", "*", "Set the CORS Origin Policy to a specific host or *")
-}
+	app.StringVar(&docRoot, "d", defaultDocRoot, "Set the htdocs path")
+	app.StringVar(&docRoot, "docs", defaultDocRoot, "Set the htdocs path")
+	app.StringVar(&uri, "u", defaultURL, "The protocol and hostname listen for as a URL")
+	app.StringVar(&uri, "url", defaultURL, "The protocol and hostname listen for as a URL")
+	app.StringVar(&sslKey, "k", "", "Set the path for the SSL Key")
+	app.StringVar(&sslKey, "key", "", "Set the path for the SSL Key")
+	app.StringVar(&sslCert, "c", "", "Set the path for the SSL Cert")
+	app.StringVar(&sslCert, "cert", "", "Set the path for the SSL Cert")
+	app.BoolVar(&letsEncrypt, "acme", false, "Enable Let's Encypt ACME TLS support")
+	app.StringVar(&CORSOrigin, "cors-origin", "*", "Set the CORS Origin Policy to a specific host or *")
 
-func main() {
-	appName := path.Base(os.Args[0])
-	flag.Parse()
-	args := flag.Args()
+	app.Parse()
+	args := app.Args()
 
-	// Configuration and command line interation
-	cfg := cli.New(appName, "MKPAGE", mkpage.Version)
-	cfg.LicenseText = fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version)
-	cfg.UsageText = fmt.Sprintf(usage, appName)
-	cfg.DescriptionText = fmt.Sprintf(description, appName, appName)
-	cfg.OptionText = "OPTIONS"
-	cfg.ExampleText = fmt.Sprintf(examples, appName, appName, appName)
+	// Setup IO
+	var err error
+
+	app.Eout = os.Stderr
+
+	app.Out, err = cli.Create(outputFName, os.Stdout)
+	cli.ExitOnError(app.Eout, err, quiet)
+	defer cli.CloseFile(outputFName, app.Out)
 
 	// Process flags and update the environment as needed.
-	if showHelp == true {
+	if generateMarkdownDocs {
+		app.GenerateMarkdownDocs(app.Out)
+		os.Exit(0)
+	}
+	if showHelp || showExamples {
 		if len(args) > 0 {
-			fmt.Println(cfg.Help(args...))
+			fmt.Fprintln(app.Out, app.Help(args...))
 		} else {
-			fmt.Println(cfg.Usage())
+			app.Usage(app.Out)
 		}
 		os.Exit(0)
 	}
-
-	if showExamples == true {
-		if len(args) > 0 {
-			fmt.Println(cfg.Example(args...))
-		} else {
-			fmt.Println(cfg.ExampleText)
-		}
+	if showLicense {
+		fmt.Fprintln(app.Out, app.License())
 		os.Exit(0)
 	}
-
-	if showLicense == true {
-		fmt.Println(cfg.License())
-		os.Exit(0)
-	}
-	if showVersion == true {
-		fmt.Println(cfg.Version())
+	if showVersion {
+		fmt.Fprintln(app.Out, app.Version())
 		os.Exit(0)
 	}
 
@@ -187,18 +197,14 @@ func main() {
 		docRoot = args[0]
 	}
 
-	docRoot = cfg.CheckOption("dotroot", cfg.MergeEnv("docroot", docRoot), true)
 	log.Printf("DocRoot %s", docRoot)
 
-	uri = cfg.CheckOption("url", cfg.MergeEnv("url", uri), true)
 	u, err := url.Parse(uri)
 	if err != nil {
-		log.Fatalf("Can't parse %q, %s", uri, err)
+		cli.ExitOnError(app.Eout, err, quiet)
 	}
 
 	if u.Scheme == "https" && letsEncrypt == false {
-		sslKey = cfg.CheckOption("ssl_key", cfg.MergeEnv("ssl_key", sslKey), true)
-		sslCert = cfg.CheckOption("ssl_cert", cfg.MergeEnv("ssl_cert", sslCert), true)
 		log.Printf("SSL Key %s", sslKey)
 		log.Printf("SSL Cert %s", sslCert)
 	}
@@ -255,16 +261,13 @@ func main() {
 			Handler: wsfn.RequestLogger(rmux),
 		}
 		log.Printf("Redirecting http://%s to to %s", u.Host, u.String())
-		log.Fatal(pSvr.ListenAndServe())
+		err = pSvr.ListenAndServe()
+		cli.ExitOnError(app.Eout, err, quiet)
 	} else if u.Scheme == "https" {
-		err := http.ListenAndServeTLS(u.Host, sslCert, sslKey, wsfn.RequestLogger(wsfn.StaticRouter(http.DefaultServeMux)))
-		if err != nil {
-			log.Fatalf("%s", err)
-		}
+		err = http.ListenAndServeTLS(u.Host, sslCert, sslKey, wsfn.RequestLogger(wsfn.StaticRouter(http.DefaultServeMux)))
+		cli.ExitOnError(app.Eout, err, quiet)
 	} else {
-		err := http.ListenAndServe(u.Host, wsfn.RequestLogger(wsfn.StaticRouter(http.DefaultServeMux)))
-		if err != nil {
-			log.Fatalf("%s", err)
-		}
+		err = http.ListenAndServe(u.Host, wsfn.RequestLogger(wsfn.StaticRouter(http.DefaultServeMux)))
+		cli.ExitOnError(app.Eout, err, quiet)
 	}
 }

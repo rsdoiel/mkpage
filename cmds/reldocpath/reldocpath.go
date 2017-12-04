@@ -20,10 +20,8 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"os"
-	"path"
 
 	// My packages
 	"github.com/caltechlibrary/cli"
@@ -31,19 +29,14 @@ import (
 )
 
 var (
-	usage = `USAGE: %s SOURCE_DOC_PATH TARGET_DOC_PATH `
-
 	description = `
-
 SYNOPSIS
 
 Given a source document path, a target document path calculate and
 the implied common base path calculate the relative path for target.
-
 `
 
 	examples = `
-
 EXAMPLE
 
 Given
@@ -53,71 +46,64 @@ Given
 would output
 
     .../css/site.css
-
 `
 
 	// Standard options
-	showHelp     bool
-	showVersion  bool
-	showLicense  bool
-	showExamples bool
+	showHelp             bool
+	showVersion          bool
+	showLicense          bool
+	showExamples         bool
+	generateMarkdownDocs bool
+	quiet                bool
 )
 
-func init() {
-	// Standard options
-	flag.BoolVar(&showHelp, "h", false, "display help")
-	flag.BoolVar(&showHelp, "help", false, "display help")
-	flag.BoolVar(&showLicense, "l", false, "display license")
-	flag.BoolVar(&showLicense, "license", false, "display license")
-	flag.BoolVar(&showVersion, "v", false, "display version")
-	flag.BoolVar(&showVersion, "version", false, "display version")
-	flag.BoolVar(&showExamples, "example", false, "display example(s)")
-}
-
 func main() {
-	appName := path.Base(os.Args[0])
-	flag.Parse()
-	args := flag.Args()
+	app := cli.NewCli(mkpage.Version)
+	appName := app.AppName()
+
+	// Define the command line parameters (non-options)
+	app.AddParams(`SOURCE_DOC_PATH`, `TARGET_DOC_PATH`)
 
 	// Configuration and command line interation
-	cfg := cli.New(appName, "MKPAGE", mkpage.Version)
-	cfg.LicenseText = fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version)
-	cfg.UsageText = fmt.Sprintf(usage, appName)
-	cfg.DescriptionText = description
-	cfg.OptionText = "OPTIONS"
-	cfg.ExampleText = fmt.Sprintf(examples, appName)
+	app.AddHelp("license", []byte(fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version)))
+	app.AddHelp("description", []byte(description))
+	app.AddHelp("examples", []byte(fmt.Sprintf(examples, appName)))
 
-	if showHelp == true {
+	// Standard options
+	app.BoolVar(&showHelp, "h,help", false, "display help")
+	app.BoolVar(&showLicense, "l,license", false, "display license")
+	app.BoolVar(&showVersion, "v,version", false, "display version")
+	app.BoolVar(&showExamples, "examples", false, "display example(s)")
+	app.BoolVar(&generateMarkdownDocs, "generate-markdown-docs", false, "generate markdown documentation")
+	app.BoolVar(&quiet, "quiet", false, "suppress error messages")
+
+	app.Parse()
+	args := app.Args()
+
+	if generateMarkdownDocs {
+		app.GenerateMarkdownDocs(app.Out)
+		os.Exit(0)
+	}
+	if showHelp || showExamples {
 		if len(args) > 0 {
-			fmt.Println(cfg.Help(args...))
+			fmt.Fprintln(app.Out, app.Help(args...))
 		} else {
-			fmt.Println(cfg.Usage())
+			app.Usage(app.Out)
 		}
 		os.Exit(0)
 	}
-
-	if showExamples == true {
-		if len(args) > 0 {
-			fmt.Println(cfg.Example(args...))
-		} else {
-			fmt.Println(cfg.ExampleText)
-		}
+	if showLicense {
+		fmt.Println(app.License())
 		os.Exit(0)
 	}
-
-	if showLicense == true {
-		fmt.Println(cfg.License())
-		os.Exit(0)
-	}
-	if showVersion == true {
-		fmt.Println(cfg.Version())
+	if showVersion {
+		fmt.Println(app.Version())
 		os.Exit(0)
 	}
 
 	if len(args) != 2 {
-		fmt.Fprintf(os.Stderr, " Expected a source and target file path\n For help try: %s -help", appName)
-		os.Exit(1)
+		cli.ExitOnError(app.Eout, fmt.Errorf("Expected a source and target file path\n For help try: %s -help", appName), quiet)
 	}
 	source, target := args[0], args[1]
-	fmt.Fprintf(os.Stdout, `%s`, mkpage.RelativeDocPath(source, target))
+	fmt.Fprintf(app.Out, `%s`, mkpage.RelativeDocPath(source, target))
 }

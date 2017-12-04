@@ -19,7 +19,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"log"
 	"net/url"
@@ -39,10 +38,7 @@ type locInfo struct {
 }
 
 var (
-	usage = `USAGE: %s [OPTIONS] HTDOCS_PATH MAP_FILENAME PUBLIC_BASE_URL`
-
 	description = `
-
 SYNOPSIS
 
 %s generates a sitemap for the website.
@@ -50,18 +46,19 @@ SYNOPSIS
 `
 
 	examples = `
-
 EXAMPLE
 
     %s htdocs htdocs/sitemap.xml http://eprints.example.edu
-
 `
 
 	// Standard options
-	showHelp     bool
-	showVersion  bool
-	showLicense  bool
-	showExamples bool
+	showHelp             bool
+	showVersion          bool
+	showLicense          bool
+	showExamples         bool
+	outputFName          string
+	quiet                bool
+	generateMarkdownDocs bool
 
 	// App options
 	htdocs       string
@@ -103,68 +100,78 @@ func (dirList ExcludeList) Exclude(p string) bool {
 	return false
 }
 
-func init() {
-	// Log to standard out
-	log.SetOutput(os.Stdout)
+func main() {
+	app := cli.NewCli(mkpage.Version)
+	appName := app.AppName()
+
+	// Document additional non-option parameters
+	app.AddParams(`HTDOCS_PATH`, `MAP_FILENAME`, `PUBLIC_BASE_URL`)
+
+	// Add Help Docs
+	app.AddHelp("license", []byte(fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version)))
+	app.AddHelp("description", []byte(fmt.Sprintf(description, appName)))
+	app.AddHelp("examples", []byte(fmt.Sprintf(examples, appName)))
+
+	// Setup environment options
+	app.EnvStringVar(&htdocs, "MKPAGE_DOCROOT", "", "set the document root, defaults to current working directory")
+	app.EnvStringVar(&siteURL, "MKPAGE_SITEURL", "", "set the site url")
+	app.EnvStringVar(&sitemapFName, "MKPAGE_SITEMAP", "", "set the sitemap filename and path")
 
 	// Setup options
-	flag.BoolVar(&showHelp, "h", false, "display help")
-	flag.BoolVar(&showHelp, "help", false, "display help")
-	flag.BoolVar(&showLicense, "l", false, "display license")
-	flag.BoolVar(&showLicense, "license", false, "display license")
-	flag.BoolVar(&showVersion, "v", false, "display version")
-	flag.BoolVar(&showVersion, "version", false, "display version")
-	flag.BoolVar(&showExamples, "example", false, "display example(s)")
+	app.BoolVar(&showHelp, "h,help", false, "display help")
+	app.BoolVar(&showLicense, "l,license", false, "display license")
+	app.BoolVar(&showVersion, "v,version", false, "display version")
+	app.BoolVar(&showExamples, "examples", false, "display example(s)")
+	app.StringVar(&outputFName, "o,output", "", "output filename (for logging)")
+	app.BoolVar(&generateMarkdownDocs, "generate-markdown-docs", false, "generate markdown documentation")
+	app.BoolVar(&quiet, "quiet", false, "suppress error messages")
 
 	// App specific options
-	flag.StringVar(&changefreq, "u", "daily", "Set the change frequencely value, e.g. daily, weekly, monthly")
-	flag.StringVar(&changefreq, "update-frequency", "daily", "Set the change frequencely value, e.g. daily, weekly, monthly")
-	flag.StringVar(&excludeList, "e", "", "A colon delimited list of path parts to exclude from sitemap")
-	flag.StringVar(&excludeList, "exclude", "", "A colon delimited list of path parts to exclude from sitemap")
-}
+	app.StringVar(&htdocs, "d,docs", "", "set the htdoc root")
+	app.StringVar(&siteURL, "u,url", "", "set the site URL")
+	app.StringVar(&sitemapFName, "sitemap", "", "set the sitemap filename and path")
+	app.StringVar(&changefreq, "u", "daily", "Set the change frequencely value, e.g. daily, weekly, monthly")
+	app.StringVar(&changefreq, "update-frequency", "daily", "Set the change frequencely value, e.g. daily, weekly, monthly")
+	app.StringVar(&excludeList, "e", "", "A colon delimited list of path parts to exclude from sitemap")
+	app.StringVar(&excludeList, "exclude", "", "A colon delimited list of path parts to exclude from sitemap")
 
-func main() {
-	appName := path.Base(os.Args[0])
-	flag.Parse()
-	args := flag.Args()
+	// Setup IO
+	var err error
+	app.Eout = os.Stderr
 
-	cfg := cli.New(appName, "MKPAGE", mkpage.Version)
-	cfg.LicenseText = fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version)
-	cfg.UsageText = fmt.Sprintf(usage, appName)
-	cfg.DescriptionText = fmt.Sprintf(description, appName)
-	cfg.OptionText = "OPTIONS"
-	cfg.ExampleText = fmt.Sprintf(examples, appName)
+	app.Out, err = cli.Create(outputFName, os.Stdout)
+	cli.ExitOnError(app.Eout, err, quiet)
+	defer cli.CloseFile(outputFName, app.Out)
 
-	if showHelp == true {
+	// NOTE: We log to standard out when processing the sitemap...
+	log.SetOutput(app.Out)
+
+	app.Parse()
+	args := app.Args()
+
+	if generateMarkdownDocs {
+		app.GenerateMarkdownDocs(app.Out)
+		os.Exit(0)
+	}
+	if showHelp || showExamples {
 		if len(args) > 0 {
-			fmt.Println(cfg.Help(args...))
+			fmt.Fprintln(app.Out, app.Help(args...))
 		} else {
-			fmt.Println(cfg.Usage())
+			app.Usage(app.Out)
 		}
 		os.Exit(0)
 	}
-
-	if showExamples == true {
-		if len(args) > 0 {
-			fmt.Println(cfg.Example(args...))
-		} else {
-			fmt.Println(cfg.ExampleText)
-		}
+	if showVersion {
+		fmt.Fprintln(app.Out, app.Version())
 		os.Exit(0)
 	}
-
-	if showVersion == true {
-		fmt.Println(cfg.Version())
-		os.Exit(0)
-	}
-	if showLicense == true {
-		fmt.Println(cfg.License())
+	if showLicense {
+		fmt.Fprintln(app.Out, app.License())
 		os.Exit(0)
 	}
 
 	if len(args) != 3 {
-		fmt.Printf("%s requires 3 parameters, see %s --help\n", appName, appName)
-		os.Exit(1)
+		cli.ExitOnError(app.Eout, fmt.Errorf("%s requires 3 parameters, see %s --help\n", appName, appName), quiet)
 	}
 
 	if len(args) > 0 {
@@ -178,9 +185,15 @@ func main() {
 	}
 
 	// Required
-	htdocs = check(cfg, "docroot", cfg.MergeEnv("docroot", htdocs))
-	siteURL = check(cfg, "site_url", cfg.MergeEnv("site_url", siteURL))
-	sitemapFName = check(cfg, "sitemap", cfg.MergeEnv("sitemap", sitemapFName))
+	if htdocs == "" {
+		cli.ExitOnError(app.Eout, fmt.Errorf("Missing document root, set with MKPAGE_DOCROOT or -docs option"), quiet)
+	}
+	if siteURL == "" {
+		cli.ExitOnError(app.Eout, fmt.Errorf("Missing site url, set with MKPAGE_SITEURL or -url option"), quiet)
+	}
+	if sitemapFName == "" {
+		cli.ExitOnError(app.Eout, fmt.Errorf("Missing sitemap filename, set with MKPAGE_SITEMAP or -sitemap option"), quiet)
+	}
 
 	if changefreq == "" {
 		changefreq = "daily"

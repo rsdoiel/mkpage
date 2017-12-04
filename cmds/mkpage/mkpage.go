@@ -19,7 +19,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -33,20 +32,10 @@ import (
 )
 
 var (
-	usage = `USAGE: %s [OPTION] [KEY/VALUE DATA PAIRS] [TEMPLATE_FILENAMES]`
-
 	description = `
-
 SYNOPSIS
 
 Using the key/value pairs populate the template(s) and render to stdout.
-
-CONFIGURATION
-
-You can set a local default template path by using environment variables.
-
-+ MKPAGE_TEMPLATES - (optional) is the colon delimited list of template paths
-
 `
 
 	examples = `
@@ -92,94 +81,97 @@ Golang's text/template docs can be found at
 `
 
 	// Standard Options
-	showHelp     bool
-	showVersion  bool
-	showLicense  bool
-	showExamples bool
-	outputFName  string
+	showHelp             bool
+	showVersion          bool
+	showLicense          bool
+	showExamples         bool
+	inputFName           string
+	outputFName          string
+	quiet                bool
+	generateMarkdownDocs bool
 
 	// Application Options
 	templateFNames string
 	showTemplate   bool
 )
 
-func init() {
+func main() {
+	app := cli.NewCli(mkpage.Version)
+	appName := app.AppName()
+
+	// Document expected parameters
+	app.AddParams(`[KEY/VALUE DATA PAIRS]`, `[TEMPLATE_FILENAMES]`)
+
+	// Add Help docs
+	app.AddHelp("license", []byte(fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version)))
+	app.AddHelp("description", []byte(fmt.Sprintf(description)))
+	app.AddHelp("examples", []byte(fmt.Sprintf(examples, appName)))
+
+	// Setup Environment variables
+	app.EnvStringVar(&templateFNames, "MKPAGE_TEMPLATES", "", "set the default template path")
+
 	// Standard Options
-	flag.BoolVar(&showHelp, "h", false, "display help")
-	flag.BoolVar(&showHelp, "help", false, "display help")
-	flag.BoolVar(&showVersion, "v", false, "display version")
-	flag.BoolVar(&showVersion, "version", false, "display version")
-	flag.BoolVar(&showExamples, "example", false, "display example(s)")
-	flag.BoolVar(&showLicense, "l", false, "display license")
-	flag.BoolVar(&showLicense, "license", false, "display license")
-	flag.StringVar(&outputFName, "o", "", "output filename")
-	flag.StringVar(&outputFName, "output", "", "output filename")
+	app.BoolVar(&showHelp, "h,help", false, "display help")
+	app.BoolVar(&showVersion, "v,version", false, "display version")
+	app.BoolVar(&showExamples, "examples", false, "display example(s)")
+	app.BoolVar(&showLicense, "l,license", false, "display license")
+	app.StringVar(&inputFName, "i,input", "", "input filename")
+	app.StringVar(&outputFName, "o,output", "", "output filename")
+	app.BoolVar(&quiet, "quiet", false, "suppress error messages")
+	app.BoolVar(&generateMarkdownDocs, "generate-markdown-docs", false, "generate markdown documentation")
 
 	// Application specific options
-	flag.BoolVar(&showTemplate, "s", false, "display the default template")
-	flag.BoolVar(&showTemplate, "show-template", false, "display the default template")
-	flag.StringVar(&templateFNames, "t", "", "colon delimited list of templates to use")
-	flag.StringVar(&templateFNames, "templates", "", "colon delimited list of templates to use")
-}
+	app.BoolVar(&showTemplate, "s", false, "display the default template")
+	app.BoolVar(&showTemplate, "show-template", false, "display the default template")
+	app.StringVar(&templateFNames, "t", "", "colon delimited list of templates to use")
+	app.StringVar(&templateFNames, "templates", "", "colon delimited list of templates to use")
 
-func main() {
-	appName := path.Base(os.Args[0])
-	flag.Parse()
-	args := flag.Args()
+	app.Parse()
+	args := app.Args()
 
-	cfg := cli.New(appName, "MKPAGE", mkpage.Version)
-	cfg.LicenseText = fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version)
-	cfg.UsageText = fmt.Sprintf(usage, appName)
-	cfg.DescriptionText = fmt.Sprintf(description)
-	cfg.OptionText = "OPTIONS"
-	cfg.ExampleText = fmt.Sprintf(examples, appName)
+	// Setup IO
+	var err error
+	app.Eout = os.Stderr
+
+	app.In, err = cli.Open(inputFName, os.Stdin)
+	cli.ExitOnError(app.Eout, err, quiet)
+	defer cli.CloseFile(inputFName, app.In)
+	app.Out, err = cli.Create(outputFName, os.Stdout)
+	cli.ExitOnError(app.Eout, err, quiet)
+	defer cli.CloseFile(outputFName, app.Out)
 
 	// Process flags and update the environment as needed.
-	if showHelp == true {
+	if generateMarkdownDocs {
+		app.GenerateMarkdownDocs(app.Out)
+		os.Exit(0)
+	}
+	if showHelp || showExamples {
 		if len(args) > 0 {
-			fmt.Println(cfg.Help(args...))
+			fmt.Fprintln(app.Out, app.Help(args...))
 		} else {
-			fmt.Println(cfg.Usage())
+			app.Usage(app.Out)
 		}
 		os.Exit(0)
 	}
-
-	if showExamples == true {
-		if len(args) > 0 {
-			fmt.Println(cfg.Example(args...))
-		} else {
-			fmt.Println(cfg.ExampleText)
-		}
+	if showLicense {
+		fmt.Fprintln(app.Out, app.License())
+		os.Exit(0)
+	}
+	if showVersion {
+		fmt.Fprintln(app.Out, app.Version())
 		os.Exit(0)
 	}
 
-	if showLicense == true {
-		fmt.Println(cfg.License())
+	if showTemplate {
+		fmt.Fprintln(app.Out, mkpage.DefaultTemplateSource)
 		os.Exit(0)
 	}
-	if showVersion == true {
-		fmt.Println(cfg.Version())
-		os.Exit(0)
-	}
-
-	if showTemplate == true {
-		fmt.Println(mkpage.DefaultTemplateSource)
-		os.Exit(0)
-	}
-
-	out, err := cli.Create(outputFName, os.Stdout)
-	if err != nil {
-		fmt.Printf("%s\n", err)
-		os.Exit(1)
-	}
-	defer cli.CloseFile(outputFName, out)
 
 	// Default template name is page.tmpl
 	templateName := "page.tmpl"
+	templateSources := []string{}
 
 	// Make sure we have a configured command to run
-	templateSources := []string{}
-	templateFNames = cfg.MergeEnv("templates", templateFNames)
 	if len(templateFNames) > 0 {
 		for _, fname := range strings.Split(templateFNames, ":") {
 			templateSources = append(templateSources, fname)
@@ -192,7 +184,7 @@ func main() {
 			// Update data map
 			pair := strings.SplitN(arg, "=", 2)
 			if len(pair) != 2 {
-				fmt.Fprintf(os.Stderr, "Can't read pair (%d) %s\n", i+1, arg)
+				fmt.Fprintf(app.Eout, "Can't read pair (%d) %s\n", i+1, arg)
 				os.Exit(1)
 			}
 			data[pair[0]] = pair[1]
@@ -205,41 +197,27 @@ func main() {
 	// Create our Tmpl struct with our function map
 	tmpl := tmplfn.New(tmplfn.AllFuncs())
 
-	// Load ant user supplied templates
+	// Load any user supplied templates
 	if len(templateSources) > 0 {
-		if err := tmpl.ReadFiles(templateSources...); err != nil {
-			fmt.Fprintf(os.Stderr, "%s\n", err)
-			os.Exit(1)
-		}
+		err = tmpl.ReadFiles(templateSources...)
+		cli.ExitOnError(app.Eout, err, quiet)
 		templateName = path.Base(templateSources[0])
-	} else {
+	} else if inputFName != "" {
 		// Read any templates from stdin that might be present
-		if cli.IsPipe(os.Stdin) == true {
-			buf, err := ioutil.ReadAll(os.Stdin)
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "%s\n", err)
-				os.Exit(1)
-			}
-			tmpl.Add(templateName, buf)
-		} else {
-			// Load our default template maps
-			if err := tmpl.Add(templateName, mkpage.Defaults["/templates/page.tmpl"]); err != nil {
-				fmt.Fprintf(os.Stderr, "%s\n", err)
-				os.Exit(1)
-			}
-		}
+		buf, err := ioutil.ReadAll(app.In)
+		cli.ExitOnError(app.Eout, err, quiet)
+		tmpl.Add(templateName, buf)
+	} else {
+		// Load our default template maps
+		err = tmpl.Add(templateName, mkpage.Defaults["/templates/page.tmpl"])
+		cli.ExitOnError(app.Eout, err, quiet)
 	}
 
 	// Build a template and send to MakePage
 	t, err := tmpl.Assemble()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "%s\n", err)
-		os.Exit(1)
-	}
+	cli.ExitOnError(app.Eout, err, quiet)
 
 	// Make the page
-	if err := mkpage.MakePage(out, templateName, t, data); err != nil {
-		fmt.Fprintf(os.Stderr, "%s\n", err)
-		os.Exit(1)
-	}
+	err = mkpage.MakePage(app.Out, templateName, t, data)
+	cli.ExitOnError(app.Eout, err, quiet)
 }

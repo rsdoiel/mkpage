@@ -20,7 +20,6 @@ package main
 
 import (
 	"encoding/xml"
-	"flag"
 	"fmt"
 	"io/ioutil"
 	"net/url"
@@ -38,10 +37,8 @@ import (
 
 var (
 	// Usage and docs
-	usage = `USAGE: %s [OPTION] HTDOCS [RSS_FILENAME]`
 
 	description = `
-
 SYNOPSIS
 
 %s walks the file system to generate a RSS2 file. It assumes 
@@ -49,11 +46,9 @@ that the directory for HTDOCS is is the base directory containing
 subdirectories in the form of /YYYY/MM/DD/ARTICLE_HTML where 
 YYYY/MM/DD (Year, Month, Day) corresponds to the publication date 
 of ARTICLE_HTML.
-
 `
 
 	examples = `
-
 EXAMPLE
 
 If our htdocs folder is our document root and out blog is
@@ -66,16 +61,17 @@ htdocs/myblog.
 
 This would build an RSS 2 file in htdocs/rss.xml from the
 articles in htdocs/myblog/YYYY/MM/DD.
-
 `
 
 	// Standard options
-	showHelp     bool
-	showLicense  bool
-	showVersion  bool
-	showExamples bool
-	inputFName   string
-	outputFName  string
+	showHelp             bool
+	showLicense          bool
+	showVersion          bool
+	showExamples         bool
+	inputFName           string
+	outputFName          string
+	quiet                bool
+	generateMarkdownDocs bool
 
 	// App specific options
 	excludeList        string
@@ -94,76 +90,78 @@ articles in htdocs/myblog/YYYY/MM/DD.
 	dateExp            string
 )
 
-func init() {
+func main() {
+
+	app := cli.NewCli(mkpage.Version)
+	appName := app.AppName()
+
+	// App Parameters (non-options)
+	app.AddParams(`HTDOCS`, `[RSS_FILENAME]`)
+
+	// Add Help Docs
+	app.AddHelp("license", []byte(fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version)))
+	app.AddHelp("description", []byte(fmt.Sprintf(description, appName)))
+	app.AddHelp("examples", []byte(fmt.Sprintf(examples, appName)))
+
 	// Standard options
-	flag.BoolVar(&showHelp, "h", false, "display help")
-	flag.BoolVar(&showHelp, "help", false, "display help")
-	flag.BoolVar(&showLicense, "l", false, "display license")
-	flag.BoolVar(&showLicense, "license", false, "display license")
-	flag.BoolVar(&showVersion, "v", false, "display version")
-	flag.BoolVar(&showVersion, "version", false, "display version")
-	flag.BoolVar(&showExamples, "example", false, "display example(s)")
-	flag.StringVar(&inputFName, "i", "", "set input filename")
-	flag.StringVar(&inputFName, "input", "", "set input filename")
-	flag.StringVar(&outputFName, "o", "", "set output filename")
-	flag.StringVar(&outputFName, "output", "", "set output filename")
+	app.BoolVar(&showHelp, "h,help", false, "display help")
+	app.BoolVar(&showLicense, "l,license", false, "display license")
+	app.BoolVar(&showVersion, "v,version", false, "display version")
+	app.BoolVar(&showExamples, "examples", false, "display example(s)")
+	app.StringVar(&inputFName, "i,input", "", "set input filename")
+	app.StringVar(&outputFName, "o,output", "", "set output filename")
+	app.BoolVar(&quiet, "quiet", false, "suppress error messages")
+	app.BoolVar(&generateMarkdownDocs, "generate-markdown-docs", false, "generate markdown documentation")
 
 	// App specific options
-	flag.StringVar(&excludeList, "e", "", "A colon delimited list of path exclusions")
-	flag.IntVar(&articleLimit, "c", 0, "If non-zero, limit the number of articles in the RSS file")
-	flag.StringVar(&channelLanguage, "channel-language", "", "Language, e.g. en-ca")
-	flag.StringVar(&channelTitle, "channel-title", "", "Title of channel")
-	flag.StringVar(&channelDescription, "channel-description", "", "Description of channel")
-	flag.StringVar(&channelLink, "channel-link", "", "link to channel")
-	flag.StringVar(&channelGenerator, "channel-generator", "", "Name of RSS generator")
-	flag.StringVar(&channelPubDate, "channel-pubdate", "", "Pub Date for channel (e.g. 2006-01-02 15:04:05 -0700)")
-	flag.StringVar(&channelBuildDate, "channel-builddate", "", "Build Date for channel (e.g. 2006-01-02 15:04:05 -0700)")
-	flag.StringVar(&channelCopyright, "channel-copyright", "", "Copyright for channel")
-	flag.StringVar(&channelCategory, "channel-category", "", "category for channel")
-	flag.StringVar(&dateExp, "d", mkpage.DateExp, "set date regexp")
-	flag.StringVar(&dateExp, "date-format", mkpage.DateExp, "set date regexp")
-	flag.StringVar(&titleExp, "t", mkpage.TitleExp, "set title regexp")
-	flag.StringVar(&titleExp, "title", mkpage.TitleExp, "set title regexp")
-	flag.StringVar(&bylineExp, "b", mkpage.BylineExp, "set byline regexp")
-	flag.StringVar(&bylineExp, "byline", mkpage.BylineExp, "set byline regexp")
-}
+	app.StringVar(&excludeList, "e", "", "A colon delimited list of path exclusions")
+	app.IntVar(&articleLimit, "c", 0, "If non-zero, limit the number of articles in the RSS file")
+	app.StringVar(&channelLanguage, "channel-language", "", "Language, e.g. en-ca")
+	app.StringVar(&channelTitle, "channel-title", "", "Title of channel")
+	app.StringVar(&channelDescription, "channel-description", "", "Description of channel")
+	app.StringVar(&channelLink, "channel-link", "", "link to channel")
+	app.StringVar(&channelGenerator, "channel-generator", "", "Name of RSS generator")
+	app.StringVar(&channelPubDate, "channel-pubdate", "", "Pub Date for channel (e.g. 2006-01-02 15:04:05 -0700)")
+	app.StringVar(&channelBuildDate, "channel-builddate", "", "Build Date for channel (e.g. 2006-01-02 15:04:05 -0700)")
+	app.StringVar(&channelCopyright, "channel-copyright", "", "Copyright for channel")
+	app.StringVar(&channelCategory, "channel-category", "", "category for channel")
+	app.StringVar(&dateExp, "d,date-format", mkpage.DateExp, "set date regexp")
+	app.StringVar(&titleExp, "t,title", mkpage.TitleExp, "set title regexp")
+	app.StringVar(&bylineExp, "b,byline", mkpage.BylineExp, "set byline regexp")
 
-func main() {
-	appName := path.Base(os.Args[0])
-	flag.Parse()
-	args := flag.Args()
+	app.Parse()
+	args := app.Args()
 
-	cfg := cli.New(appName, "MKPAGE", mkpage.Version)
-	cfg.LicenseText = fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version)
-	cfg.UsageText = fmt.Sprintf(usage, appName)
-	cfg.DescriptionText = fmt.Sprintf(description, appName)
-	cfg.OptionText = "OPTIONS"
-	cfg.ExampleText = fmt.Sprintf(examples, appName)
+	// Setup IO
+	var err error
+	app.Eout = os.Stderr
 
-	if showHelp == true {
+	app.In, err = cli.Open(inputFName, os.Stdin)
+	cli.ExitOnError(app.Eout, err, quiet)
+	defer cli.CloseFile(inputFName, app.In)
+	app.Out, err = cli.Create(outputFName, os.Stdout)
+	cli.ExitOnError(app.Eout, err, quiet)
+	defer cli.CloseFile(outputFName, app.Out)
+
+	// Process options
+	if generateMarkdownDocs {
+		app.GenerateMarkdownDocs(app.Out)
+		os.Exit(0)
+	}
+	if showHelp || showExamples {
 		if len(args) > 0 {
-			fmt.Println(cfg.Help(args...))
+			fmt.Fprintln(app.Out, app.Help(args...))
 		} else {
-			fmt.Println(cfg.Usage())
+			app.Usage(app.Out)
 		}
 		os.Exit(0)
 	}
-
-	if showExamples == true {
-		if len(args) > 0 {
-			fmt.Println(cfg.Example(args...))
-		} else {
-			fmt.Println(cfg.ExampleText)
-		}
+	if showLicense {
+		fmt.Fprintln(app.Out, app.License())
 		os.Exit(0)
 	}
-
-	if showLicense == true {
-		fmt.Println(cfg.License())
-		os.Exit(0)
-	}
-	if showVersion == true {
-		fmt.Println(cfg.Version())
+	if showVersion {
+		fmt.Fprintln(app.Out, app.Version())
 		os.Exit(0)
 	}
 
@@ -193,7 +191,7 @@ func main() {
 		feed.Category = channelCategory
 	}
 	if len(channelGenerator) == 0 {
-		feed.Generator = cfg.Version()
+		feed.Generator = app.Version()
 	} else {
 		feed.Generator = channelGenerator
 	}
@@ -205,8 +203,7 @@ func main() {
 	} else {
 		dt, err := mkpage.NormalizeDate(channelPubDate)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Can't parse %q, %s\n", channelPubDate, err)
-			os.Exit(1)
+			cli.ExitOnError(app.Eout, fmt.Errorf("Can't parse %q, %s\n", channelPubDate, err), quiet)
 		}
 		feed.PubDate = dt.Format(time.RFC1123)
 	}
@@ -217,8 +214,7 @@ func main() {
 	} else {
 		dt, err := mkpage.NormalizeDate(channelBuildDate)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Can't parse %q, %s\n", channelBuildDate, err)
-			os.Exit(1)
+			cli.ExitOnError(app.Eout, fmt.Errorf("Can't parse %q, %s\n", channelBuildDate, err), quiet)
 		}
 		feed.LastBuildDate = dt.Format(time.RFC1123)
 	}
@@ -234,7 +230,7 @@ func main() {
 	}
 
 	validBlogPath := regexp.MustCompile("/[0-9][0-9][0-9][0-9]/[0-9][0-9]/[0-9][0-9]/")
-	err := mkpage.Walk(htdocs, func(p string, info os.FileInfo) bool {
+	err = mkpage.Walk(htdocs, func(p string, info os.FileInfo) bool {
 		fname := path.Base(p)
 		if validBlogPath.MatchString(p) == true &&
 			strings.HasSuffix(fname, ".md") == true {
@@ -286,24 +282,22 @@ func main() {
 		return nil
 	})
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "%s\n", err)
+		fmt.Fprintf(app.Eout, "%s\n", err)
 		os.Exit(1)
 	}
 
 	// Marshal RSS2 and render output
 	src, err := xml.MarshalIndent(feed, "", "    ")
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "%s\n", err)
+		fmt.Fprintf(app.Eout, "%s\n", err)
 		os.Exit(1)
 	}
 	txt := fmt.Sprintf(`<?xml version="1.0"?>
-																																																																																																																																																																																																																																																																																																																																%s`, src)
+%s`, src)
 	if len(rssPath) > 0 {
-		if err := ioutil.WriteFile(rssPath, []byte(txt), 0664); err != nil {
-			fmt.Fprintf(os.Stderr, "%s\n", err)
-			os.Exit(1)
-		}
+		err = ioutil.WriteFile(rssPath, []byte(txt), 0664)
+		cli.ExitOnError(app.Eout, err, quiet)
 		os.Exit(0)
 	}
-	fmt.Fprintf(os.Stdout, "%s\n", txt)
+	fmt.Fprintf(app.Out, "%s\n", txt)
 }

@@ -17,12 +17,10 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"io/ioutil"
 	"net/url"
 	"os"
-	"path"
 	"strings"
 
 	// CaltechLibrary Packages
@@ -31,8 +29,6 @@ import (
 )
 
 var (
-	usage = `USAGE: %s [OPTIONS] [STRING_TO_ENCODE]`
-
 	description = `
 
 SYNOPSIS
@@ -56,90 +52,87 @@ would yield
 `
 
 	// Standard Options
-	showHelp     bool
-	showLicense  bool
-	showVersion  bool
-	showExamples bool
-	inputFName   string
-	outputFName  string
+	showHelp             bool
+	showLicense          bool
+	showVersion          bool
+	showExamples         bool
+	inputFName           string
+	outputFName          string
+	newLine              bool
+	generateMarkdownDocs bool
+	quiet                bool
 
 	// App Options
 	useQueryUnescape bool
 )
 
-func init() {
+func main() {
+	app := cli.NewCli(mkpage.Version)
+	appName := app.AppName()
+
+	// Document non-option parameters
+	app.AddParams(`[STRING_TO_ENCODE]`)
+
+	// Add Help Docs
+	app.AddHelp("license", []byte(fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version)))
+	app.AddHelp("description", []byte(fmt.Sprintf(description, appName)))
+	app.AddHelp("examples", []byte(fmt.Sprintf(examples, appName)))
+
 	// Standard Options
-	flag.BoolVar(&showHelp, "h", false, "display help")
-	flag.BoolVar(&showHelp, "help", false, "display help")
-	flag.BoolVar(&showLicense, "l", false, "display license")
-	flag.BoolVar(&showLicense, "license", false, "display license")
-	flag.BoolVar(&showVersion, "v", false, "display version")
-	flag.BoolVar(&showVersion, "version", false, "display version")
-	flag.BoolVar(&showExamples, "example", false, "display example(s)")
-	flag.StringVar(&inputFName, "i", "", "set input filename")
-	flag.StringVar(&inputFName, "input", "", "set input filename")
-	flag.StringVar(&outputFName, "o", "", "set output filename")
-	flag.StringVar(&outputFName, "output", "", "set output filename")
+	app.BoolVar(&showHelp, "h,help", false, "display help")
+	app.BoolVar(&showLicense, "l,license", false, "display license")
+	app.BoolVar(&showVersion, "v,version", false, "display version")
+	app.BoolVar(&showExamples, "examples", false, "display example(s)")
+	app.StringVar(&inputFName, "i,input", "", "set input filename")
+	app.StringVar(&outputFName, "o,output", "", "set output filename")
+	app.BoolVar(&newLine, "nl,newline", false, "if true add a trailing newline to output")
+	app.BoolVar(&generateMarkdownDocs, "generate-markdown-docs", false, "generate markdown documentation")
+	app.BoolVar(&quiet, "quiet", false, "suppress error messages")
 
 	// App Options
-	flag.BoolVar(&useQueryUnescape, "q", false, "use query escape (pluses for spaces)")
-	flag.BoolVar(&useQueryUnescape, "query", false, "use query escape (pluses for spaces)")
-}
+	app.BoolVar(&useQueryUnescape, "q,query", false, "use query escape (pluses for spaces)")
 
-func main() {
-	appName := path.Base(os.Args[0])
-	flag.Parse()
-	args := flag.Args()
+	app.Parse()
+	args := app.Args()
 
-	// Populate cfg from the environment
-	cfg := cli.New(appName, "MKPAGE", mkpage.Version)
-	cfg.LicenseText = fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version)
-	cfg.UsageText = fmt.Sprintf(usage, appName)
-	cfg.DescriptionText = fmt.Sprintf(description, appName)
-	cfg.OptionText = "OPTIONS"
-	cfg.ExampleText = fmt.Sprintf(examples, appName)
+	// Setup IO
+	var err error
+
+	app.Eout = os.Stderr
+	app.In, err = cli.Open(inputFName, os.Stdin)
+	cli.ExitOnError(app.Eout, err, quiet)
+	defer cli.CloseFile(inputFName, app.In)
+
+	app.Out, err = cli.Create(outputFName, os.Stdout)
+	cli.ExitOnError(app.Eout, err, quiet)
+	defer cli.CloseFile(outputFName, app.Out)
 
 	// Handle the default options
-	if showHelp == true {
+	if generateMarkdownDocs {
+		app.GenerateMarkdownDocs(app.Out)
+		os.Exit(0)
+	}
+	if showHelp || showExamples {
 		if len(args) > 0 {
-			fmt.Println(cfg.Help(args...))
+			fmt.Fprintln(app.Out, app.Help(args...))
 		} else {
-			fmt.Println(cfg.Usage())
+			app.Usage(app.Out)
 		}
 		os.Exit(0)
 	}
-
-	if showExamples == true {
-		if len(args) > 0 {
-			fmt.Println(cfg.Example(args...))
-		} else {
-			fmt.Println(cfg.ExampleText)
-		}
+	if showVersion {
+		fmt.Fprintln(app.Out, app.Version())
+		os.Exit(0)
+	}
+	if showLicense {
+		fmt.Fprintln(app.Out, app.License())
 		os.Exit(0)
 	}
 
-	if showVersion == true {
-		fmt.Println(cfg.Version())
-		os.Exit(0)
+	nl := "\n"
+	if newLine == false {
+		nl = ""
 	}
-	if showLicense == true {
-		fmt.Println(cfg.License())
-		os.Exit(0)
-	}
-
-	in, err := cli.Open(inputFName, os.Stdin)
-	if err != nil {
-		fmt.Fprint(os.Stderr, "%s\n", err)
-		os.Exit(1)
-	}
-	defer cli.CloseFile(inputFName, in)
-
-	out, err := cli.Create(outputFName, os.Stdout)
-	if err != nil {
-		fmt.Fprint(os.Stderr, "%s\n", err)
-		os.Exit(1)
-	}
-	defer cli.CloseFile(outputFName, out)
 
 	var (
 		src string
@@ -149,11 +142,8 @@ func main() {
 	if len(args) > 0 {
 		src = strings.Join(args, " ")
 	} else {
-		buf, err := ioutil.ReadAll(in)
-		if err != nil {
-			fmt.Fprint(os.Stderr, "%s\n", err)
-			os.Exit(1)
-		}
+		buf, err := ioutil.ReadAll(app.In)
+		cli.ExitOnError(app.Eout, err, quiet)
 		src = fmt.Sprintf("%s", buf)
 	}
 	if useQueryUnescape {
@@ -161,9 +151,6 @@ func main() {
 	} else {
 		s, err = url.PathUnescape(src)
 	}
-	if err != nil {
-		fmt.Fprint(os.Stderr, "%s\n", err)
-		os.Exit(1)
-	}
-	fmt.Fprintf(out, "%s", s)
+	cli.ExitOnError(app.Eout, err, quiet)
+	fmt.Fprintf(app.Out, "%s%s", s, nl)
 }

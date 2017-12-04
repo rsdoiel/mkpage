@@ -32,8 +32,6 @@ import (
 )
 
 var (
-	usage = `USAGE: %s [OPTIONS]`
-
 	description = `
 
 SYNOPSIS
@@ -73,23 +71,17 @@ func main() {
 	appName := app.AppName()
 
 	// Standard Options
-	app.BoolVar(&showHelp, "h", false, "display help")
-	app.BoolVar(&showHelp, "help", false, "display help")
-	app.BoolVar(&showLicense, "l", false, "display license")
-	app.BoolVar(&showLicense, "license", false, "display license")
-	app.BoolVar(&showVersion, "v", false, "display version")
-	app.BoolVar(&showVersion, "version", false, "display version")
-	app.BoolVar(&showExamples, "example", false, "display example(s)")
-	app.StringVar(&inputFName, "i", "", "input filename")
-	app.StringVar(&inputFName, "input", "", "input filename")
-	app.StringVar(&outputFName, "o", "", "output filename")
-	app.StringVar(&outputFName, "output", "", "output filename")
+	app.BoolVar(&showHelp, "h,help", false, "display help")
+	app.BoolVar(&showLicense, "l,license", false, "display license")
+	app.BoolVar(&showVersion, "v,version", false, "display version")
+	app.BoolVar(&showExamples, "examples", false, "display example(s)")
+	app.StringVar(&inputFName, "i,input", "", "input filename")
+	app.StringVar(&outputFName, "o,output", "", "output filename")
 	app.BoolVar(&quiet, "quiet", false, "suppress error messages")
 	app.BoolVar(&generateMarkdownDocs, "generate-markdown-docs", false, "generate Markdown documentation")
 
 	// App Options
-	app.StringVar(&bylineExp, "b", mkpage.BylineExp, "set byline regexp")
-	app.StringVar(&bylineExp, "byline", mkpage.BylineExp, "set byline regexp")
+	app.StringVar(&bylineExp, "b,byline", mkpage.BylineExp, "set byline regexp")
 
 	// Configuration and command line interation
 	app.AddHelp("license", []byte(fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version)))
