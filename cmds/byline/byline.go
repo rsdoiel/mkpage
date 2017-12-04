@@ -23,10 +23,8 @@ package main
 
 import (
 	"bufio"
-	"flag"
 	"fmt"
 	"os"
-	"path"
 
 	// My packages
 	"github.com/caltechlibrary/cli"
@@ -57,92 +55,91 @@ This will display the %s of article.md.
 `
 
 	// Standard Options
-	showHelp     bool
-	showLicense  bool
-	showVersion  bool
-	showExamples bool
-	inputFName   string
-	outputFName  string
+	showHelp             bool
+	showLicense          bool
+	showVersion          bool
+	showExamples         bool
+	inputFName           string
+	outputFName          string
+	quiet                bool
+	generateMarkdownDocs bool
 
 	// App Options
 	bylineExp string
 )
 
-func init() {
+func main() {
+	app := cli.NewCli(mkpage.Version)
+	appName := app.AppName()
+
 	// Standard Options
-	flag.BoolVar(&showHelp, "h", false, "display help")
-	flag.BoolVar(&showHelp, "help", false, "display help")
-	flag.BoolVar(&showLicense, "l", false, "display license")
-	flag.BoolVar(&showLicense, "license", false, "display license")
-	flag.BoolVar(&showVersion, "v", false, "display version")
-	flag.BoolVar(&showVersion, "version", false, "display version")
-	flag.BoolVar(&showExamples, "example", false, "display example(s)")
-	flag.StringVar(&inputFName, "i", "", "input filename")
-	flag.StringVar(&inputFName, "input", "", "input filename")
-	flag.StringVar(&outputFName, "o", "", "output filename")
-	flag.StringVar(&outputFName, "output", "", "output filename")
+	app.BoolVar(&showHelp, "h", false, "display help")
+	app.BoolVar(&showHelp, "help", false, "display help")
+	app.BoolVar(&showLicense, "l", false, "display license")
+	app.BoolVar(&showLicense, "license", false, "display license")
+	app.BoolVar(&showVersion, "v", false, "display version")
+	app.BoolVar(&showVersion, "version", false, "display version")
+	app.BoolVar(&showExamples, "example", false, "display example(s)")
+	app.StringVar(&inputFName, "i", "", "input filename")
+	app.StringVar(&inputFName, "input", "", "input filename")
+	app.StringVar(&outputFName, "o", "", "output filename")
+	app.StringVar(&outputFName, "output", "", "output filename")
+	app.BoolVar(&quiet, "quiet", false, "suppress error messages")
+	app.BoolVar(&generateMarkdownDocs, "generate-markdown-docs", false, "generate Markdown documentation")
 
 	// App Options
-	flag.StringVar(&bylineExp, "b", mkpage.BylineExp, "set byline regexp")
-	flag.StringVar(&bylineExp, "byline", mkpage.BylineExp, "set byline regexp")
-
-}
-
-func main() {
-	appName := path.Base(os.Args[0])
-	flag.Parse()
-	args := flag.Args()
+	app.StringVar(&bylineExp, "b", mkpage.BylineExp, "set byline regexp")
+	app.StringVar(&bylineExp, "byline", mkpage.BylineExp, "set byline regexp")
 
 	// Configuration and command line interation
-	cfg := cli.New(appName, "MKPAGE", mkpage.Version)
-	cfg.LicenseText = fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version)
-	cfg.UsageText = fmt.Sprintf(usage, appName)
-	cfg.DescriptionText = fmt.Sprintf(description, appName)
-	cfg.OptionText = "OPTIONS"
-	cfg.ExampleText = fmt.Sprintf(examples, appName, appName)
+	app.AddHelp("license", []byte(fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version)))
+	app.AddHelp("description", []byte(fmt.Sprintf(description, appName)))
+	app.AddHelp("examples", []byte(fmt.Sprintf(examples, appName, appName)))
 
-	if showHelp == true {
+	app.Parse()
+	args := app.Args()
+
+	// Setup IO
+	var err error
+	app.Eout = os.Stderr
+
+	app.In, err = cli.Open(inputFName, os.Stdin)
+	cli.ExitOnError(app.Eout, err, quiet)
+	defer cli.CloseFile(inputFName, app.In)
+
+	app.Out, err = cli.Create(outputFName, os.Stdout)
+	cli.ExitOnError(app.Eout, err, quiet)
+	defer cli.CloseFile(outputFName, app.Out)
+
+	// Handle Options
+	if generateMarkdownDocs {
+		app.GenerateMarkdownDocs(app.Out)
+		os.Exit(0)
+	}
+	if showHelp || showExamples {
 		if len(args) > 0 {
-			fmt.Println(cfg.Help(args...))
+			fmt.Fprintln(app.Out, app.Help(args...))
+		} else if showExamples {
+			fmt.Fprintln(app.Out, app.Help("examples"))
 		} else {
-			fmt.Println(cfg.Usage())
+			app.Usage(app.Out)
 		}
 		os.Exit(0)
 	}
-
-	if showExamples == true {
-		if len(args) > 0 {
-			fmt.Println(cfg.Example(args...))
-		} else {
-			fmt.Println(cfg.ExampleText)
-		}
+	if showLicense {
+		fmt.Println(app.License())
+		os.Exit(0)
+	}
+	if showVersion {
+		fmt.Println(app.Version())
 		os.Exit(0)
 	}
 
-	if showLicense == true {
-		fmt.Println(cfg.License())
-		os.Exit(0)
-	}
-	if showVersion == true {
-		fmt.Println(cfg.Version())
-		os.Exit(0)
-	}
-
-	in, err := cli.Open(inputFName, os.Stdin)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "%s\n", err)
-		os.Exit(1)
-	}
-	out, err := cli.Create(outputFName, os.Stdout)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "%s\n", err)
-		os.Exit(1)
-	}
-	scanner := bufio.NewScanner(in)
+	scanner := bufio.NewScanner(app.In)
 	for scanner.Scan() {
 		s := mkpage.Grep(bylineExp, scanner.Text())
 		if len(s) > 0 {
-			fmt.Fprintf(out, "%s", s)
+			fmt.Fprintf(app.Out, "%s", s)
 			os.Exit(0)
 		}
 	}
