@@ -39,7 +39,7 @@ import (
 
 const (
 	// Version of the mkpage package.
-	Version = `v0.0.19`
+	Version = `v0.0.20-dev`
 
 	// LicenseText provides a string template for rendering cli license info
 	LicenseText = `
@@ -211,7 +211,11 @@ func RelativeDocPath(source, target string) string {
 		result = append(result, "..")
 	}
 	result = append(result, target)
-	return strings.Join(result, sep)
+	p := strings.Join(result, sep)
+	if strings.HasSuffix(p, "/.") {
+		return strings.TrimSuffix(p, ".")
+	}
+	return p
 }
 
 //
