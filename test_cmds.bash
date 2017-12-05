@@ -24,6 +24,16 @@ function assert_equal() {
     fi
 }
 
+function assert_empty() {
+    if [ "$#" != "2" ]; then
+        echo "wrong number of parameters for $1, $@"
+        exit 1
+    fi
+    if [ "$2" != "" ]; then
+        echo "$1: expected empty string got |$2|"
+        exit 1
+    fi
+}
 
 
 #
@@ -42,12 +52,27 @@ function test_byline() {
 }
 
 function test_mkpage() {
+    # test basic markdown processing
     bin/mkpage content=demo/mkpage/helloworld.md page.tmpl > temp.html
     EXPECTED=""
-    RESULT=$(cmp temp.html demo/mkpage/helloworld.html)
+    RESULT=$(cmp demo/mkpage/helloworld.html temp.html)
     assert_exists "test_mkpage (simple)" "temp.html"
     assert_equal "test_mkpage (simple)" "$EXPECTED" "$RESULT"
     rm temp.html
+
+    # test codesnip support
+    bin/mkpage content=demo/codesnip/index.md > temp.html
+    RESULT=$(cmp demo/codesnip/index.html temp.html)
+    assert_exists "test_mkpage (codesnip html)" "temp.html"
+    assert_empty "test_mkpage (codesnip html)" "$RESULT"
+    rm temp.html
+    mkdir -p test/codesnip
+    bin/mkpage -codesnip=demo/codesnip/index.html -codedir="test/codesnip"
+    RESULT=$(cmp demo/codesnip/hello.bash test/codesnip/hello.bash)
+    assert_exists "test_mkpage (codesnip bash)" "test/codesnip/hello.bash"
+    assert_empty "test_mkpage (codesnip bash)" "$RESULT"
+    rm -fR test/codesnip
+
     echo "test_mkpage() OK"
 }
 
