@@ -22,13 +22,13 @@ build: bin/mkpage$(EXT) bin/mkslides$(EXT) bin/mkrss$(EXT) \
 	bin/reldocpath$(EXT) bin/urlencode$(EXT) bin/urldecode$(EXT) \
 	bin/ws$(EXT) 
 
-mkpage.go: assets.go
+mkpage.go: assets.go codesnip.go
 
 assets.go:
 	pkgassets -o assets.go -p mkpage Defaults defaults
 	git add assets.go
 
-bin/mkpage$(EXT): mkpage.go cmds/mkpage/mkpage.go
+bin/mkpage$(EXT): mkpage.go assets.go codesnip.go cmds/mkpage/mkpage.go
 	go build -o bin/mkpage$(EXT) cmds/mkpage/mkpage.go
 
 bin/mkslides$(EXT): mkpage.go cmds/mkslides/mkslides.go

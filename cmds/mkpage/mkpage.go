@@ -93,8 +93,7 @@ Golang's text/template docs can be found at
 	// Application Options
 	templateFNames string
 	showTemplate   bool
-	codesnip       string
-	codedir        string
+	codesnip       bool
 )
 
 func main() {
@@ -127,20 +126,11 @@ func main() {
 	app.BoolVar(&showTemplate, "show-template", false, "display the default template")
 	app.StringVar(&templateFNames, "t", "", "colon delimited list of templates to use")
 	app.StringVar(&templateFNames, "templates", "", "colon delimited list of templates to use")
-	app.StringVar(&codesnip, "codesnip", "", "the file you want to snip code from")
-	app.StringVar(&codedir, "codedir", "", "the directory to write your codesnips to")
+	app.BoolVar(&codesnip, "codesnip", false, "snip out the code bit from input")
 
 	app.Parse()
 	args := app.Args()
 
-	// Setup IO
-	var err error
-	app.Eout = os.Stderr
-	// Process flags and update the environment as needed.
-	if generateMarkdownDocs {
-		app.GenerateMarkdownDocs(app.Out)
-		os.Exit(0)
-	}
 	if showHelp || showExamples {
 		if len(args) > 0 {
 			fmt.Fprintln(app.Out, app.Help(args...))
@@ -163,10 +153,6 @@ func main() {
 		os.Exit(0)
 	}
 
-	if codesnip != "" {
-		inputFName = codesnip
-	}
-
 	// Default template name is page.tmpl
 	templateName := "page.tmpl"
 	templateSources := []string{}
@@ -179,15 +165,27 @@ func main() {
 	}
 
 	// Setup IO
+	var err error
+
+	app.Eout = os.Stderr
 	app.In, err = cli.Open(inputFName, os.Stdin)
 	cli.ExitOnError(app.Eout, err, quiet)
 	defer cli.CloseFile(inputFName, app.In)
+
 	app.Out, err = cli.Create(outputFName, os.Stdout)
 	cli.ExitOnError(app.Eout, err, quiet)
 	defer cli.CloseFile(outputFName, app.Out)
 
-	if codesnip != "" {
-		cli.ExitOnError(app.Eout, fmt.Errorf("codesnip not implemented"), quiet)
+	// Process flags and update the environment as needed.
+	if generateMarkdownDocs {
+		app.GenerateMarkdownDocs(app.Out)
+		os.Exit(0)
+	}
+
+	if codesnip {
+		err = mkpage.Codesnip(app.In, app.Out)
+		cli.ExitOnError(app.Eout, err, quiet)
+		os.Exit(0)
 	}
 
 	data := map[string]string{}

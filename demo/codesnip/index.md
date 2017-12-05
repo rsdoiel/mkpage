@@ -6,7 +6,9 @@ an extra annotation to indicate the filename it belongs to.
 
 Here is an example --
 
-```shell hello.bash
+```shell
+    #!/bin/bash
+
     echo "Hello World!"
 ```
 
