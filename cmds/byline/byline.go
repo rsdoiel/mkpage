@@ -33,23 +33,17 @@ import (
 
 var (
 	description = `
-
-SYNOPSIS
-
 %s extracts a byline from a Markdown file. By default it reads
 from standard in and writes to standard out but can read/write
 to specific files using an option.
-
 `
 
 	examples = `
-
-EXAMPLE
+Extract a byline from article.md.
 
     cat article.md | %s
 
-This will display the %s of article.md.
-
+This will display the %s if one is found in article.md.
 `
 
 	// Standard Options
