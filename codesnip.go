@@ -23,7 +23,15 @@ func Codesnip(in io.Reader, out io.Writer) error {
 			}
 		}
 		if inBlock {
-			fmt.Fprintln(out, strings.TrimPrefix(line, "    "))
+			switch {
+			case strings.HasPrefix(line, "    "):
+				fmt.Fprintln(out, strings.TrimPrefix(line, "    "))
+			case strings.HasPrefix(line, "\t"):
+				fmt.Fprintln(out, strings.TrimPrefix(line, "\t"))
+			default:
+				fmt.Fprintln(out, line)
+			}
+
 		}
 	}
 	return scanner.Err()
