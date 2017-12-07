@@ -7,22 +7,22 @@ import (
 	"strings"
 )
 
-func Codesnip(in io.Reader, out io.Writer) error {
+func Codesnip(in io.Reader, out io.Writer, language string) error {
 	var (
-		inBlock bool
+		inCodeBlock bool
 	)
 	scanner := bufio.NewScanner(in)
 	for scanner.Scan() {
 		line := scanner.Text()
 		if strings.HasPrefix(line, "```") {
-			if inBlock {
-				inBlock = false
-			} else {
-				inBlock = true
+			if inCodeBlock {
+				inCodeBlock = false
+			} else if strings.HasPrefix(line, "```"+language) {
+				inCodeBlock = true
 				continue
 			}
 		}
-		if inBlock {
+		if inCodeBlock {
 			switch {
 			case strings.HasPrefix(line, "    "):
 				fmt.Fprintln(out, strings.TrimPrefix(line, "    "))
@@ -31,7 +31,6 @@ func Codesnip(in io.Reader, out io.Writer) error {
 			default:
 				fmt.Fprintln(out, line)
 			}
-
 		}
 	}
 	return scanner.Err()

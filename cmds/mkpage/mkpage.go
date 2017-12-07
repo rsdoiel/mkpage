@@ -94,6 +94,7 @@ Golang's text/template docs can be found at
 	templateFNames string
 	showTemplate   bool
 	codesnip       bool
+	codeType       string
 )
 
 func main() {
@@ -127,6 +128,7 @@ func main() {
 	app.StringVar(&templateFNames, "t", "", "colon delimited list of templates to use")
 	app.StringVar(&templateFNames, "templates", "", "colon delimited list of templates to use")
 	app.BoolVar(&codesnip, "codesnip", false, "snip out the code bit from input")
+	app.StringVar(&codeType, "lang", "", "restrict codesnip to language, e.g. shell or json")
 
 	app.Parse()
 	args := app.Args()
@@ -183,7 +185,7 @@ func main() {
 	}
 
 	if codesnip {
-		err = mkpage.Codesnip(app.In, app.Out)
+		err = mkpage.Codesnip(app.In, app.Out, codeType)
 		cli.ExitOnError(app.Eout, err, quiet)
 		os.Exit(0)
 	}
