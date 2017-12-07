@@ -127,8 +127,8 @@ func main() {
 	app.BoolVar(&showTemplate, "show-template", false, "display the default template")
 	app.StringVar(&templateFNames, "t", "", "colon delimited list of templates to use")
 	app.StringVar(&templateFNames, "templates", "", "colon delimited list of templates to use")
-	app.BoolVar(&codesnip, "codesnip", false, "snip out the code bit from input")
-	app.StringVar(&codeType, "lang", "", "restrict codesnip to language, e.g. shell or json")
+	app.BoolVar(&codesnip, "codesnip", false, "output just the code bocks")
+	app.StringVar(&codeType, "code", "", "outout just code blocks for language, e.g. shell or json")
 
 	app.Parse()
 	args := app.Args()
@@ -184,7 +184,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	if codesnip {
+	if codesnip || codeType != "" {
 		err = mkpage.Codesnip(app.In, app.Out, codeType)
 		cli.ExitOnError(app.Eout, err, quiet)
 		os.Exit(0)
