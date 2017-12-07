@@ -103,10 +103,6 @@ function test_urlencode() {
     echo "test_urlencode() not implemented."
 }
 
-function test_ws() {
-    echo "test_ws() not implemented."
-}
-
 echo "Testing command line tools"
 test_byline
 test_mkpage
@@ -117,5 +113,4 @@ test_sitemapper
 test_titleline
 test_urldecode
 test_urlencode
-test_ws
 echo 'Success!'
