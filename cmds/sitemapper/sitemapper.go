@@ -127,12 +127,10 @@ func main() {
 	app.BoolVar(&quiet, "quiet", false, "suppress error messages")
 
 	// App specific options
-	app.StringVar(&htdocs, "d,docs", "", "set the htdoc root")
-	app.StringVar(&siteURL, "u,url", "", "set the site URL")
+	app.StringVar(&htdocs, "docs", "", "set the htdoc root")
+	app.StringVar(&siteURL, "url", "", "set the site URL")
 	app.StringVar(&sitemapFName, "sitemap", "", "set the sitemap filename and path")
-	app.StringVar(&changefreq, "u", "daily", "Set the change frequencely value, e.g. daily, weekly, monthly")
-	app.StringVar(&changefreq, "update-frequency", "daily", "Set the change frequencely value, e.g. daily, weekly, monthly")
-	app.StringVar(&excludeList, "e", "", "A colon delimited list of path parts to exclude from sitemap")
+	app.StringVar(&changefreq, "update,update-frequency", "daily", "Set the change frequencely value, e.g. daily, weekly, monthly")
 	app.StringVar(&excludeList, "exclude", "", "A colon delimited list of path parts to exclude from sitemap")
 
 	// Setup IO
