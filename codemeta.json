@@ -6,7 +6,7 @@
     "codeRepository": "https://github.com/caltechlibrary/mkpage",
     "issueTracker": "https://github.com/caltechlibrary/mkpage/issues",
     "license": "https://data.caltech.edu/license",
-    "version": "0.0.20",
+    "version": "0.0.21-dev",
     "author": [
         {
             "@type": "Person",
@@ -18,7 +18,7 @@
         }
     ],
     "developmentStatus": "active",
-    "downloadUrl": "https://github.com/caltechlibrary/mkpage/archive/v0.0.20.zip",
+    "downloadUrl": "https://github.com/caltechlibrary/mkpage/archive/v0.0.21-dev.zip",
     "keywords": [
         "content management",
         "webpage generation",

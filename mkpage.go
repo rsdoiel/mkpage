@@ -257,7 +257,7 @@ func MarkdownToSlides(fname string, mdSource []byte) []*Slide {
 			NextNo:  (i + 1),
 			FirstNo: 0,
 			LastNo:  lastSlide,
-			Content: fmt.Sprintf("%s", s),
+			Content: string(blackfriday.MarkdownCommon(s)),
 		})
 	}
 	return slides
