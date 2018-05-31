@@ -1,7 +1,8 @@
-{{ define "page.tmpl" }}<!DOCTYPE html>
+{{- define "page.tmpl" -}}
+<!DOCTYPE html>
 <html>
 <head>
-  {{if .title -}}<title>{{- .title -}}</title>{{- end}}
+  {{ with .title -}}<title>{{- . -}}</title>{{- end}}
   {{if .csspath -}}<link href="{{ .csspath }}" rel="stylesheet" />{{else -}}
   <style>
 /**

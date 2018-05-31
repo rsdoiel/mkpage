@@ -31,12 +31,13 @@ Point your webbrowser at http://localhost:8000 and view this page.
     <!DOCTYPE html>
     <html>
     <head>
-        {{with .Title -}}<title>{{- . -}}</title>{{- end }}
-        {{with .CSSPath -}}<link rel="stylesheet" href="{{- . -}}">{{- end}}
+        {{with .title -}}<title>{{- . -}}</title>{{- end }}
+        {{with .csspath -}}<link rel="stylesheet" href="{{- . -}}">{{- end}}
+        {{with .css -}}<style>{{- . -}}</style>{{- end }} 
     </head>
     <body>
         <header>
-            {{with .Title -}}<h1>{{- . -}}</h1>{{- end}}
+            {{with .title -}}<h1>{{- . -}}</h1>{{- end}}
         </header>
         <nav>
             <ul>
@@ -44,7 +45,7 @@ Point your webbrowser at http://localhost:8000 and view this page.
                 <li><a href="../">Up</a></li>
             </ul>
         </nav>
-        {{with .Content}}<section>{{- . -}}</section>{{- end}}
+        {{with .content }}<section>{{- . -}}</section>{{- end}}
         <footer>Simple is a theme that works with  three elements Title, CSSPath, and Content</footer>
     </body>
     </html>
@@ -82,10 +83,10 @@ Point your webbrowser at http://localhost:8000 and view this page.
     	HTML_FILE="$DOCPath/$(basename "$MARKDOWN_FILE" .md).html"
     	CSSPath="$(reldocpath "$DOCPath" css)"
     	mkpage \
-    		"Title=text:$WEBSITE_TITLE" \
-    		"CSSPath=text:$CSSPath/site.css" \
-    		"Content=$MARKDOWN_FILE" \
-    		page.tmpl >"$HTML_FILE"
+    		"title=text:${WEBSITE_TITLE}" \
+    		"csspath=text:${CSSPath}/site.css" \
+    		"content=${MARKDOWN_FILE}" \
+    		page.tmpl >"${HTML_FILE}"
     done
 
     cd "$START"
@@ -94,10 +95,10 @@ Point your webbrowser at http://localhost:8000 and view this page.
 
 ## Improvements over one-element
 
-The Title value can be set for the whole site by modifying by setting an
+The "title" value can be set for the whole site by modifying by setting an
 environment variable WEBSITE_TITLE.
 
-The CSS file path is calculate with _reldocpath_. This means that you could
+The "csspath" (CSS file path) is calculate with _reldocpath_. This means that you could
 place content rendered with this them in a subdirectory of a larger website 
 and still use the CSS that comes with this theme.
 

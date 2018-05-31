@@ -224,16 +224,20 @@ func RelativeDocPath(source, target string) string {
 
 // Slide is the metadata about a slide to be generated.
 type Slide struct {
-	CurNo   int
-	PrevNo  int
-	NextNo  int
-	FirstNo int
-	LastNo  int
-	FName   string
-	Title   string
-	Content string
-	CSSPath string
-	JSPath  string
+	CurNo   int    `json:"CurNo,omitemtpy"`
+	PrevNo  int    `json:"PrevNo,omitempty"`
+	NextNo  int    `json:"NextNo,omitempty"`
+	FirstNo int    `json:"FirstNo,omitempty"`
+	LastNo  int    `json:"LastNo,omitempty"`
+	FName   string `json:"FName,omitempty"`
+	Title   string `json:"title,omitempty"`
+	Content string `json:"content,omitempty"`
+	CSSPath string `json:"csspath,omitempty"`
+	JSPath  string `json:"jspath,omitempty"`
+	CSS     string `json:"css,omitempty"`
+	Header  string `json:"header,omitempty"`
+	Footer  string `json:"footer,omitempty"`
+	Nav     string `json:"nav,omitempty"`
 }
 
 // MarkdownToSlides turns a markdown file into one or more Slide structs
@@ -278,7 +282,10 @@ func MakeSlide(wr io.Writer, templateName string, tmpl *template.Template, keyVa
 	data["NextNo"] = slide.NextNo
 	data["FirstNo"] = slide.FirstNo
 	data["LastNo"] = slide.LastNo
-	data["Content"] = slide.Content
+	data["content"] = slide.Content
+	data["header"] = slide.Header
+	data["footer"] = slide.Header
+	data["nav"] = slide.Nav
 	return tmpl.ExecuteTemplate(wr, templateName, data)
 }
 

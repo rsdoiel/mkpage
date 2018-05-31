@@ -3,7 +3,7 @@
 
 This theme demonstates adding a Markdown file for controlling site 
 navigation and document specific titles. Like the simple theme you have 
-a Content element and a sitewide common CSSPath element.
+a "content" element and a sitewide common "csspath" element.
 
 The title element in the Markdown document is extracted with the _mkpage_ 
 utility called _titleline_.
@@ -28,17 +28,17 @@ Point your webbrowser at http://localhost:8000 and view this page.
     <!DOCTYPE html>
     <html>
     <head>
-        {{with .Title -}}<title>{{- . -}}</title>{{- end }}
-        {{with .CSSPath -}}<link rel="stylesheet" href="{{- . -}}">{{- end}}
-        {{with .CSS -}}<style>{{- . -}}</style>{{- end }} 
+        {{with .title -}}<title>{{- . -}}</title>{{- end }}
+        {{with .csspath -}}<link rel="stylesheet" href="{{- . -}}">{{- end}}
+        {{with .css -}}<style>{{- . -}}</style>{{- end }} 
     </head>
     <body>
         <header>
-            {{with .Title -}}<h1>{{- . -}}</h1>{{- end}}
+            {{with .title -}}<h1>{{- . -}}</h1>{{- end}}
         </header>
-        {{with .Nav}}<nav>{{- . -}}</nav>{{- end}}
-        {{with .Content}}<section>{{- . -}}</section>{{- end}}
-        {{with .Footer -}}<footer>{{- . -}}</footer>{{- end -}}
+        {{with .nav}}<nav>{{- . -}}</nav>{{- end}}
+        {{with .content}}<section>{{- . -}}</section>{{- end}}
+        {{with .footer -}}<footer>{{- . -}}</footer>{{- end -}}
     </body>
     </html>
 ```
@@ -93,10 +93,10 @@ Point your webbrowser at http://localhost:8000 and view this page.
     		WEBSITE_TITLE="$(titleline -i "$MARKDOWN_FILE")"
     		echo "Generating $WEBSITE_TITLE from $MARKDOWN_FILE"
     		mkpage \
-    			"Title=text:$WEBSITE_TITLE" \
-    			"CSSPath=text:$CSSPath/site.css" \
-    			"Nav=nav.md" \
-    			"Content=$MARKDOWN_FILE" \
+    			"title=text:$WEBSITE_TITLE" \
+    			"csspath=text:$CSSPath/site.css" \
+    			"nav=nav.md" \
+    			"content=$MARKDOWN_FILE" \
     			page.tmpl >"$DOCPath/$HTML_FILE"
     	fi
     done
