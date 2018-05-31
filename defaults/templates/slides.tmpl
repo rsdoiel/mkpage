@@ -1,10 +1,11 @@
-{{ define "slides.tmpl" }}<!DOCTYPE html>
+{{- define "slides.tmpl" -}}
+<!DOCTYPE html>
 <html>
 <head>
-	{{if .Title -}}<title>{{- .Title -}}</title>{{- end}}
+	{{with .Title -}}<title>{{- . -}}</title>{{- end}}
 	{{if .CSSPath -}}
 <link href="{{ .CSSPath }}" rel="stylesheet" />
-   {{else -}}
+    {{else -}}
 <style>
     body {
     	width: 100%;
@@ -49,7 +50,7 @@
 <a id="start-slide" href="{{printf "%02d-%s.html" .FirstNo .FName}}">Home</a>
 {{- end}}
 {{ if gt .CurNo .FirstNo -}} 
-<a id="previ-slide" href="{{printf "%02d-%s.html" .PrevNo .FName}}">Prev</a>
+<a id="prev-slide" href="{{printf "%02d-%s.html" .PrevNo .FName}}">Prev</a>
 {{- end}}
 {{ if lt .CurNo .LastNo -}} 
 <a id="next-slide" href="{{printf "%02d-%s.html" .NextNo .FName}}">Next</a>
@@ -63,27 +64,37 @@
         prev = document.getElementById('prev-slide'),
         next = document.getElementById('next-slide');
     
-    
-    document.onkeydown = function(e) {
-        switch (e.keyCode) {
-            /* case 32: */
-            case 37:
-            // Previous: left arrow
-                prev.click();
-                break;
-            case 39:
-                // Next: right arrow
+    window.addEventListener("keydown", function(e) {
+        switch (e.key) {
+        case "PageDown":
+        case "ArrowRight":
+        case "ArrowDown":
+        case "Enter":
+        case " ":
+            if (next != null) {
                 next.click();
-                break;
-            case 72:
-            case 83:
-                // Home/Start: h, s
+            }
+            break;
+        case "PageUp":
+        case "ArrowLeft":
+        case "ArrowUp":
+        case "Backspace":
+            if (prev != null) {
+                prev.click();
+            }
+            break;
+        case "Home":
+            if (start != null) {
                 start.click();
-                break;
+            }
+            break;
+        default:
+            return;
         }
-    };
+        e.preventDefault();
+    }, true);
 }(document, window));
 </script>
 </body>
 </html>
-{{ end }}
+{{- end }}
