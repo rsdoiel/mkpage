@@ -41,6 +41,14 @@
 	code {
 		color: teal;
 	}
+
+    .slide {
+        display: flex;
+        justify-content: center;
+        min-width: 40%;
+        padding: 2.5%;
+    }
+
 </style>
 {{- end }}
 </head>
@@ -48,21 +56,33 @@
 	<nav>
 {{ if ne .CurNo .FirstNo -}}
 <a id="start-slide" href="{{printf "%02d-%s.html" .FirstNo .FName}}">Home</a>
-{{- end}}
+{{- else -}}
+<span id="start-slide">Home</span>
+{{- end }}
 {{ if gt .CurNo .FirstNo -}} 
 <a id="prev-slide" href="{{printf "%02d-%s.html" .PrevNo .FName}}">Prev</a>
-{{- end}}
+{{- else -}}
+<span id="prev-slide">Prev</span>
+{{- end }}
 {{ if lt .CurNo .LastNo -}} 
 <a id="next-slide" href="{{printf "%02d-%s.html" .NextNo .FName}}">Next</a>
-{{- end}}
+{{- else -}}
+<span id="next-slide">Next</span>
+{{- end }}
+{{ if ne .CurNo .LastNo -}}
+<a id="end-slide" href="{{printf "%02d-%s.html" .LastNo .FName}}">End</a>
+{{- else -}}
+<span id="end-slide">End</span>
+{{- end }}
 	</nav>
-	<section>{{ .Content }}</section>
+	<section class="slide">{{ .Content }}</section>
 <script>
 (function (document, window) {
     'use strict';
     var start = document.getElementById('start-slide'),
         prev = document.getElementById('prev-slide'),
-        next = document.getElementById('next-slide');
+        next = document.getElementById('next-slide'),
+        end = document.getElementById('end-slide');
     
     window.addEventListener("keydown", function(e) {
         switch (e.key) {
@@ -86,6 +106,11 @@
         case "Home":
             if (start != null) {
                 start.click();
+            }
+            break;
+        case "End":
+            if (end != null) {
+                end.click();
             }
             break;
         default:

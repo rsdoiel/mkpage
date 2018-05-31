@@ -24,7 +24,7 @@ build: bin/mkpage$(EXT) bin/mkslides$(EXT) bin/mkrss$(EXT) \
 
 mkpage.go: assets.go codesnip.go
 
-assets.go:
+assets.go: defaults/templates/page.tmpl defaults/templates/slides.tmpl
 	pkgassets -o assets.go -p mkpage Defaults defaults
 	git add assets.go
 
@@ -106,7 +106,7 @@ clean:
 	if [ -d bin ]; then rm -fR bin; fi
 	if [ -d dist ]; then rm -fR dist; fi
 
-install:
+install: assets.go
 	env GOBIN=$(GOPATH)/bin go install cmds/mkpage/mkpage.go
 	env GOBIN=$(GOPATH)/bin go install cmds/mkslides/mkslides.go
 	env GOBIN=$(GOPATH)/bin go install cmds/mkrss/mkrss.go
