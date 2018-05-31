@@ -41,7 +41,7 @@ function assert_empty() {
 #
 
 function test_byline() {
-    EXPECTED="By J. Q. Public 2017-12-04"
+    EXPECTED="By J. Q. Public 2018-12-04"
     # Test reading from file
     RESULT=$(bin/byline -i demo/byline/index.md)
     assert_equal "test_byline" "$EXPECTED" "$RESULT"
@@ -53,19 +53,20 @@ function test_byline() {
 
 function test_mkpage() {
     # test basic markdown processing
+    if [[ -f "temp.html" ]]; then rm temp.html; fi
     bin/mkpage content=demo/mkpage/helloworld.md page.tmpl > temp.html
     EXPECTED=""
     assert_exists "test_mkpage (simple)" "temp.html"
     RESULT=$(cmp demo/mkpage/helloworld.html temp.html)
     assert_equal "test_mkpage (simple)" "$EXPECTED" "$RESULT"
-    rm temp.html
 
     # test codesnip support
+    if [[ -f "temp.html" ]]; then rm temp.html; fi
     bin/mkpage content=demo/codesnip/index.md > temp.html
+    EXPECTED=""
     assert_exists "test_mkpage (codesnip html)" "temp.html"
     RESULT=$(cmp demo/codesnip/index.html temp.html)
     assert_empty "test_mkpage (codesnip html)" "$RESULT"
-    rm temp.html
     mkdir -p test/codesnip
     bin/mkpage -codesnip -i=demo/codesnip/index.md -o=test/codesnip/hello.bash
     assert_exists "test_mkpage (codesnip bash)" "test/codesnip/hello.bash"

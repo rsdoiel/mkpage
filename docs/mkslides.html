@@ -2,7 +2,6 @@
 <html>
 <head>
     <title>Caltech Library's Digital Library Development Sandbox</title>
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="/css/site.css">
 </head>
 <body>
@@ -54,15 +53,18 @@ result from a single Markdown file. To manage the linkage between
 slides some predefined template variables is used.</p>
 
 <ul>
-<li>Title which would hold the page title for presentation</li>
-<li>CSSPath which would hold the path to your CSS File.</li>
-<li>Content holds the extracted for each slide</li>
-<li>CurNo which holds the current page number</li>
-<li>FirstNo which holds the first slide&rsquo;s page number (e.g. 00)</li>
-<li>LastNo which holds the last slides page number (e..g length of slide deck minus one)</li>
-<li>PrevNo which holds the previous slide number if CurNo is create than 0</li>
-<li>NextNo which holds the next slide number if CurNo is not the last slide</li>
-<li>FName is the filename for presentation</li>
+<li><em>title</em> which would hold the page title for presentation</li>
+<li><em>csspath</em> which would hold the path to your CSS File.</li>
+<li><em>content</em> holds the extracted for each slide</li>
+<li><em>cur_no</em> which holds the current page number</li>
+<li><em>first_no</em> which holds the first slide&rsquo;s page number (e.g. 00)</li>
+<li><em>last_no</em> which holds the last slides page number (e..g length of slide deck minus one)</li>
+<li><em>prev_no</em> which holds the previous slide number if CurNo is create than 0</li>
+<li><em>next_no</em> which holds the next slide number if CurNo is not the last slide</li>
+<li><em>filename</em> is the filename for presentation</li>
+<li><em>nav</em> is to replace the default presentation navigation</li>
+<li><em>header</em> is to add a header to the presentation</li>
+<li><em>footer</em> is to add a footer to the presentation</li>
 </ul>
 
 <p>In your custom templates these should be exist to link everything together
@@ -123,15 +125,15 @@ Here&rsquo;s an example of a three slide presentation</p>
 <p>If you saved this as presentation.md you can run the following
 command to generate slides</p>
 
-<pre><code class="language-shell">    mkslides &quot;Title=text:My Presentation&quot; \
-	    &quot;CSSPath=text:css/slides.css&quot; presentation.md
+<pre><code class="language-shell">    mkslides &quot;title=text:My Presentation&quot; \
+	    &quot;csspath=text:css/slides.css&quot; presentation.md
 </code></pre>
 
 <p>Using a custom template would look like</p>
 
 <pre><code class="language-shell">    mkslides -t custom-slides.tmpl \
-        &quot;Title=text:My Presentation&quot; \
-	    &quot;CSSPath=text:css/slides.css&quot; presentation.md
+        &quot;title=text:My Presentation&quot; \
+	    &quot;csspath=text:css/slides.css&quot; presentation.md
 </code></pre>
 
 <p>This would result in the following webpages</p>
@@ -146,7 +148,7 @@ command to generate slides</p>
 
 <footer>
 <span><h1><A href="http://caltech.edu">Caltech</a></h1></span>
-<span>&copy; 2017 <a href="https://www.library.caltech.edu/copyright">Caltech library</a></span>
+<span>&copy; 2018 <a href="https://www.library.caltech.edu/copyright">Caltech library</a></span>
 <address>1200 E California Blvd, Mail Code 1-32, Pasadena, CA 91125-3200</address> 
 <span>Phone: <a href="tel:+1-626-395-3405">(626)395-3405</a></span>
 <span><a href="mailto:library@caltech.edu">Email Us</a></span>

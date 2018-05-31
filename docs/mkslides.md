@@ -21,15 +21,18 @@ _mkslides_ is based on _mkpage_ with the difference that multiple pages
 result from a single Markdown file. To manage the linkage between
 slides some predefined template variables is used.
 
-+ Title which would hold the page title for presentation
-+ CSSPath which would hold the path to your CSS File.
-+ Content holds the extracted for each slide
-+ CurNo which holds the current page number
-+ FirstNo which holds the first slide's page number (e.g. 00)
-+ LastNo which holds the last slides page number (e..g length of slide deck minus one)
-+ PrevNo which holds the previous slide number if CurNo is create than 0
-+ NextNo which holds the next slide number if CurNo is not the last slide
-+ FName is the filename for presentation
++ *title* which would hold the page title for presentation
++ *csspath* which would hold the path to your CSS File.
++ *content* holds the extracted for each slide
++ *cur_no* which holds the current page number
++ *first_no* which holds the first slide's page number (e.g. 00)
++ *last_no* which holds the last slides page number (e..g length of slide deck minus one)
++ *prev_no* which holds the previous slide number if CurNo is create than 0
++ *next_no* which holds the next slide number if CurNo is not the last slide
++ *filename* is the filename for presentation
++ *nav* is to replace the default presentation navigation
++ *header* is to add a header to the presentation
++ *footer* is to add a footer to the presentation
 
 In your custom templates these should be exist to link everything together
 as expected.  In addition you may want to include JavaScript to allow mapping
@@ -91,16 +94,16 @@ If you saved this as presentation.md you can run the following
 command to generate slides
 
 ```shell
-    mkslides "Title=text:My Presentation" \
-	    "CSSPath=text:css/slides.css" presentation.md
+    mkslides "title=text:My Presentation" \
+	    "csspath=text:css/slides.css" presentation.md
 ```
 
 Using a custom template would look like
 
 ```shell
     mkslides -t custom-slides.tmpl \
-        "Title=text:My Presentation" \
-	    "CSSPath=text:css/slides.css" presentation.md
+        "title=text:My Presentation" \
+	    "csspath=text:css/slides.css" presentation.md
 ```
 
 This would result in the following webpages

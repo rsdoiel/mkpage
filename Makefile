@@ -90,7 +90,7 @@ format:
 test: bin/mkpage$(EXT) bin/mkslides$(EXT) bin/mkrss$(EXT) \
 	bin/sitemapper$(EXT) bin/byline$(EXT) bin/titleline$(EXT) \
 	bin/reldocpath$(EXT) bin/urlencode$(EXT) bin/urldecode$(EXT) \
-	bin/ws$(EXT) 
+	bin/ws$(EXT)  FORCE
 	go test
 	bash test_cmds.bash
 
@@ -211,3 +211,4 @@ publish:
 	./mk-website.bash
 	./publish.bash
 
+FORCE:

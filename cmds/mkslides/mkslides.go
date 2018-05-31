@@ -4,7 +4,7 @@
 //
 // @author R. S. Doiel, <rsdoiel@caltech.edu>
 //
-// Copyright (c) 2017, Caltech
+// Copyright (c) 2018, Caltech
 // All rights not granted herein are expressly reserved by Caltech.
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -57,12 +57,12 @@ slides some predefined template variables is used.
 + "nav" which would hold an alternative navigation section for the presentation
 + "csspath" which would hold the path to your CSS File.
 + "content" holds the extracted for each slide
-+ "CurNo" which holds the current page number
-+ "FirstNo" which holds the first slide's page number (e.g. 00)
-+ "LastNo" which holds the last slides page number (e..g length of slide deck minus one)
-+ "PrevNo" which holds the previous slide number if CurNo is create than 0
-+ "NextNo" which holds the next slide number if CurNo is not the last slide
-+ "FName" is the filename for presentation
++ "cur_no" which holds the current page number
++ "first_no" which holds the first slide's page number (e.g. 00)
++ "last_no" which holds the last slides page number (e..g length of slide deck minus one)
++ "prev_no" which holds the previous slide number if CurNo is create than 0
++ "next_no" which holds the next slide number if CurNo is not the last slide
++ "filename" is the filename for presentation
 
 In your custom templates these should be exist to link everything together
 as expected.  In addition you may want to include JavaScript to allow mapping

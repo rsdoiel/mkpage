@@ -3,7 +3,7 @@
 //
 // @author R. S. Doiel, <rsdoiel@caltech.edu>
 //
-// Copyright (c) 2017, Caltech
+// Copyright (c) 2018, Caltech
 // All rights not granted herein are expressly reserved by Caltech.
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,7 +45,7 @@ const (
 	LicenseText = `
 %s %s
 
-Copyright (c) 2017, Caltech
+Copyright (c) 2018, Caltech
 All rights not granted herein are expressly reserved by Caltech.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -224,12 +224,12 @@ func RelativeDocPath(source, target string) string {
 
 // Slide is the metadata about a slide to be generated.
 type Slide struct {
-	CurNo   int    `json:"CurNo,omitemtpy"`
-	PrevNo  int    `json:"PrevNo,omitempty"`
-	NextNo  int    `json:"NextNo,omitempty"`
-	FirstNo int    `json:"FirstNo,omitempty"`
-	LastNo  int    `json:"LastNo,omitempty"`
-	FName   string `json:"FName,omitempty"`
+	CurNo   int    `json:"cur_no,omitemtpy"`
+	PrevNo  int    `json:"prev_no,omitempty"`
+	NextNo  int    `json:"next_no,omitempty"`
+	FirstNo int    `json:"first_no,omitempty"`
+	LastNo  int    `json:"last_no,omitempty"`
+	FName   string `json:"filename,omitempty"`
 	Title   string `json:"title,omitempty"`
 	Content string `json:"content,omitempty"`
 	CSSPath string `json:"csspath,omitempty"`
@@ -276,12 +276,12 @@ func MakeSlide(wr io.Writer, templateName string, tmpl *template.Template, keyVa
 		return fmt.Errorf("Can't resolve data source %s", err)
 	}
 	// Merge the slide metadata into data pairs for template
-	data["FName"] = slide.FName
-	data["CurNo"] = slide.CurNo
-	data["PrevNo"] = slide.PrevNo
-	data["NextNo"] = slide.NextNo
-	data["FirstNo"] = slide.FirstNo
-	data["LastNo"] = slide.LastNo
+	data["filename"] = slide.FName
+	data["cur_no"] = slide.CurNo
+	data["prev_no"] = slide.PrevNo
+	data["next_no"] = slide.NextNo
+	data["first_no"] = slide.FirstNo
+	data["last_no"] = slide.LastNo
 	data["content"] = slide.Content
 	data["header"] = slide.Header
 	data["footer"] = slide.Header

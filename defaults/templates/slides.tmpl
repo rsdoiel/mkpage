@@ -2,10 +2,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-	{{with .title -}}<title>{{- . -}}</title>{{- end}}
-	{{if .csspath -}}
-<link href="{{ .csspath }}" rel="stylesheet" />
-    {{else -}}
+	{{ with .title -}}<title>{{- . -}}</title>{{- end }}
+	{{ with .csspath -}}<link href="{{- . -}}" rel="stylesheet" />{{- else -}}
 <style>
 /**
  * site.css - stylesheet for the Caltech Library's Digital Library Development Group's sandbox.
@@ -285,25 +283,25 @@ section.slide {
 </head>
 <body>
 {{ with .header -}}<header>{{- . -}}</header>{{- end }}
-{{ with .nav -}}<nav>{{- . -}}</nav>{{- else }}
+{{ with .nav -}}<nav>{{- . -}}</nav>{{- else -}}
 <nav>
-{{ if ne .CurNo .FirstNo -}}
-    <a id="start-slide" href="{{printf "%02d-%s.html" .FirstNo .FName}}">Home</a>
+{{ if ne .cur_no .first_no -}}
+    <a id="start-slide" href="{{printf "%02d-%s.html" .first_no .filename}}">Home</a>
 {{- else -}}
     <span id="start-slide">Home</span>
 {{- end }}
-{{ if gt .CurNo .FirstNo -}} 
-    <a id="prev-slide" href="{{printf "%02d-%s.html" .PrevNo .FName}}">Prev</a>
+{{ if gt .cur_no .first_no -}} 
+    <a id="prev-slide" href="{{printf "%02d-%s.html" .prev_no .filename}}">Prev</a>
 {{- else -}}
     <span id="prev-slide">Prev</span>
 {{- end }}
-{{ if lt .CurNo .LastNo -}} 
-    <a id="next-slide" href="{{printf "%02d-%s.html" .NextNo .FName}}">Next</a>
+{{ if lt .cur_no .last_no -}} 
+    <a id="next-slide" href="{{printf "%02d-%s.html" .next_no .filename}}">Next</a>
 {{- else -}}
     <span id="next-slide">Next</span>
 {{- end }}
-{{ if ne .CurNo .LastNo -}}
-    <a id="end-slide" href="{{printf "%02d-%s.html" .LastNo .FName}}">End</a>
+{{ if ne .cur_no .last_no -}}
+    <a id="end-slide" href="{{printf "%02d-%s.html" .last_no .filename}}">End</a>
 {{- else -}}
     <span id="end-slide">End</span>
 {{- end }}
@@ -311,6 +309,7 @@ section.slide {
 {{- end }}
 {{ with .content -}}<section class="slide"><div class="slide">{{- . -}}</div></section>{{- end }}
 {{ with .footer -}}<footer>{{- . -}}</footer>{{- end }}
+{{ with .jspath -}}<script>{{- . }}</script>{{- else -}}
 <script>
 (function (document, window) {
     'use strict';
@@ -355,6 +354,7 @@ section.slide {
     }, true);
 }(document, window));
 </script>
+{{- end }}
 </body>
 </html>
 {{- end }}
