@@ -202,7 +202,7 @@ distribute_docs:
 	cp -vR templates dist/
 	./package-versions.bash > dist/package-versions.txt
 
-release: assets.go distribute_docs dist/linux-amd64 dist/windows-amd64 dist/macosx-amd64 dist/raspbian-arm7
+release: clean website assets.go distribute_docs dist/linux-amd64 dist/windows-amd64 dist/macosx-amd64 dist/raspbian-arm7
 
 website:
 	./mk-website.bash
