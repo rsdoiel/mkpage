@@ -7,10 +7,10 @@ on Github. What you want to download is the zip file named *mkpage-VERSION_NO-re
 the zip file look for the directory that matches your computer and copy that someplace
 defined in your path (e.g. $HOME/bin). 
 
-Compiled versions are available for Mac OS X (amd64 processor), Linux (amd64), Windows
+Compiled versions are available for macOS (amd64 processor), Linux (amd64), Windows
 (amd64) and Rapsberry Pi (both ARM6 and ARM7)
 
-## Mac OS X
+## macOS
 
 1. Go to [github.com/rsdoiel/mkpage/releases/latest](https://github.com/rsdoiel/mkpage/releases/latest)
 2. Click on the green "mkpage-VERSION_NO-release.zip" link and download
