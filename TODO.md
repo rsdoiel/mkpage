@@ -7,6 +7,7 @@
 
 ## Next
 
++ [ ] Add support for metadata taken from Namaste (Name as text) in the directory
 
 ## Someday, Maybe
 
