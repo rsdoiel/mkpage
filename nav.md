@@ -1,8 +1,9 @@
 
 + [Home](/)
-+ [README](./)
++ [README](index.html)
 + [LICENSE](license.html)
 + [INSTALL](install.html)
 + [Documentation](docs/)
-+ [Github](https://github.com/rsdoiel/mkpage)
++ [HOW TO](how-to/)
++ [Github](https://github.com/caltechlibrary/mkpage)
 

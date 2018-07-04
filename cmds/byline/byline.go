@@ -4,9 +4,10 @@
 // `^[B|b]y\s+(\w|\s)+ [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$`
 // This can be overwritten with another definition using an option.
 //
-// @Author R. S. Doiel
+// @Author R. S. Doiel, <rsdoiel@caltech.edu>
 //
-// Copyright 2017 R. S. Doiel
+// Copyright (c) 2018, Caltech
+// All rights not granted herein are expressly reserved by Caltech.
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 //
@@ -22,103 +23,109 @@ package main
 
 import (
 	"bufio"
-	"flag"
 	"fmt"
 	"os"
-	"path"
 
 	// My packages
-	"github.com/rsdoiel/cli"
-	"github.com/rsdoiel/mkpage"
+	"github.com/caltechlibrary/cli"
+	"github.com/caltechlibrary/mkpage"
 )
 
 var (
-	usage = `USAGE: %s [OPTIONS]`
-
 	description = `
-SYNOPSIS
-
 %s extracts a byline from a Markdown file. By default it reads
 from standard in and writes to standard out but can read/write
 to specific files using an option.
 `
 
 	examples = `
-EXAMPLE
+Extract a byline from article.md.
 
     cat article.md | %s
 
-This will display the %s of article.md.
+This will display the %s if one is found in article.md.
 `
 
 	// Standard Options
-	showHelp    bool
-	showLicense bool
-	showVersion bool
-	inputFName  string
-	outputFName string
+	showHelp             bool
+	showLicense          bool
+	showVersion          bool
+	showExamples         bool
+	inputFName           string
+	outputFName          string
+	quiet                bool
+	generateMarkdownDocs bool
 
 	// App Options
 	bylineExp string
 )
 
-func init() {
+func main() {
+	app := cli.NewCli(mkpage.Version)
+	appName := app.AppName()
+
 	// Standard Options
-	flag.BoolVar(&showHelp, "h", false, "display help")
-	flag.BoolVar(&showHelp, "help", false, "display help")
-	flag.BoolVar(&showLicense, "l", false, "display license")
-	flag.BoolVar(&showLicense, "license", false, "display license")
-	flag.BoolVar(&showVersion, "v", false, "display version")
-	flag.BoolVar(&showVersion, "version", false, "display version")
-	flag.StringVar(&inputFName, "i", "", "input filename")
-	flag.StringVar(&inputFName, "input", "", "input filename")
-	flag.StringVar(&outputFName, "o", "", "output filename")
-	flag.StringVar(&outputFName, "output", "", "output filename")
+	app.BoolVar(&showHelp, "h,help", false, "display help")
+	app.BoolVar(&showLicense, "l,license", false, "display license")
+	app.BoolVar(&showVersion, "v,version", false, "display version")
+	app.BoolVar(&showExamples, "examples", false, "display example(s)")
+	app.StringVar(&inputFName, "i,input", "", "input filename")
+	app.StringVar(&outputFName, "o,output", "", "output filename")
+	app.BoolVar(&quiet, "quiet", false, "suppress error messages")
+	app.BoolVar(&generateMarkdownDocs, "generate-markdown-docs", false, "generate Markdown documentation")
 
 	// App Options
-	flag.StringVar(&bylineExp, "b", mkpage.BylineExp, "set byline regexp")
-	flag.StringVar(&bylineExp, "byline", mkpage.BylineExp, "set byline regexp")
-
-}
-
-func main() {
-	appName := path.Base(os.Args[0])
-	flag.Parse()
+	app.StringVar(&bylineExp, "b,byline", mkpage.BylineExp, "set byline regexp")
 
 	// Configuration and command line interation
-	cfg := cli.New(appName, "MKPAGE", fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version), mkpage.Version)
-	cfg.UsageText = fmt.Sprintf(usage, appName)
-	cfg.DescriptionText = fmt.Sprintf(description, appName)
-	cfg.ExampleText = fmt.Sprintf(examples, appName, appName)
+	app.AddHelp("license", []byte(fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version)))
+	app.AddHelp("description", []byte(fmt.Sprintf(description, appName)))
+	app.AddHelp("examples", []byte(fmt.Sprintf(examples, appName, appName)))
 
-	if showHelp == true {
-		fmt.Println(cfg.Usage())
+	app.Parse()
+	args := app.Args()
+
+	// Setup IO
+	var err error
+	app.Eout = os.Stderr
+
+	app.In, err = cli.Open(inputFName, os.Stdin)
+	cli.ExitOnError(app.Eout, err, quiet)
+	defer cli.CloseFile(inputFName, app.In)
+
+	app.Out, err = cli.Create(outputFName, os.Stdout)
+	cli.ExitOnError(app.Eout, err, quiet)
+	defer cli.CloseFile(outputFName, app.Out)
+
+	// Handle Options
+	if generateMarkdownDocs {
+		app.GenerateMarkdownDocs(app.Out)
 		os.Exit(0)
 	}
-	if showLicense == true {
-		fmt.Println(cfg.License())
+	if showHelp || showExamples {
+		if len(args) > 0 {
+			fmt.Fprintln(app.Out, app.Help(args...))
+		} else if showExamples {
+			fmt.Fprintln(app.Out, app.Help("examples"))
+		} else {
+			app.Usage(app.Out)
+		}
 		os.Exit(0)
 	}
-	if showVersion == true {
-		fmt.Println(cfg.Version())
+	if showLicense {
+		fmt.Println(app.License())
+		os.Exit(0)
+	}
+	if showVersion {
+		fmt.Println(app.Version())
 		os.Exit(0)
 	}
 
-	in, err := cli.Open(inputFName, os.Stdin)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "%s\n", err)
-		os.Exit(1)
-	}
-	out, err := cli.Create(outputFName, os.Stdout)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "%s\n", err)
-		os.Exit(1)
-	}
-	scanner := bufio.NewScanner(in)
+	scanner := bufio.NewScanner(app.In)
 	for scanner.Scan() {
 		s := mkpage.Grep(bylineExp, scanner.Text())
 		if len(s) > 0 {
-			fmt.Fprintf(out, "%s", s)
+			fmt.Fprintf(app.Out, "%s", s)
 			os.Exit(0)
 		}
 	}

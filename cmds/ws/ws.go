@@ -1,9 +1,10 @@
 //
 // ws.go - A simple web server for static files and limit server side JavaScript
 //
-// @author R. S. Doiel, <rsdoiel@gmail.com>
+// @author R. S. Doiel, <rsdoiel@caltech.edu>
 //
-// Copyright 2017 R. S. Doiel
+// Copyright (c) 2018, Caltech
+// All rights not granted herein are expressly reserved by Caltech
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 //
@@ -18,24 +19,27 @@
 package main
 
 import (
-	"flag"
+	"crypto/tls"
 	"fmt"
 	"log"
 	"net/http"
 	"net/url"
 	"os"
-	"path"
+	"strings"
 
-	// My packages
-	"github.com/rsdoiel/cli"
-	"github.com/rsdoiel/mkpage"
+	// Caltech Library packages
+	"github.com/caltechlibrary/cli"
+	"github.com/caltechlibrary/mkpage"
+	"github.com/caltechlibrary/wsfn"
+
+	// Other packages
+	"golang.org/x/crypto/acme/autocert"
 )
 
 // Flag options
 var (
-	usage = `USAGE: %s [OPTIONS] [DOCROOT]`
-
 	description = `
+
 SYNOPSIS
 
 	a nimble web server
@@ -54,9 +58,11 @@ supported.
 + MKPAGE_DOCROOT - sets the document path to use
 + MKPAGE_SSL_KEY - the path to the SSL key if using https
 + MKPAGE_SSL_CERT - the path to the SSL cert if using https
+
 `
 
 	examples = `
+
 EXAMPLES
 
 Run web server using the content in the current directory
@@ -67,18 +73,34 @@ Run web server using the content in the current directory
 Run web server using a specified directory
 
    %s /www/htdocs
+
+Running web server using ACME TLS support (i.e. Let's Encrypt).
+Note will only include the hostname as the ACME setup is for
+listenning on port 443. This may require privileged account
+and will require that the hostname listed matches the public
+DNS for the machine (this is need by the ACME protocol to
+issue the cert, see https://letsencrypt.org for details)
+
+   %s -acme -url www.example.org /www/htdocs
+
 `
 
-	// Standard Options
-	showHelp    bool
-	showLicense bool
-	showVersion bool
+	// Standard options
+	showHelp             bool
+	showVersion          bool
+	showLicense          bool
+	showExamples         bool
+	outputFName          string
+	generateMarkdownDocs bool
+	quiet                bool
 
-	// App Options
-	uri     string
-	docRoot string
-	sslKey  string
-	sslCert string
+	// local app options
+	uri         string
+	docRoot     string
+	sslKey      string
+	sslCert     string
+	letsEncrypt bool
+	CORSOrigin  string
 )
 
 func logRequest(r *http.Request) {
@@ -92,51 +114,81 @@ func logger(next http.Handler) http.Handler {
 	})
 }
 
-func init() {
+func main() {
+	app := cli.NewCli(mkpage.Version)
+	appName := app.AppName()
+
+	// Document non-option parameters
+	app.AddParams(`[DOCROOT]`)
+
+	// Add Help Docs
+	app.AddHelp("license", []byte(fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version)))
+	app.AddHelp("description", []byte(fmt.Sprintf(description, appName, appName)))
+	app.AddHelp("examples", []byte(fmt.Sprintf(examples, appName, appName, appName)))
+
 	defaultDocRoot := "."
 	defaultURL := "http://localhost:8000"
 
-	// Stanard Options
-	flag.BoolVar(&showHelp, "h", false, "Display this help message")
-	flag.BoolVar(&showHelp, "help", false, "Display this help message")
-	flag.BoolVar(&showLicense, "l", false, "Should license info")
-	flag.BoolVar(&showLicense, "license", false, "Should license info")
-	flag.BoolVar(&showVersion, "v", false, "Should version info")
-	flag.BoolVar(&showVersion, "version", false, "Should version info")
+	// Environment Options
+	app.EnvStringVar(&docRoot, "MKPAGE_DOCROOT", "", "set the htdoc root")
+	app.EnvStringVar(&uri, "MKPAGE_URL", "", "set the URL to listen on, defaults to http://localhost:8000")
+	app.EnvStringVar(&sslKey, "MKPAGE_SSL_KEY", "", "set the path to the SSL KEY")
+	app.EnvStringVar(&sslCert, "MKPAGE_SSL_CERT", "", "set the path to the SSL Certificate")
 
-	// App Options
-	flag.StringVar(&docRoot, "d", defaultDocRoot, "Set the htdocs path")
-	flag.StringVar(&docRoot, "docs", defaultDocRoot, "Set the htdocs path")
-	flag.StringVar(&uri, "u", defaultURL, "The protocal and hostname listen for as a URL")
-	flag.StringVar(&uri, "url", defaultURL, "The protocal and hostname listen for as a URL")
-	flag.StringVar(&sslKey, "k", "", "Set the path for the SSL Key")
-	flag.StringVar(&sslKey, "key", "", "Set the path for the SSL Key")
-	flag.StringVar(&sslCert, "c", "", "Set the path for the SSL Cert")
-	flag.StringVar(&sslCert, "cert", "", "Set the path for the SSL Cert")
-}
+	// Standard Options
+	app.BoolVar(&showHelp, "h", false, "display help")
+	app.BoolVar(&showHelp, "help", false, "display help")
+	app.BoolVar(&showLicense, "l", false, "display license")
+	app.BoolVar(&showLicense, "license", false, "display license")
+	app.BoolVar(&showVersion, "v", false, "display version")
+	app.BoolVar(&showVersion, "version", false, "display version")
+	app.BoolVar(&showExamples, "example", false, "display example(s)")
+	app.BoolVar(&generateMarkdownDocs, "generate-markdown-docs", false, "generate markdown documentation")
+	app.BoolVar(&quiet, "quiet", false, "suppress error messages")
 
-func main() {
-	appName := path.Base(os.Args[0])
-	flag.Parse()
-	args := flag.Args()
+	// Application Options
+	app.StringVar(&docRoot, "d", defaultDocRoot, "Set the htdocs path")
+	app.StringVar(&docRoot, "docs", defaultDocRoot, "Set the htdocs path")
+	app.StringVar(&uri, "u", defaultURL, "The protocol and hostname listen for as a URL")
+	app.StringVar(&uri, "url", defaultURL, "The protocol and hostname listen for as a URL")
+	app.StringVar(&sslKey, "k", "", "Set the path for the SSL Key")
+	app.StringVar(&sslKey, "key", "", "Set the path for the SSL Key")
+	app.StringVar(&sslCert, "c", "", "Set the path for the SSL Cert")
+	app.StringVar(&sslCert, "cert", "", "Set the path for the SSL Cert")
+	app.BoolVar(&letsEncrypt, "acme", false, "Enable Let's Encypt ACME TLS support")
+	app.StringVar(&CORSOrigin, "cors-origin", "*", "Set the CORS Origin Policy to a specific host or *")
 
-	// Configuration and command line interation
-	cfg := cli.New(appName, "MKPAGE", fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version), mkpage.Version)
-	cfg.UsageText = fmt.Sprintf(usage, appName)
-	cfg.DescriptionText = fmt.Sprintf(description, appName, appName)
-	cfg.ExampleText = fmt.Sprintf(examples, appName, appName)
+	app.Parse()
+	args := app.Args()
+
+	// Setup IO
+	var err error
+
+	app.Eout = os.Stderr
+
+	app.Out, err = cli.Create(outputFName, os.Stdout)
+	cli.ExitOnError(app.Eout, err, quiet)
+	defer cli.CloseFile(outputFName, app.Out)
 
 	// Process flags and update the environment as needed.
-	if showHelp == true {
-		fmt.Println(cfg.Usage())
+	if generateMarkdownDocs {
+		app.GenerateMarkdownDocs(app.Out)
 		os.Exit(0)
 	}
-	if showLicense == true {
-		fmt.Println(cfg.License())
+	if showHelp || showExamples {
+		if len(args) > 0 {
+			fmt.Fprintln(app.Out, app.Help(args...))
+		} else {
+			app.Usage(app.Out)
+		}
 		os.Exit(0)
 	}
-	if showVersion == true {
-		fmt.Println(cfg.Version())
+	if showLicense {
+		fmt.Fprintln(app.Out, app.License())
+		os.Exit(0)
+	}
+	if showVersion {
+		fmt.Fprintln(app.Out, app.Version())
 		os.Exit(0)
 	}
 
@@ -145,33 +197,77 @@ func main() {
 		docRoot = args[0]
 	}
 
-	docRoot = cli.CheckOption(docRoot, cfg.MergeEnv("docroot", docRoot), true)
 	log.Printf("DocRoot %s", docRoot)
 
-	uri = cli.CheckOption(uri, cfg.MergeEnv("url", uri), true)
 	u, err := url.Parse(uri)
 	if err != nil {
-		log.Fatalf("Can't parse %q, %s", uri, err)
+		cli.ExitOnError(app.Eout, err, quiet)
 	}
 
-	log.Printf("Listening for %s", uri)
-	if u.Scheme == "https" {
-		sslKey = cli.CheckOption(sslKey, cfg.MergeEnv("ssl_key", sslKey), true)
-		sslCert = cli.CheckOption(sslCert, cfg.MergeEnv("ssl_cert", sslCert), true)
+	if u.Scheme == "https" && letsEncrypt == false {
 		log.Printf("SSL Key %s", sslKey)
 		log.Printf("SSL Cert %s", sslCert)
 	}
+	log.Printf("Listening for %s", uri)
 
-	http.Handle("/", http.FileServer(http.Dir(docRoot)))
-	if u.Scheme == "https" {
-		err := http.ListenAndServeTLS(u.Host, sslCert, sslKey, mkpage.RequestLogger(mkpage.StaticRouter(http.DefaultServeMux)))
+	cors := wsfn.CORSPolicy{
+		Origin: CORSOrigin,
+	}
+	http.Handle("/", cors.Handle(http.FileServer(http.Dir(docRoot))))
+	if letsEncrypt == true {
+		// Note: use a sensible value for data directory
+		// this is where cached certificates are stored
+		cwd, err := os.Getwd()
 		if err != nil {
-			log.Fatalf("%s", err)
+			log.Fatal("Can't determine current working directory before creating etc/acme")
 		}
+		if docRoot == "." || docRoot == cwd {
+			log.Fatal("Can't create etc/acme in shared document root")
+		}
+		cacheDir := "etc/acme"
+		os.MkdirAll(cacheDir, 0700)
+		m := autocert.Manager{
+			Prompt:     autocert.AcceptTOS,
+			HostPolicy: autocert.HostWhitelist(u.Host),
+			Cache:      autocert.DirCache(cacheDir),
+		}
+		sSvr := &http.Server{
+			Addr:      ":https",
+			TLSConfig: &tls.Config{GetCertificate: m.GetCertificate},
+			Handler:   wsfn.RequestLogger(wsfn.StaticRouter(http.DefaultServeMux)),
+		}
+		// Launch the TLS version
+		go func() {
+			log.Fatal(sSvr.ListenAndServeTLS("", ""))
+		}()
+
+		// Launch http redirect to TLS version
+		rmux := http.NewServeMux()
+		rmux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+			var target string
+			if strings.HasPrefix(r.URL.Path, "/") == false {
+				target = u.String() + "/" + r.URL.Path
+			} else {
+				target = u.String() + r.URL.Path
+			}
+			if len(r.URL.RawQuery) > 0 {
+				target += "?" + r.URL.RawQuery
+			}
+			wsfn.ResponseLogger(r, http.StatusTemporaryRedirect, fmt.Errorf("redirecting %s to %s", r.URL.String(), target))
+			http.Redirect(w, r, target, http.StatusTemporaryRedirect)
+		})
+		pSvr := &http.Server{
+			Addr:    ":http",
+			Handler: wsfn.RequestLogger(rmux),
+		}
+		log.Printf("Redirecting http://%s to to %s", u.Host, u.String())
+		err = pSvr.ListenAndServe()
+		cli.ExitOnError(app.Eout, err, quiet)
+	} else if u.Scheme == "https" {
+		err = http.ListenAndServeTLS(u.Host, sslCert, sslKey, wsfn.RequestLogger(wsfn.StaticRouter(http.DefaultServeMux)))
+		cli.ExitOnError(app.Eout, err, quiet)
 	} else {
-		err := http.ListenAndServe(u.Host, mkpage.RequestLogger(mkpage.StaticRouter(http.DefaultServeMux)))
-		if err != nil {
-			log.Fatalf("%s", err)
-		}
+		err = http.ListenAndServe(u.Host, wsfn.RequestLogger(wsfn.StaticRouter(http.DefaultServeMux)))
+		cli.ExitOnError(app.Eout, err, quiet)
 	}
 }

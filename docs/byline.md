@@ -1,5 +1,7 @@
 
-# USAGE
+# byline
+
+### USAGE
 
     byline [OPTIONS]
 
@@ -8,6 +10,8 @@
 byline extracts a byline from a Markdown file. By default it reads
 from standard in and writes to standard out but can read/write
 to specific files using an option.
+
+## OPTIONS
 
 ```
 	-b	set byline regexp

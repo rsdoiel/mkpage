@@ -1,5 +1,7 @@
 
-# USAGE
+# urldecode
+
+## USAGE
 
     urldecode [OPTIONS] [STRING_TO_ENCODE]
 
@@ -8,6 +10,8 @@
 urldecode is a simple command line utility to URL decode content. By default
 it reads from standard input and writes to standard out.  You can
 also specifty the string to decode as a command line parameter.
+
+## OPTIONS
 
 ```
 	-h	display help
@@ -18,8 +22,6 @@ also specifty the string to decode as a command line parameter.
 	-license	display license
 	-o	set output filename
 	-output	set output filename
-	-q	use query escape (pluses for spaces)
-	-query	use query escape (pluses for spaces)
 	-v	display version
 	-version	display version
 ```
@@ -32,7 +34,7 @@ also specifty the string to decode as a command line parameter.
 
 would yield
 
-```
+```shell
     This is the string to encode & nothing else!
 ```
 

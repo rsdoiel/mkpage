@@ -1,23 +1,46 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>mkpage: Experimental deconstructed content system</title>
-    <link href="../css/site.css" rel="stylesheet" />
-<head>
+    <title>Caltech Library's Digital Library Development Sandbox</title>
+    <link rel="stylesheet" href="/css/site.css">
+</head>
 <body>
-    <header>
-        <h1>mkpage: Experimental deconstructed content system</h1>
-    </header>
-    <section><h1>USAGE</h1>
+<header>
+<a href="http://library.caltech.edu"><img src="/assets/liblogo.gif" alt="Caltech Library logo"></a>
+</header>
+<nav>
+<ul>
+<li><a href="/">Home</a></li>
+<li><a href="../">Up</a></li>
+<li><a href="./sitemapper.html">sitemapper</a></li>
+<li><a href="./titleline.html">titleline</a></li>
+<li><a href="./urldecode.html">urldecode</a></li>
+<li><a href="./ws.html">ws</a></li>
+<li><a href="./urlencode.html">urlencode</a></li>
+<li><a href="./mkrss.html">mkrss</a></li>
+<li><a href="./mkslides.html">mkslides</a></li>
+<li><a href="./mkpage.html">mkpage</a></li>
+<li><a href="./byline.html">byline</a></li>
+<li><a href="./reldocpath.html">reldocpath</a></li>
+</ul>
+
+</nav>
+
+<section>
+<h1>titleline</h1>
+
+<h2>USAGE</h2>
 
 <pre><code>titleline [OPTIONS]
 </code></pre>
 
 <h2>SYNOPSIS</h2>
 
-<p>titleline extracts the first title line from a Markdown file. By
-default it reads from standard in and writes to standard out but
-can read/write to specific files using an option.</p>
+<p>titleline extracts the first title line from a Markdown file. By default it reads
+from standard in and writes to standard out but can read/write
+to specific files using an option.</p>
+
+<h2>OPTIONS</h2>
 
 <pre><code>	-h	display help
 	-help	display help
@@ -38,20 +61,17 @@ can read/write to specific files using an option.</p>
 <pre><code class="language-shell">    cat article.md | titleline
 </code></pre>
 
-<p>This will display the title of article.md.</p>
+<p>This will display the title of an article.md.</p>
+
 </section>
-    <nav><ul>
-<li><a href="/">Home</a></li>
-<li><a href="../">README</a></li>
-<li><a href="../license.html">LICENSE</a></li>
-<li><a href="../install.html">INSTALL</a></li>
-<li><a href="./">Documentation</a></li>
-<li><a href="https://github.com/rsdoiel/mkpage">Github</a></li>
-</ul>
-</nav>
-    <footer>
-    copyright (c) 2017 R. S. Doiel
-    See: <a href="license.html">LICENSE</a>
-    </footer>
+
+<footer>
+<span><h1><A href="http://caltech.edu">Caltech</a></h1></span>
+<span>&copy; 2018 <a href="https://www.library.caltech.edu/copyright">Caltech library</a></span>
+<address>1200 E California Blvd, Mail Code 1-32, Pasadena, CA 91125-3200</address> 
+<span>Phone: <a href="tel:+1-626-395-3405">(626)395-3405</a></span>
+<span><a href="mailto:library@caltech.edu">Email Us</a></span>
+<a class="cl-hide" href="sitemap.xml">Site Map</a>
+</footer>
 </body>
 </html>

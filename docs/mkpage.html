@@ -1,85 +1,121 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>mkpage: Experimental deconstructed content system</title>
-    <link href="../css/site.css" rel="stylesheet" />
-<head>
+    <title>Caltech Library's Digital Library Development Sandbox</title>
+    <link rel="stylesheet" href="/css/site.css">
+</head>
 <body>
-    <header>
-        <h1>mkpage: Experimental deconstructed content system</h1>
-    </header>
-    <section><h1>USAGE</h1>
+<header>
+<a href="http://library.caltech.edu"><img src="/assets/liblogo.gif" alt="Caltech Library logo"></a>
+</header>
+<nav>
+<ul>
+<li><a href="/">Home</a></li>
+<li><a href="../">Up</a></li>
+<li><a href="./sitemapper.html">sitemapper</a></li>
+<li><a href="./titleline.html">titleline</a></li>
+<li><a href="./urldecode.html">urldecode</a></li>
+<li><a href="./ws.html">ws</a></li>
+<li><a href="./urlencode.html">urlencode</a></li>
+<li><a href="./mkrss.html">mkrss</a></li>
+<li><a href="./mkslides.html">mkslides</a></li>
+<li><a href="./mkpage.html">mkpage</a></li>
+<li><a href="./byline.html">byline</a></li>
+<li><a href="./reldocpath.html">reldocpath</a></li>
+</ul>
 
-<pre><code>mkpage [OPTION] [KEY/VALUE DATA PAIRS] [TEMPLATE_FILENAMES]
+</nav>
+
+<section>
+<h1>mkpage</h1>
+
+<h2>USAGE</h2>
+
+<pre><code>mkpage [OPTION] [KEY/VALUE DATA PAIRS] TEMPLATE_FILENAME [TEMPLATE_FILENAMES]
 </code></pre>
 
 <h2>SYNOPSIS</h2>
 
-<p>Using the key value pairs populate the template(s) and render to stdout.</p>
+<p>Using the key/value pairs populate the template(s) and render to stdout.</p>
+
+<h2>CONFIGURATION</h2>
+
+<p>You can set a local default template path by using environment variables.</p>
+
+<ul>
+<li>MKPAGE_TEMPLATES - is the colon delimited list of template paths</li>
+</ul>
 
 <h2>OPTIONS</h2>
 
-<pre><code>	-h	show help
+<pre><code>	-default-template	Use the default template
+	-h	show help
 	-help	show help
 	-l	show license
 	-license	show license
-	-t	show the default template source
-	-template	show the default template source
+	-s	display the default template
+	-show-template	display the default template
+	-t	colon delimited list of templates to use
+	-templates	colon delimited list of templates to use
 	-v	show version
 	-version	show version
 </code></pre>
 
 <h2>EXAMPLE</h2>
 
-<p>Template</p>
+<p>Template (named &ldquo;examples/weather.tmpl&rdquo;)</p>
 
-<pre><code>    Date: {{- .now}}
+<pre><code>    {{ define &quot;weather.tmpl&quot; }}
+    Date: {{- .now}}
 
     Hello {{.name -}},
     
     The current weather is
 
-    {{.weather}}
+    {{index .weatherForecast.data.weather 0}}
 
     Thank you
 
-	{{.signature}}
+    {{.signature}}
+    {{ end }}
 </code></pre>
 
-<p>Render the template above (i.e. myformletter.template) would be accomplished from the following
-data sources&ndash;</p>
+<p>Render the template above (i.e. examples/weather.tmpl) would be accomplished from
+the following data sources&ndash;</p>
 
 <ul>
 <li>&ldquo;now&rdquo; and &ldquo;name&rdquo; are strings</li>
-<li>&ldquo;weatherForcast&rdquo; comes from a URL</li>
-<li>&ldquo;license&rdquo; comes from a file in our local disc</li>
+<li>&ldquo;weatherForecast&rdquo; is JSON data retrieved from a URL
+
+<ul>
+<li>&rdquo;.data.weather&rdquo; is a data path inside the JSON document</li>
+<li>&ldquo;index&rdquo; let&rsquo;s us pull our the &ldquo;0&rdquo;-th element (i.e. the initial element of the array)</li>
+</ul></li>
+<li>&ldquo;signature&rdquo; comes from a file in our local disc (i.e. examples/signature.txt)</li>
 </ul>
 
 <p>That would be expressed on the command line as follows</p>
 
-<pre><code class="language-shell">	mkpage &quot;now=text:$(date)&quot; &quot;name=text:Little Frieda&quot; \
-		&quot;weather=http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&amp;lon=144.74977715100056&amp;FcstType=json&quot; \
-		signature=testdata/signature.txt \
-		testdata/myformletter.template
+<pre><code class="language-shell">    mkpage &quot;now=text:$(date)&quot; &quot;name=text:Little Frieda&quot; \
+        &quot;weatherForecast=http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&amp;lon=144.74977715100056&amp;FcstType=json&quot; \
+        signature=examples/signature.txt \
+        examples/weather.tmpl     
 </code></pre>
 
 <p>Golang&rsquo;s text/template docs can be found at</p>
 
-<pre><code>  https://golang.org/pkg/text/template/
+<pre><code>      https://golang.org/pkg/text/template/
 </code></pre>
+
 </section>
-    <nav><ul>
-<li><a href="/">Home</a></li>
-<li><a href="../">README</a></li>
-<li><a href="../license.html">LICENSE</a></li>
-<li><a href="../install.html">INSTALL</a></li>
-<li><a href="./">Documentation</a></li>
-<li><a href="https://github.com/rsdoiel/mkpage">Github</a></li>
-</ul>
-</nav>
-    <footer>
-    copyright (c) 2017 R. S. Doiel
-    See: <a href="license.html">LICENSE</a>
-    </footer>
+
+<footer>
+<span><h1><A href="http://caltech.edu">Caltech</a></h1></span>
+<span>&copy; 2018 <a href="https://www.library.caltech.edu/copyright">Caltech library</a></span>
+<address>1200 E California Blvd, Mail Code 1-32, Pasadena, CA 91125-3200</address> 
+<span>Phone: <a href="tel:+1-626-395-3405">(626)395-3405</a></span>
+<span><a href="mailto:library@caltech.edu">Email Us</a></span>
+<a class="cl-hide" href="sitemap.xml">Site Map</a>
+</footer>
 </body>
 </html>

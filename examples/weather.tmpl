@@ -1,0 +1,14 @@
+{{ define "weather.tmpl" }}
+Date: {{- .now}}
+
+Hello {{.name -}},
+    
+The current weather is
+
+{{index .weatherForecast.data.weather 0}}
+
+Thank you
+
+{{.signature}}
+
+{{ end }}

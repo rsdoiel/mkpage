@@ -1,0 +1,18 @@
+{{ define "page.tmpl" }}
+<!DOCTYPE html>
+<html>
+<head>
+    {{with .Title -}}<title>{{- . -}}</title>{{- end }}
+    {{with .CSSPath -}}<link rel="stylesheet" href="{{- . -}}">{{- end}}
+    {{with .CSS -}}<style>{{- . -}}</style>{{- end }} 
+</head>
+<body>
+    <header>
+        {{with .Title -}}<h1>{{- . -}}</h1>{{- end}}
+    </header>
+    {{with .Nav}}<nav>{{- . -}}</nav>{{- end}}
+    {{with .Content}}<section>{{- . -}}</section>{{- end}}
+    {{with .Footer -}}<footer>{{- . -}}</footer>{{- end -}}
+</body>
+</html>
+{{ end }}

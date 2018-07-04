@@ -1,0 +1,9 @@
+{{ define "data-source-demo.tmpl" }}
+This is a plain text string: "{{ .string }}"
+
+Below is a an included file:
+{{ .file }}
+    
+Finally below is data from a URL:
+{{ .url }}
+{{ end }}

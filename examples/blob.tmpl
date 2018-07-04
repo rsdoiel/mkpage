@@ -1,4 +1,5 @@
+{{ define "blob.tmpl" }}
 {{range $key,$val := .blob }}
-        Key: {{ $key }} Value: {{ $val -}}
+   Key: {{ $key }} Value: {{ $val -}}
 {{end}}
-
+{{ end }}

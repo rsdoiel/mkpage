@@ -1,54 +1,145 @@
 
 # Installation
 
-*mkpage* and companions are command line programs run from a shell like Bash. You can find compiled
-versions in [releases/latest](https://github.com/rsdoiel/mkpage/releases/latest) 
-on Github. What you want to download is the zip file named *mkpage-VERSION_NO-release.zip*. Inside
-the zip file look for the directory that matches your computer and copy that someplace
-defined in your path (e.g. $HOME/bin). 
+*mkpage* is a set of command line programs run from a shell like Bash. 
 
-Compiled versions are available for macOS (amd64 processor), Linux (amd64), Windows
-(amd64) and Rapsberry Pi (both ARM6 and ARM7)
+For all the released version go to the project page on Github and click latest release
 
-## macOS
+>    https://github.com/caltechlibrary/mkpage/releases/latest
 
-1. Go to [github.com/rsdoiel/mkpage/releases/latest](https://github.com/rsdoiel/mkpage/releases/latest)
-2. Click on the green "mkpage-VERSION_NO-release.zip" link and download
-3. Open a finder window and find the downloaded file and unzip it (e.g. mkpage-VERSION_NO-release.zip)
-4. Look in the unziped folder and find dist/macosx-amd64/
-5. Drag (or copy) the files inside to a "bin" directory in your path 
-    + e.g. `cp ~/Downloads/mkpage-VERSION_NO-release/dist/macosx-amd64/* ~/bin/`
-6. Open and "Terminal" and run `mkpage -h` and run `reldocpath -h`
+You will seea list of filenames is in the form of `mkpage-VERSION_NO-PLATFORM_NAME.zip`.
 
-## Windows
+> VERSION_NUMBER is a [symantic version number](http://semver.org/) (e.g. v0.1.2)
 
-1. Go to [github.com/rsdoiel/mkpage/releases/latest](https://github.com/rsdoiel/mkpage/releases/latest)
-2. Click on the green "mkpage-VERSION_NO-release.zip" link and download
-3. Open the file manager find the downloaded file and unzip it (e.g. mkpage-VERSION_NO-release.zip)
-4. Look in the unziped folder and find dist/windows-amd64/mkpage.exe
-5. Drag (or copy) the *mkpage.exe*, *mkslides.exe*, and other files ending in ".exe" to a "bin" directory in your path
-6. Open Bash and and run `mkpage -h` and run `reldocpath -h`
+> PLATFROM_NAME is a description of a platform (e.g. windows-amd64, macosx-amd64).
 
-## Linux
+Compiled versions are available for Mac OS X (amd64 processor, macosx-amd64), 
+Linux (amd64 processor, linux-amd64), Windows (amd64 processor, windows-amd64) 
+and Rapsberry Pi (ARM7 processor, raspbian-arm7).
 
-1. Go to [github.com/rsdoiel/mkpage/releases/latest](https://github.com/rsdoiel/mkpage/releases/latest)
-2. Click on the green "mkpage-VERSION_NO-release.zip" link and download
-3. find the downloaded zip file and unzip it (e.g. unzip ~/Downloads/mkpage-VERSION_NO-release.zip)
-4. In the unziped directory and find for dist/linux-amd64/
-5. copy the fils in that directory to a "bin" directory 
-    + e.g. `cp ~/Downloads/mkpage-VERSION_NO-release/dist/linux-amd64/* ~/bin/`
-6. From the shell prompt run `mkpage -h` and run `reldocpath -h`
+| Platform    | Zip Filename                            |
+|-------------|-----------------------------------------|
+| Windows     | mkpage-VERSION_NUMBER-windows-amd64.zip |
+| Mac OS X    | mkpage-VERSION_NUMBER-macosx-amd64.zip  |
+| Linux/Intel | mkpage-VERSION_NUMBER-linux-amd64.zip   |
+| Raspbery Pi | mkpage-VERSION_NUMBER-raspbian-arm7.zip |
 
-## Raspberry Pi
 
-If you are using a Raspberry Pi 2 or later use the ARM7 VERSION_NO, ARM6 is only for the first generaiton Raspberry Pi.
+## The basic recipe 
 
-1. Go to [github.com/rsdoiel/mkpage/releases/latest](https://github.com/rsdoiel/mkpage/releases/latest)
-2. Click on the green "mkpage-VERSION_NO-release.zip" link and download
-3. find the downloaded zip file and unzip it (e.g. unzip ~/Downloads/mkpage-VERSION_NO-release.zip)
-4. In the unziped directory and find for dist/raspberrypi-arm7/
-5. copy the files in that directory to a "bin" directory 
-    + e.g. `cp ~/Downloads/mkpage-VERSION_NO-release/dist/raspberrypi-arm7/mkpage ~/bin/`
-    + if you are using an original Raspberry Pi you should copy the ARM6 version instead
-6. From the shell prompt run `mkpage -h` and run `reldocpath -h`
++ Download the zip file matching your platform 
++ Unzip it 
++ Copy the contents of the "bin" folder to a folder in your shell's path (e.g. $HOME/bin). 
++ Adjust you PATH if needed
++ test to see if it worked
+
+
+### Mac OS X
+
+1. Download the zip file
+2. Unzip the zip file
+3. Copy the executables to $HOME/bin (or a folder in your path)
+4. Test
+
+Here's an example of the commands run in the Terminal App after downloading the 
+zip file.
+
+```shell
+    cd Downloads/
+    unzip mkpage-*-macosx-amd64.zip
+    mkdir -p $HOME/bin
+    cp -v bin/* $HOME/bin/
+    export PATH=$HOME/bin:$PATH
+    mkpage -version
+```
+
+### Windows
+
+1. Download the zip file
+2. Unzip the zip file
+3. Copy the executables to $HOME/bin (or a folder in your path)
+4. Test
+
+Here's an example of the commands run in from the Bash shell on Windows 10 after
+downloading the zip file.
+
+```shell
+    cd Downloads/
+    unzip mkpage-*-windows-amd64.zip
+    mkdir -p $HOME/bin
+    cp -v bin/* $HOME/bin/
+    export PATH=$HOME/bin:$PATH
+    mkpage -version
+```
+
+
+### Linux 
+
+1. Download the zip file
+2. Unzip the zip file
+3. Copy the executables to $HOME/bin (or a folder in your path)
+4. Test
+
+Here's an example of the commands run in from the Bash shell after
+downloading the zip file.
+
+```shell
+    cd Downloads/
+    unzip mkpage-*-linux-amd64.zip
+    mkdir -p $HOME/bin
+    cp -v bin/* $HOME/bin/
+    export PATH=$HOME/bin:$PATH
+    mkpage -version
+```
+
+
+### Raspberry Pi
+
+Released version is for a Raspberry Pi 2 or later use (i.e. requires ARM 7 support).
+
+1. Download the zip file
+2. Unzip the zip file
+3. Copy the executables to $HOME/bin (or a folder in your path)
+4. Test
+
+Here's an example of the commands run in from the Bash shell after
+downloading the zip file.
+
+```shell
+    cd Downloads/
+    unzip mkpage-*-raspbian-arm7.zip
+    mkdir -p $HOME/bin
+    cp -v bin/* $HOME/bin/
+    export PATH=$HOME/bin:$PATH
+    mkpage -version
+```
+
+
+## Compiling from source
+
+_mkpage_ is "go gettable".  Use the "go get" command to download the dependant packages
+as well as _mkpage_'s source code.
+
+```shell
+    go get -u github.com/caltechlibrary/pkgassets/...
+    go get -u github.com/caltechlibrary/mkpage/...
+```
+
+Or clone the repstory and then compile
+
+```shell
+    cd
+    git clone https://github.com/caltechlibrary/pkgassets src/github.com/caltechlibrary/pkgassets
+    cd src/github.com/caltechlibrary/pkgassets
+    make
+    make test
+    make install
+    cd
+    git clone https://github.com/caltechlibrary/mkpage src/github.com/caltechlibrary/mkpage
+    cd src/github.com/caltechlibrary/mkpage
+    make
+    make test
+    make install
+```
+
 

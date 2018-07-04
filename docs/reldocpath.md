@@ -1,5 +1,7 @@
 
-# USAGE
+# reldocpath
+
+## USAGE
 
     reldocpath SOURCE_DOC_PATH TARGET_DOC_PATH 
 
@@ -10,7 +12,7 @@ the implied common base path calculate the relative path for target.
 
 ## OPTIONS
 
-```shell
+```
 	-h	display help
 	-help	display help
 	-l	display license
@@ -23,14 +25,13 @@ the implied common base path calculate the relative path for target.
 
 Given
 
-```shell
+```
     reldocpath chapter-01/lesson-03.html css/site.css
 ```
 
 would output
 
-```shell
+```
     .../css/site.css
 ```
-
 

@@ -1,11 +1,15 @@
 
-# USAGE
+# sitemapper
 
-    sitemapper [OPTIONS] HTDOCS_PATH SITEMAP_FILENAME PUBLIC_BASE_URL
+## USAGE
+
+    sitemapper [OPTIONS] HTDOCS_PATH MAP_FILENAME PUBLIC_BASE_URL
 
 ## OVERVIEW
 
 sitemapper generates a sitemap for the website.
+
+## OPTIONS
 
 ```
 	-e	A colon delimited list of path parts to exclude from sitemap
@@ -22,8 +26,9 @@ sitemapper generates a sitemap for the website.
 
 ## EXAMPLE
 
-```shell
-    sitemapper htdocs htdocs/sitemap.xml http://blog.example.org
+```
+    sitemapper htdocs htdocs/sitemap.xml http://eprints.example.edu
 ```
 
-This yields a sitemap.xml file in the htdocs folder.
+Renders out a new sitemap at htdocs/sitemap.xml
+

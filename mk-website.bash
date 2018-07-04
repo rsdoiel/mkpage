@@ -3,42 +3,41 @@
 START=$(pwd)
 cd "$(dirname "$0")"
 
-function softwareCheck() {
-    for NAME in "$@"; do
-        APP_NAME=$(which "$NAME")
-        if [ "$APP_NAME" = "" ] && [ ! -f "./bin/$NAME" ]; then
-            echo "Missing $NAME"
-            exit 1
-        fi
-    done
+function checkApp() {
+	APP_NAME="$(which "$1")"
+	if [ "$APP_NAME" = "" ] && [ ! -f "./bin/$1" ]; then
+		echo "Missing $APP_NAME"
+		exit 1
+	fi
 }
 
-function MakePage () {
-    nav="$1"
-    content="$2"
-    html="$3"
-    # Always use the latest compiled mkpage and reldocpath
-    MKPAGE=$(which mkpage)
-    if [ -f ./bin/mkpage ]; then
-        MKPAGE="./bin/mkpage"
-    fi
-    RELDOCPATH=$(which reldocpath)
-    if [ -f ./bin/reldocpath ]; then
-        RELDOCPATH="./bin/reldocpath"
-    fi
-    csspath=$("$RELDOCPATH" "$html" css/site.css)
+function softwareCheck() {
+	for APP_NAME in "$@"; do
+		checkApp "$APP_NAME"
+	done
+}
 
-    echo "Rendering $html"
-    "$MKPAGE" \
-    	"Title=text:mkpage: Experimental deconstructed content system" \
-        "Nav=$nav" \
-        "Content=$content" \
-        "CSSPath=text:$csspath" \
-        page.tmpl > "$html"
+function MakePage() {
+	nav="$1"
+	content="$2"
+	html="$3"
+	# Always use the latest compiled mkpage
+	if [ -f ./bin/mkpage ]; then
+		export PATH=bin:$PATH
+	fi
+
+	echo "Rendering $html"
+	mkpage \
+		"title=text:mkpage: An experimental template and markdown processor" \
+		"nav=$nav" \
+		"content=$content" \
+		"sitebuilt=text:Updated $(date)" \
+		"copyright=copyright.md" \
+		page.tmpl >"$html"
 }
 
 echo "Checking necessary software is installed"
-softwareCheck mkpage mkslides reldocpath
+softwareCheck mkpage
 echo "Generating website index.html"
 MakePage nav.md README.md index.html
 echo "Generating install.html"
@@ -46,24 +45,37 @@ MakePage nav.md INSTALL.md install.html
 echo "Generating license.html"
 MakePage nav.md "markdown:$(cat LICENSE)" license.html
 
-for FNAME in docs/index docs/mkpage docs/mkslides docs/sitemapper docs/reldocpath docs/mkrss docs/byline docs/titleline docs/ws docs/urlencode docs/urldecode docs/go-template-recipes; do
-    D=$(dirname "$FNAME")
-    echo "Generating $FNAME.html"
-    MakePage "$D/nav.md" $FNAME.md $FNAME.html
+echo "Generating CLI docs"
+mkpage \
+	"title=text:mkpage: An experimental template and markdown processor" \
+	"nav=docs/nav.md" \
+	"content=docs/index.md" \
+	"sitebuilt=text:Updated $(date)" \
+	"copyright=copyright.md" \
+	page.tmpl >docs/index.html
+
+for SCRIPT_NAME in $(findfile -s .bash docs); do
+	echo "Running docs/$SCRIPT_NAME"
+	"docs/$SCRIPT_NAME"
 done
 
-echo "Generating slides demo"
-cd docs/slides
-if [ -f ../bin/mkslides ]; then
-    ../../bin/mkslides presentation.md
-    ../../bin/mkslides three-slides.md
-else
-    mkslides presentation.md
-    mkslides three-slides.md
-fi
+echo "Generating How-To documentation"
+mkpage \
+	"title=text:mkpage: An experimental template and markdown processor" \
+	"nav=how-to/nav.md" \
+	"content=how-to/index.md" \
+	"sitebuilt=text:Updated $(date)" \
+	"copyright=copyright.md" \
+	page.tmpl >how-to/index.html
+
+echo "Generating the-basics.html"
+MakePage how-to/nav.md how-to/the-basics.md how-to/the-basics.html
+echo "Generating go-template-recipes.html"
+MakePage how-to/nav.md how-to/go-template-recipes.md how-to/go-template-recipes.html
+
+for SCRIPT_NAME in $(findfile -s .bash how-to); do
+	echo "Running how-to/$SCRIPT_NAME"
+	"how-to/$SCRIPT_NAME"
+done
+
 cd "$START"
-
-echo "Generating theme demos"
-for ITEM in docs/one-element docs/simple docs/simple-with-nav; do
-    $ITEM/mk-website.bash
-done

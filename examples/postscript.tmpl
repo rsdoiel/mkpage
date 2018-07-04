@@ -1,1 +1,3 @@
-(P. S. {{with .ToName}}{{- . }}, {{end -}} what is coming at is coming from you)
+{{ define "postscript.tmpl" }}
+(P.S. What is comming at you is coming from you, {{rfc3339 "now"}})
+{{ end }}

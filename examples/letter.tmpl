@@ -1,11 +1,9 @@
+{{ define "letter.tmpl" }}
+Dear {{ .ToName }},
 
+Hope all is well.  I will be with you shortly though not necessarily
+on the same plane of existance.
 
-{{- with .ToName}}Hello {{ . -}},{{- else}}Hello,{{end}}
-
-This is an example of a letter.
-
-Sincerly,
-
-{{ template "signature.tmpl" . }}
-
-{{ template "postscript.tmpl" . }}
+{{template "signature.tmpl" . }}
+{{template "postscript.tmpl" . }}
+{{ end }}

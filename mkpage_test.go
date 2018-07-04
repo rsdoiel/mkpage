@@ -1,9 +1,10 @@
 //
 // mkpage is a thought experiment in a light weight template and markdown processor.
 //
-// @author R. S. Doiel, <rsdoiel@gmail.com>
+// @author R. S. Doiel, <rsdoiel@caltech.edu>
 //
-// Copyright 2017 R. S. Doiel
+// Copyright (c) 2018, Caltech
+// All rights not granted herein are expressly reserved by Caltech.
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 //
@@ -14,7 +15,6 @@
 // 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 //
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-//
 //
 package mkpage
 
@@ -46,7 +46,6 @@ func TestResolveData(t *testing.T) {
 		} else {
 			return fmt.Errorf("expected %s, missing %s", expected, ky)
 		}
-		return nil
 	}
 
 	keyValues := map[string]string{
@@ -110,6 +109,7 @@ func TestMakePage(t *testing.T) {
 	}
 
 	src := `
+{{define "Hello"}}
 Hello {{.hello}}
 
 Nav: {{.nav}}
@@ -117,6 +117,7 @@ Nav: {{.nav}}
 Content: {{.content}}
 
 Weather: {{.weather.data.text}}
+{{end}}
 `
 
 	keyValues := map[string]string{
@@ -127,33 +128,13 @@ Weather: {{.weather.data.text}}
 	}
 
 	tmpl := template.Must(template.New("test.tmpl").Parse(src))
-	out, err := MakePageString(tmpl, keyValues)
+	out, err := MakePageString("Hello", tmpl, keyValues)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 	checkForString(out, "Hi there!")
 	checkForString(out, "<ul>")
-}
-
-func TestRelativeDocPath(t *testing.T) {
-	pathOK := func(t *testing.T, expected, found string) {
-		if strings.Compare(expected, found) != 0 {
-			t.Errorf("expected %q, found %q", expected, found)
-		}
-	}
-	target := "css/sites.css"
-	src := "index.html"
-	pathOK(t, target, RelativeDocPath(src, target))
-
-	src = "module/index.html"
-	pathOK(t, "../css/sites.css", RelativeDocPath(src, target))
-
-	src = "modules/chapter-01/"
-	pathOK(t, "../../css/sites.css", RelativeDocPath(src, target))
-
-	src = "modules/chapter-01/index.html"
-	pathOK(t, "../../css/sites.css", RelativeDocPath(src, target))
 }
 
 func TestBasic(t *testing.T) {
@@ -184,7 +165,7 @@ This is slide three, just a random paragraph of text. Blah, blah, blah, blah, bl
 
 `
 
-	tmpl, err := template.New("test.tmpl").Parse(DefaultSlideTemplateSource)
+	tmpl, err := template.New("slides.tmpl").Parse(DefaultSlideTemplateSource)
 	if err != nil {
 		t.Errorf("Can't parse DefaultTemplateSource templates %s", err)
 		t.FailNow()
@@ -196,13 +177,15 @@ This is slide three, just a random paragraph of text. Blah, blah, blah, blah, bl
 		"<h2>Slide Three</h2>",
 	}
 
-	slides := MarkdownToSlides("test.html", "This is just a test", "", "", []byte(src))
+	slides := MarkdownToSlides("test.html", []byte(src))
 	if len(slides) != 3 {
 		t.Errorf("Was expected three slides %+v\n", slides)
 	}
 
+	keyVals := map[string]string{}
 	for i, slide := range slides {
-		s, err := MakeSlideString(tmpl, slide)
+		keyVals["Title"] = "text:" + titles[i]
+		s, err := MakeSlideString("slides.tmpl", tmpl, keyVals, slide)
 		if err != nil {
 			t.Errorf("MakeSlideString() failed %d - %s", i, err)
 		}

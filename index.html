@@ -1,228 +1,173 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>mkpage: Experimental deconstructed content system</title>
-    <link href="css/site.css" rel="stylesheet" />
-<head>
+    <title>Caltech Library's Digital Library Development Sandbox</title>
+    <link rel="stylesheet" href="/css/site.css">
+</head>
 <body>
-    <header>
-        <h1>mkpage: Experimental deconstructed content system</h1>
-    </header>
-    <section><pre><code>Your deconstructed web content system, something is sure to change
-</code></pre>
+<header>
+<a href="http://library.caltech.edu"><img src="/assets/liblogo.gif" alt="Caltech Library logo"></a>
+</header>
+<nav>
+<ul>
+<li><a href="/">Home</a></li>
+<li><a href="index.html">README</a></li>
+<li><a href="license.html">LICENSE</a></li>
+<li><a href="install.html">INSTALL</a></li>
+<li><a href="docs/">Documentation</a></li>
+<li><a href="how-to/">HOW TO</a></li>
+<li><a href="https://github.com/caltechlibrary/mkpage">Github</a></li>
+</ul>
 
-<h1>mkpage project</h1>
+</nav>
 
-<p><em>mkpage</em> (pronounced &ldquo;make page&rdquo;) collection of command line utilities
-written as a <a href="https://golang.org">Go</a> package. These utilities provide an
-experimental deconstructed content management system for websites. Rather
-than run systems like Wordpress and Drupal you can assemble your own by
-combining the tools in <em>mkpage</em> with common Unix utilities to render
-your website. This means that Bash scripts can easily create simple to
-complex websites from content written in Markdown. Versioning your site
-works easily with source code control systems such as git or svn.</p>
+<section>
+<h1>mkpage</h1>
 
-<h2>It started with <em>mkpage</em></h2>
+<p><em>mkpage</em> is a deconstructed, post modern, content management system for generating static websites.
+It is suited to building sites hosted on services like Github Pages or Amazon&rsquo;s S3. It is
+comprised of a set of command line utilities that augment the standard suite of Unix/Posix commands
+available on most Posix based operating systems (e.g. Linux, Mac OS X, Raspberry Pi and Windows systems that
+have a port of Bash).</p>
 
-<p><em>mkpage</em> utility is an experimental template engine with an embedded
-markdown processor.  It is a simple command line tool which accepts key
-value pairs and applies them to a Golang <a href="https://golang.org/pkg/text/template/">text/template</a>.<br />
-The key side of a pair corresponds to the template element names that will
-be replaced in the render version of the document. If a key was called
-&ldquo;pageContent&rdquo; the template element would look like <code>{{ .pageContent }}</code>.
-The value of &ldquo;pageContent&rdquo; would replace <code>{{ .pageContent }}</code>. Go
-text/templates elements can do more than that but this is the core idea.
-On the value side of the key/value pair is also a string. The value
-describes a data source, as well as, a specific type of content.  Data
-sources can be one of three types - literal text, a filename, or URL.
-The data source can be of one of three types - plain text, markdown
-or JSON.</p>
+<p><em>mkpage</em> can run on machines as small as a Raspberry Pi.  Its small foot print and minimal
+dependencies means installation usually boils down to copying the precompiled binaries to a bin directory
+in your path. Precompiled binaries are available for Linux, Windows and Mac OS X running on Intel as
+well as for the ARM7 versions of Raspbian running on Raspberry Pi.  <em>mkpage</em> is built on Go&rsquo;s text templates.
+The template markup similar to the <a href="https://mustache.github.io/">Mustache</a> templates and
+<a href="http://handlebarsjs.com/">Handlebars</a>.  <em>mkpage</em> has been easier for us to support when compared with
+more established static site generators like <a href="https://jekyllrb.com/">Jekyll</a>.</p>
 
-<pre><code class="language-template">    Date: {{.now}}
+<p><em>mkpage</em>&rsquo;s minimalism turns into an advantage when you combine <em>mkpage</em> with the standard suite of text
+processing tools available under your typical Unix/Posix like operating sytems. This makes scripting a
+<em>mkpage</em> project using languages like Bash and Python relatively straight forward.  Each <em>mkpage</em> utility
+is independent. You can use as few or as many as you like as you when you script the website creation
+process that best fits your needs.</p>
 
-    Hello {{.name -}},
+<p>The following command line tools come with <em>mkpage</em></p>
+
+<ul>
+<li><a href="docs/mkpage.html">mkpage</a> &ndash; a single page renderer with support for Markdown, JSON and Go text templates</li>
+<li><a href="docs/mkslides.html">mkslides</a> &ndash; a HTML slide generator based on the approach in <em>mkpage</em></li>
+<li><a href="docs/mkrss.html">mkrss</a> &ndash; an RSS feed generator for content authored in Markdown and rendered to HTML</li>
+<li><a href="docs/sitemapper.html">sitemapper</a> &ndash; an XML Sitemap generator</li>
+<li><a href="docs/byline.html">byline</a> &ndash; a tool for extracting bylines from Markdown files</li>
+<li><a href="docs/titleline.html">titleline</a> &ndash; a tool for extracting the first title (H1) in a Markdown document</li>
+<li><a href="docs/reldocpath.html">reldocpath</a> &ndash; a relative path calculator, useful for pathing hrefs and src attributes in a website</li>
+<li><a href="docs/ws.html">ws</a> &ndash; a fast, small, web server for site development or deployment</li>
+</ul>
+
+<h2>A quick tour</h2>
+
+<p><em>mkpage</em> command accepts key value pairs and applies them to a Golang <a href="https://golang.org/pkg/text/template/">text/template</a>.<br />
+The key side of a pair corresponds to the template element names that will be replaced in the render
+version of the document. If a key was called &ldquo;Content&rdquo; the template element would look like <code>{{ .Content }}</code>.
+The value of &ldquo;Content&rdquo; would replace <code>{{ .Content }}</code>. Go text/templates elements can do more than
+that but the is the core idea.  On the value side of the key/value pair you have strings of one of
+three formats - plain text, markdown and JSON.  These three formatted strings can be explicit strings,
+data from a file or content retrieved via a URL.  Here&rsquo;s a basic demonstration of sampling of capabilities
+and integrating data from the <a href="http://weather.gov">NOAA weather website</a>.</p>
+
+<h3>a basic template</h3>
+
+<pre><code class="language-template">    {{ define &quot;weather.tmpl&quot; }}
+    Date: {{ .now}}
+
+    Hello {{ .name -}},
     
     Forecast:
 
-    {{range .weather.data.text}}
-       + {{ . }}
-    {{end}}
+    {{index .weather.data.weather 0}}
 
     Thank you
 
     {{.signature}}
+    {{ end }}
 </code></pre>
 
-<p>To render the template above (i.e. weather_form_letter.tmpl) is expecting
-values from various data sources. This break down is as follows.</p>
+<p>To render the template above (i.e. <a href="examples/forecast.tmpl">forecast.tmpl</a>) is expecting values from various data sources.
+This break down is as follows.</p>
 
 <ul>
-<li>&ldquo;now&rdquo; and &ldquo;name&rdquo; are explicit strings</li>
-<li>&ldquo;weather&rdquo; comes from a URL of JSON content</li>
-<li>&ldquo;signature&rdquo; comes from a file on local disc</li>
+<li>&ldquo;now&rdquo; and &ldquo;name&rdquo; are explicit strings
+
+<ul>
+<li>&ldquo;now&rdquo; integrates getting data from the Unix <em>date</em> command</li>
+</ul></li>
+<li>&ldquo;weather&rdquo; comes from a URL which returns a JSON document
+
+<ul>
+<li>&rdquo;.data.weather&rdquo; is the path into the JSON document</li>
+<li><em>index</em> is a function that lets us pull out the initial value in the array</li>
+</ul></li>
+<li>&ldquo;signature&rdquo; comes from a file in our local disc</li>
 </ul>
+
+<h3>the <em>mkpage</em> command</h3>
 
 <p>Here is how we would express the key/value pairs on the command line.</p>
 
 <pre><code class="language-shell">    mkpage &quot;now=text:$(date)&quot; \
         &quot;name=text:Little Frieda&quot; \
         &quot;weather=http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&amp;lon=144.74977715100056&amp;FcstType=json&quot; \
-        signature=testdata/signature.txt \
-        testdata/weather_form_letter.tmpl
+        signature=examples/signature.txt \
+        examples/weather.tmpl
 </code></pre>
 
-<p>Notice the two literal strings are prefixed with &ldquo;text:&rdquo;
-(other possible formats are &ldquo;markdown:&ldquo;, &ldquo;json:&ldquo;).  Values without a
-prefix are assumed to be file paths. We see that in
-testdata/signature.txt.  Likewise the weather data is coming from a URL.
-<em>mkpage</em> distinguishes URLs by prefixes &ldquo;http://&rdquo; and &ldquo;https://&ldquo;.
-Since an HTTP response contains headers describing the content type
-(e.g.  &ldquo;Content-Type: text/markdown&rdquo;) we do not require any other prefix.
-Likewise a filename&rsquo;s extension can give us an inference of the data
-format.  JSON content ends in &ldquo;.json&rdquo;, Markdown in &ldquo;.md&rdquo; and everything
-else is treated as plain text.</p>
+<p>Notice the two explicit strings are prefixed with &ldquo;text:&rdquo; (other possible formats are &ldquo;markdown:&ldquo;, &ldquo;json:&ldquo;).
+Values without a prefix are assumed to be file paths. We see that in testdata/signature.txt.  Likewise the
+weather data is coming from a URL. <em>mkpage</em> distinguishes that by the prefixes &ldquo;http://&rdquo; and &ldquo;https://&ldquo;.
+Since a HTTP response contains headers describing the content type (e.g.  &ldquo;Content-Type: text/markdown&rdquo;) we
+do not require any other prefix. Likewise a filename&rsquo;s extension can give us an inference of the data format
+it contains. &ldquo;.json&rdquo; is a JSON document, &ldquo;.md&rdquo; is a Markdown document and everything else is just plain text.</p>
 
-<p>Since we are leveraging Go&rsquo;s
-<a href="https://golang.org/pkg/text/template/">text/template</a> the template itself
-can be more than a simple substitution. It can contain conditional
-expressions, ranges for data and even include blocks from other templates
-included on the command line of <em>mkpage</em>.</p>
+<p>Since we are leveraging Go&rsquo;s <a href="https://golang.org/pkg/text/template/">text/template</a> the template itself
+can be more than a simple substitution. It can contain conditional expressions, ranges for data and even
+include blocks from other templates.</p>
 
-<h2>Template basics</h2>
+<h3>About Go text/template</h3>
 
-<p><em>mkpage</em> template engine is the Go
-<a href="https://golang.org/pkg/text/template/">text/template</a> package.
-That&rsquo;s a good place to look for official answers but I&rsquo;ve included a
-simple overview to ease you into Go&rsquo;s template system.</p>
+<p><em>mkpage</em> template engine is the Go <a href="https://golang.org/pkg/text/template/">text/template</a> package.  You can
+get a feel for working with Go templates and <em>mkpage</em> by exploring <em>mkpage</em>&rsquo;s <a href="how-to/">How To</a>. A good place
+to start is <a href="how-to/the-basics.html">how to/the basics</a> and then proceed to <a href="how-to/one-element/">How To/One element</a>.</p>
 
-<h3>Basic template element</h3>
+<h3>companion utilities</h3>
 
-<p>A basic replacement happens by wrapping a content variable in two curly
-braces. Variables begin with a dot.</p>
+<h4>mkpage</h4>
 
-<pre><code class="language-go">    Hello {{ .name }},
-</code></pre>
+<p><em>mkpage</em> comes with some helper utilities that make scripting a deconstructed
+content management system from Bash easier.</p>
 
-<p>Would replace <code>{{ .name }}</code> with the value passed into the template as
-&ldquo;name&rdquo;.</p>
+<h4>mkslides</h4>
 
-<h3>Conditional elements</h3>
+<p><em>mkslides</em> generates a set of HTML5 slides from a single Markdown file. It uses
+the same template engine as <em>mkpage</em></p>
 
-<p>One nice feature of Go&rsquo;s text/template DSL is that template elements can
-be conditional. This can be done using the &ldquo;if&rdquo; and &ldquo;with&rdquo; template
-functions. Here&rsquo;s how to show a title conditionally using the &ldquo;if&rdquo;
-function.</p>
+<h4>mkrss</h4>
 
-<pre><code class="language-go">    {{if .title}}And the title is: {{.title}}{{end}}
-</code></pre>
+<p><em>mkrss</em> will scan a directory tree for Markdown files and add each markdown file with
+a corresponding HTML file to the RSS feed generated.</p>
 
-<p>or using &ldquo;with&rdquo;</p>
+<h4>byline</h4>
 
-<pre><code class="language-go">    {{with .title}}{{ . }}{{end}}
-</code></pre>
+<p><em>byline</em> will look inside a markdown file and return the first <em>byline</em> it finds
+or an empty string if it finds none. The <em>byline</em> is identified with a regular
+expression. This regular expression can be overriden with a command line option.</p>
 
-<h3>Template blocks</h3>
+<h4>titleline</h4>
 
-<p>Go text/templates support defining blocks and rendering them in
-conjuction with a main template. This is also supported by <em>mkpage</em>.
-For each template encountered on the command line it is added to an
-array of templates parsed by the text/template package.  Collectively
-they are then executed which causes final results to render to stdout
-by <em>mkpage</em>.</p>
+<p><em>titleline</em> will look inside a markdown file and return the first h1 exquivalent title
+it finds or an empty string if it finds none.</p>
 
-<pre><code class="language-shell">    mkpage &quot;content=text:Hello World&quot; testdata/page.tmpl testdata/header.tmpl testdata/footer.tmpl
-</code></pre>
-
-<p>Here is what <em>page.tmpl</em> would look like</p>
-
-<pre><code class="language-go">    {{template &quot;header&quot; . }}
-
-        {{.content}}
-
-    {{template &quot;footer&quot; . }}
-</code></pre>
-
-<p>The header and footer are then defined in their own template files (though
-they also could be combined into one or even be defined in the main
-template file itself).</p>
-
-<p><em>header.tmpl</em></p>
-
-<pre><code class="language-go">    {{define &quot;header&quot;}}This is the document header{{end}}
-</code></pre>
-
-<p><em>footer.tmpl</em></p>
-
-<pre><code class="language-go">    {{define &quot;footer&quot;}}This is the footer{{end}}
-</code></pre>
-
-<p>In this example the output would look like</p>
-
-<pre><code class="language-text">    This is the document header
-
-        Hello World
-
-    This is the footer
-</code></pre>
-
-<h2>Content formats and data sources</h2>
-
-<p><em>mkpage</em> supports three content formats</p>
-
-<ul>
-<li>text/plain (e.g. &ldquo;text:&rdquo; when specifying strings and any file expect those having the extension &ldquo;.md&rdquo; or &ldquo;.json&rdquo;)</li>
-<li>text/markdown (e.g. &ldquo;markdown:&rdquo; when specifying strings, file extension &ldquo;.md&rdquo;)</li>
-<li>application/json (e.g. &ldquo;json:&rdquo; when specifying strings, file extension &ldquo;.json&rdquo;)</li>
-</ul>
-
-<p>It also supports three data sources</p>
-
-<ul>
-<li>an explicit string (prefixed with a hint, e.g. &ldquo;text:&ldquo;, &ldquo;markdown:&ldquo;, &ldquo;json:&ldquo;)
-
-<ul>
-<li>the prefix is case sensitive so &ldquo;Text:&rdquo; is not the same as &ldquo;text:&rdquo;</li>
-</ul></li>
-<li>a filepath and filename</li>
-<li>a URL</li>
-</ul>
-
-<p>Content type is evaluated, and if necessary, transformed before going into the Go text/template.</p>
-
-<h2>A note about Markdown dialect</h2>
-
-<p>In additional to populating a template with values from data sources
-<em>mkpage</em> also includes the
-<a href="https://github.com/russross/blackfriday">blackfriday</a> markdown
-processor.  The <code>blackfriday.MarkdownCommon()</code> function is envoked
-whenever markdown content is suggested. That means for strings that have
-the &ldquo;markdown:&rdquo; hint prefix, files ending in &ldquo;.md&rdquo; file extension or
-URL content with the content type returned as &ldquo;text/markdown&rdquo;.</p>
-
-<p>The blackfriday implementation includes many enhancements to the original
-<a href="https://daringfireball.net/projects/markdown/">Markdown</a>. For example,
-blackfirday&rsquo;s implemetation includes a basic table output.</p>
-
-<h2>Companion utilities</h2>
-
-<p><em>mkpage</em> comes with some helper utilities that make scripting a
-deconstructed content management system from Bash easier.</p>
-
-<h3>mkslides</h3>
-
-<p><em>mkslides</em> generates a set of HTML5 slides from a single Markdown file.
-It uses the same template engine as <em>mkpage</em></p>
-
-<h3>reldocpath</h3>
+<h4>reldocpath</h4>
 
 <p><em>reldocpath</em> is intended to simplify the calculation of relative
 asset paths (e.g. common css files, images, feeds) when working from
 a common project directory.</p>
 
-<h4>Example</h4>
+<h5>Example</h5>
 
-<p>You know the path from the source document to target document from the
-project root folder.</p>
+<p>You know the path from the source document to target document from the project root folder.</p>
 
 <ul>
 <li>Source is <em>course/week/01/readings.html</em><br /></li>
@@ -242,26 +187,39 @@ project root folder.</p>
 <pre><code class="language-shell">    ../../../css/site.css
 </code></pre>
 
-<h2>References</h2>
+<h4>ws</h4>
 
-<ul>
-<li><a href="http://daringfireball.net/projects/markdown/">Markdown</a> as specified by John Grubber (the person who created Markdown)</li>
-<li><a href="https://guides.github.com/features/mastering-markdown/">Mastering Markdown</a> Github Guide</li>
-<li><a href="https://github.com/russross/blackfriday">blackfriday</a> markdown processor</li>
-</ul>
+<p><em>ws</em> is a simple static file webserver.  It is suitable for viewing your local copy
+of your static website on your machine.  It runs with minimal resources and by default
+will serve content out to the URL <a href="http://localhost:8000">http://localhost:8000</a>.  It can also be used to host
+a static website and has run well on small Amazon virtual machines as well as Raspberry Pi
+computers acting as local private network web servers.</p>
+
+<h5>Example</h5>
+
+<pre><code class="language-shell">    ws Sites/mysite.example.org
+</code></pre>
+
+<p>This would start the webserver up listen for browser requests on <em><a href="http://localhost:8000">http://localhost:8000</a></em>.
+The content viewable by your web browser would be the files inside the <em>Sites/mysite.example.org</em>
+directory.</p>
+
+<pre><code class="language-shell">    ws -url http://mysite.example.org:80 Sites/mysite.example.org
+</code></pre>
+
+<p>Assume the machine where you are running <em>ws</em> has the name mysite.example.org then your could
+point your web browser at <em><a href="http://mysite.example.org">http://mysite.example.org</a></em> and see the web content you have in
+<em>Site/mysite.example.org</em> directory.</p>
+
 </section>
-    <nav><ul>
-<li><a href="/">Home</a></li>
-<li><a href="./">README</a></li>
-<li><a href="license.html">LICENSE</a></li>
-<li><a href="install.html">INSTALL</a></li>
-<li><a href="docs/">Documentation</a></li>
-<li><a href="https://github.com/rsdoiel/mkpage">Github</a></li>
-</ul>
-</nav>
-    <footer>
-    copyright (c) 2017 R. S. Doiel
-    See: <a href="license.html">LICENSE</a>
-    </footer>
+
+<footer>
+<span><h1><A href="http://caltech.edu">Caltech</a></h1></span>
+<span>&copy; 2018 <a href="https://www.library.caltech.edu/copyright">Caltech library</a></span>
+<address>1200 E California Blvd, Mail Code 1-32, Pasadena, CA 91125-3200</address> 
+<span>Phone: <a href="tel:+1-626-395-3405">(626)395-3405</a></span>
+<span><a href="mailto:library@caltech.edu">Email Us</a></span>
+<a class="cl-hide" href="sitemap.xml">Site Map</a>
+</footer>
 </body>
 </html>
