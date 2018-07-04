@@ -8,6 +8,10 @@
 ## Next
 
 + [ ] Add support for metadata taken from Namaste (Name as text) in the directory
++ [ ] Add support to byline, title to leverage Namaste
++ [ ] Add support to inline Fountain markup as well as Markdown
+    + I'd like mkslides to generate a script from Fountain markup and slides for presentation from Markdown
++ [ ] Evaluate alternatives to Go's default templates
 
 ## Someday, Maybe
 
