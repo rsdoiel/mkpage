@@ -86,13 +86,14 @@ issue the cert, see https://letsencrypt.org for details)
 `
 
 	// Standard options
-	showHelp             bool
-	showVersion          bool
-	showLicense          bool
-	showExamples         bool
-	outputFName          string
-	generateMarkdownDocs bool
-	quiet                bool
+	showHelp         bool
+	showVersion      bool
+	showLicense      bool
+	showExamples     bool
+	outputFName      string
+	generateMarkdown bool
+	generateManPage  bool
+	quiet            bool
 
 	// local app options
 	uri         string
@@ -143,7 +144,8 @@ func main() {
 	app.BoolVar(&showVersion, "v", false, "display version")
 	app.BoolVar(&showVersion, "version", false, "display version")
 	app.BoolVar(&showExamples, "example", false, "display example(s)")
-	app.BoolVar(&generateMarkdownDocs, "generate-markdown-docs", false, "generate markdown documentation")
+	app.BoolVar(&generateMarkdown, "generate-markdown", false, "generate markdown documentation")
+	app.BoolVar(&generateManPage, "generate-manpage", false, "generate man page")
 	app.BoolVar(&quiet, "quiet", false, "suppress error messages")
 
 	// Application Options
@@ -171,8 +173,12 @@ func main() {
 	defer cli.CloseFile(outputFName, app.Out)
 
 	// Process flags and update the environment as needed.
-	if generateMarkdownDocs {
-		app.GenerateMarkdownDocs(app.Out)
+	if generateMarkdown {
+		app.GenerateMarkdown(app.Out)
+		os.Exit(0)
+	}
+	if generateManPage {
+		app.GenerateManPage(app.Out)
 		os.Exit(0)
 	}
 	if showHelp || showExamples {

@@ -52,15 +52,16 @@ would yield
 `
 
 	// Standard Options
-	showHelp             bool
-	showLicense          bool
-	showVersion          bool
-	showExamples         bool
-	inputFName           string
-	outputFName          string
-	newLine              bool
-	generateMarkdownDocs bool
-	quiet                bool
+	showHelp         bool
+	showLicense      bool
+	showVersion      bool
+	showExamples     bool
+	inputFName       string
+	outputFName      string
+	newLine          bool
+	generateMarkdown bool
+	generateManPage  bool
+	quiet            bool
 
 	// App Options
 	useQueryEscape bool
@@ -86,7 +87,8 @@ func main() {
 	app.StringVar(&inputFName, "i,input", "", "set input filename")
 	app.StringVar(&outputFName, "o,output", "", "set output filename")
 	app.BoolVar(&newLine, "nl,newline", false, "add a trailing newline to output")
-	app.BoolVar(&generateMarkdownDocs, "generate-markdown-docs", false, "generate markdown documentation")
+	app.BoolVar(&generateMarkdown, "generate-markdown", false, "generate markdown documentation")
+	app.BoolVar(&generateManPage, "generate-manpage", false, "generate man page")
 	app.BoolVar(&quiet, "quiet", false, "suppress error messages")
 
 	// App Options
@@ -108,6 +110,14 @@ func main() {
 	defer cli.CloseFile(outputFName, app.Out)
 
 	// Handle the default options
+	if generateMarkdown {
+		app.GenerateMarkdown(app.Out)
+		os.Exit(0)
+	}
+	if generateManPage {
+		app.GenerateManPage(app.Out)
+		os.Exit(0)
+	}
 	if showHelp || showExamples {
 		if len(args) > 0 {
 			fmt.Fprintln(app.Out, app.Help(args...))
