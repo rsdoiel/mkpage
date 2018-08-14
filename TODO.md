@@ -11,6 +11,7 @@
 
 ## Someday, Maybe
 
++ [ ] Add redirect support to _ws_ via some sort of JSON object
 + [ ] Align templating and feature set with Hugo while retaining the approach of simple commands responsible for simple actions in a pipe line
 + [ ] Remove the default template and ship distribution with a set of standard templates
 + [ ] Add support for integration with pygments for syntax highlighting
