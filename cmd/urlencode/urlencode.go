@@ -72,7 +72,7 @@ func main() {
 	appName := app.AppName()
 
 	// Document non-option parameters
-	app.AddParams(`[STRING_TO_ENCODE]`)
+	app.SetParams(`[STRING_TO_ENCODE]`)
 
 	// Add Help Docs
 	app.AddHelp("license", []byte(fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version)))

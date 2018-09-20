@@ -71,14 +71,6 @@ EXAMPLE
 	locList    []*locInfo
 )
 
-func check(cfg *cli.Config, key, value string) string {
-	if value == "" {
-		log.Fatalf("Missing %s_%s", cfg.EnvPrefix, strings.ToUpper(key))
-		return ""
-	}
-	return value
-}
-
 // ExcludeList is a list of directories to skip when generating a sitemap
 type ExcludeList []string
 
@@ -106,7 +98,7 @@ func main() {
 	appName := app.AppName()
 
 	// Document additional non-option parameters
-	app.AddParams(`HTDOCS_PATH`, `MAP_FILENAME`, `PUBLIC_BASE_URL`)
+	app.SetParams(`HTDOCS_PATH`, `MAP_FILENAME`, `PUBLIC_BASE_URL`)
 
 	// Add Help Docs
 	app.AddHelp("license", []byte(fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version)))

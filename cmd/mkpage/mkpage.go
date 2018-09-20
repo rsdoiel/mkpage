@@ -103,7 +103,7 @@ func main() {
 	appName := app.AppName()
 
 	// Document expected parameters
-	app.AddParams(`[KEY/VALUE DATA PAIRS]`, `[TEMPLATE_FILENAMES]`)
+	app.SetParams(`[KEY/VALUE DATA PAIRS]`, `[TEMPLATE_FILENAMES]`)
 
 	// Add Help docs
 	app.AddHelp("license", []byte(fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version)))

@@ -120,7 +120,7 @@ func main() {
 	appName := app.AppName()
 
 	// Document non-option parameters
-	app.AddParams(`[DOCROOT]`)
+	app.SetParams(`[DOCROOT]`)
 
 	// Add Help Docs
 	app.AddHelp("license", []byte(fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version)))

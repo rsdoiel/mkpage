@@ -63,7 +63,7 @@ func main() {
 	appName := app.AppName()
 
 	// Define the command line parameters (non-options)
-	app.AddParams(`SOURCE_DOC_PATH`, `TARGET_DOC_PATH`)
+	app.SetParams(`SOURCE_DOC_PATH`, `TARGET_DOC_PATH`)
 
 	// Configuration and command line interation
 	app.AddHelp("license", []byte(fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version)))

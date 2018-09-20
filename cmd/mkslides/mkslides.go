@@ -140,7 +140,7 @@ func main() {
 	appName := app.AppName()
 
 	// Document Application Parameters
-	app.AddParams(`[KEY/VALUE DATA PAIRS]`, `MARKDOWN_FILE`, `[TEMPLATE_FILENAMES]`)
+	app.SetParams(`[KEY/VALUE DATA PAIRS]`, `MARKDOWN_FILE`, `[TEMPLATE_FILENAMES]`)
 
 	// Add Help Docs
 	app.AddHelp("license", []byte(fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version)))

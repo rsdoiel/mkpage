@@ -97,7 +97,7 @@ func main() {
 	appName := app.AppName()
 
 	// App Parameters (non-options)
-	app.AddParams(`HTDOCS`, `[RSS_FILENAME]`)
+	app.SetParams(`HTDOCS`, `[RSS_FILENAME]`)
 
 	// Add Help Docs
 	app.AddHelp("license", []byte(fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version)))
