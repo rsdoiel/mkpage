@@ -39,7 +39,7 @@ import (
 
 const (
 	// Version of the mkpage package.
-	Version = `v0.0.22`
+	Version = `v0.0.23`
 
 	// LicenseText provides a string template for rendering cli license info
 	LicenseText = `
