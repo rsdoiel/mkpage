@@ -110,7 +110,7 @@ func ResolveData(data map[string]string) (map[string]interface{}, error) {
 		case strings.HasPrefix(val, TextPrefix) == true:
 			out[key] = strings.TrimPrefix(val, TextPrefix)
 		case strings.HasPrefix(val, MarkdownPrefix) == true:
-			out[key] = string(blackfriday.MarkdownCommon([]byte(strings.TrimPrefix(val, MarkdownPrefix))))
+			out[key] = string(blackfriday.Run([]byte(strings.TrimPrefix(val, MarkdownPrefix))))
 		case strings.HasPrefix(val, JSONPrefix) == true:
 			var o interface{}
 			err := json.Unmarshal(bytes.TrimPrefix([]byte(val), []byte(JSONPrefix)), &o)
@@ -140,7 +140,7 @@ func ResolveData(data map[string]string) (map[string]interface{}, error) {
 						}
 						out[key] = o
 					case isContentType(contentTypes, "text/markdown") == true:
-						out[key] = string(blackfriday.MarkdownCommon(buf))
+						out[key] = string(blackfriday.Run(buf))
 					default:
 						out[key] = string(buf)
 					}
@@ -156,7 +156,7 @@ func ResolveData(data map[string]string) (map[string]interface{}, error) {
 			ext := path.Ext(val)
 			switch {
 			case strings.Compare(ext, ".md") == 0:
-				out[key] = string(blackfriday.MarkdownCommon(buf))
+				out[key] = string(blackfriday.Run(buf))
 			case strings.Compare(ext, ".json") == 0:
 				var o interface{}
 				err := json.Unmarshal(buf, &o)
@@ -261,7 +261,7 @@ func MarkdownToSlides(fname string, mdSource []byte) []*Slide {
 			NextNo:  (i + 1),
 			FirstNo: 0,
 			LastNo:  lastSlide,
-			Content: string(blackfriday.MarkdownCommon(s)),
+			Content: string(blackfriday.Run(s)),
 		})
 	}
 	return slides

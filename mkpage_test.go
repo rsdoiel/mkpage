@@ -74,7 +74,7 @@ func TestResolveData(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	expected := string(blackfriday.MarkdownCommon(src))
+	expected := string(blackfriday.Run(src))
 
 	if err := checkMap("Nav", expected, data); err != nil {
 		t.Error(err)
@@ -86,7 +86,7 @@ func TestResolveData(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	expected = string(blackfriday.MarkdownCommon(src))
+	expected = string(blackfriday.Run(src))
 
 	if err := checkMap("Content", expected, data); err != nil {
 		t.Error(err)
