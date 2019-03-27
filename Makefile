@@ -214,7 +214,8 @@ distribute_docs:
 	cp -v how-to/go-template-recipes.md dist/how-to/
 	cp -v how-to/the-basics.md dist/how-to/
 	cp -vR templates dist/
-	./package-versions.bash > dist/package-versions.txt
+	#FIXME: need to pull package versions from go.mod file.
+	#./package-versions.bash > dist/package-versions.txt
 
 release: clean website assets.go distribute_docs dist/linux-amd64 dist/windows-amd64 dist/macosx-amd64 dist/raspbian-arm7
 

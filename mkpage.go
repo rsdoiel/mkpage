@@ -34,7 +34,8 @@ import (
 	"time"
 
 	// 3rd Party Packages
-	"github.com/russross/blackfriday"
+	//"github.com/russross/blackfriday"
+	"gopkg.in/russross/blackfriday.v2"
 )
 
 const (
