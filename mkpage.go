@@ -116,14 +116,14 @@ func ResolveData(data map[string]string) (map[string]interface{}, error) {
 			var o interface{}
 			err := json.Unmarshal(bytes.TrimPrefix([]byte(val), []byte(JSONPrefix)), &o)
 			if err != nil {
-				return out, fmt.Errorf("Can't JSON decode %s, %s", val, err)
+				return out, fmt.Errorf("Can't JSON decode (%s) %s, %s", key, val, err)
 			}
 			out[key] = o
 
 		case strings.HasPrefix(val, "http://") == true || strings.HasPrefix(val, "https://") == true:
 			resp, err := http.Get(val)
 			if err != nil {
-				return out, fmt.Errorf("Error from %s, %s", val, err)
+				return out, fmt.Errorf("Error from (%s) %s, %s", key, val, err)
 			}
 			defer resp.Body.Close()
 			if resp.StatusCode == 200 {
@@ -137,7 +137,7 @@ func ResolveData(data map[string]string) (map[string]interface{}, error) {
 						var o interface{}
 						err := json.Unmarshal(buf, &o)
 						if err != nil {
-							return out, fmt.Errorf("Can't JSON decode %s, %s", val, err)
+							return out, fmt.Errorf("Can't JSON decode (%s) %s, %s", key, val, err)
 						}
 						out[key] = o
 					case isContentType(contentTypes, "text/markdown") == true:
@@ -152,7 +152,7 @@ func ResolveData(data map[string]string) (map[string]interface{}, error) {
 		default:
 			buf, err := ioutil.ReadFile(val)
 			if err != nil {
-				return out, fmt.Errorf("Can't read %s, %s", val, err)
+				return out, fmt.Errorf("Can't read (%s) %q, %s", key, val, err)
 			}
 			ext := path.Ext(val)
 			switch {
@@ -162,7 +162,7 @@ func ResolveData(data map[string]string) (map[string]interface{}, error) {
 				var o interface{}
 				err := json.Unmarshal(buf, &o)
 				if err != nil {
-					return out, fmt.Errorf("Can't JSON decode %s, %s", val, err)
+					return out, fmt.Errorf("Can't JSON decode (%s) %s, %s", key, val, err)
 				}
 				out[key] = o
 			default:
