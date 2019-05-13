@@ -7,11 +7,13 @@
 
 ## Next
 
-+ [ ] Add support for metadata taken from Namaste (Name as text) in the directory
++ [ ] Add redirect support to _ws_
+    + [ ] via simple CSV file
+    + [ ] via simple JSON object
 
 ## Someday, Maybe
 
-+ [ ] Add redirect support to _ws_ via some sort of JSON object
++ [ ] Add support for metadata taken from Namaste (Name as text) in the directory
 + [ ] Align templating and feature set with Hugo while retaining the approach of simple commands responsible for simple actions in a pipe line
 + [ ] Remove the default template and ship distribution with a set of standard templates
 + [ ] Add support for integration with pygments for syntax highlighting
