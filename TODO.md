@@ -7,9 +7,8 @@
 
 ## Next
 
-+ [ ] Add redirect support to _ws_
-    + [ ] via simple CSV file
-    + [ ] via simple JSON object
++ [x] Add simple redirect support to _ws_
+    + [x] via simple CSV file (from target column, to destination column)
 
 ## Someday, Maybe
 
