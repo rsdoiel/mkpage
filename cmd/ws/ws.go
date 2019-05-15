@@ -311,7 +311,11 @@ func main() {
 		err = pSvr.ListenAndServe()
 		cli.ExitOnError(app.Eout, err, quiet)
 	} else if u.Scheme == "https" {
-		err = http.ListenAndServeTLS(u.Host, sslCert, sslKey, wsfn.RequestLogger(wsfn.StaticRouter(http.DefaultServeMux)))
+		if wsfn.HasRedirectRoutes() {
+			err = http.ListenAndServeTLS(u.Host, sslCert, sslKey, wsfn.RequestLogger(wsfn.StaticRouter(wsfn.RedirectRouter(http.DefaultServeMux))))
+		} else {
+			err = http.ListenAndServeTLS(u.Host, sslCert, sslKey, wsfn.RequestLogger(wsfn.StaticRouter(http.DefaultServeMux)))
+		}
 		cli.ExitOnError(app.Eout, err, quiet)
 	} else {
 		if wsfn.HasRedirectRoutes() {

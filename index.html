@@ -114,9 +114,9 @@ This break down is as follows.</p>
         examples/weather.tmpl
 </code></pre>
 
-<p>Notice the two explicit strings are prefixed with &ldquo;text:&rdquo; (other possible formats are &ldquo;markdown:&ldquo;, &ldquo;json:&ldquo;).
+<p>Notice the two explicit strings are prefixed with &ldquo;text:&rdquo; (other possible formats are &ldquo;markdown:&rdquo;, &ldquo;json:&rdquo;).
 Values without a prefix are assumed to be file paths. We see that in testdata/signature.txt.  Likewise the
-weather data is coming from a URL. <em>mkpage</em> distinguishes that by the prefixes &ldquo;http://&rdquo; and &ldquo;https://&ldquo;.
+weather data is coming from a URL. <em>mkpage</em> distinguishes that by the prefixes &ldquo;http://&rdquo; and &ldquo;https://&rdquo;.
 Since a HTTP response contains headers describing the content type (e.g.  &ldquo;Content-Type: text/markdown&rdquo;) we
 do not require any other prefix. Likewise a filename&rsquo;s extension can give us an inference of the data format
 it contains. &ldquo;.json&rdquo; is a JSON document, &ldquo;.md&rdquo; is a Markdown document and everything else is just plain text.</p>
@@ -170,7 +170,8 @@ a common project directory.</p>
 <p>You know the path from the source document to target document from the project root folder.</p>
 
 <ul>
-<li>Source is <em>course/week/01/readings.html</em><br /></li>
+<li>Source is <em>course/week/01/readings.html</em><br />
+</li>
 <li>Target is <em>css/site.css</em>.</li>
 </ul>
 
