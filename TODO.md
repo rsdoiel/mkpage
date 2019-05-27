@@ -9,6 +9,7 @@
 
 + [x] Add simple redirect support to _ws_
     + [x] via simple CSV file (from target column, to destination column)
++ [ ] python wrapper for mkpage and simple demo of a mini CMS implemented with py_dataset and mkpage.
 
 ## Someday, Maybe
 
