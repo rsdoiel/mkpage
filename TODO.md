@@ -12,6 +12,24 @@
 
 ## Someday, Maybe
 
++ [ ] Search via Lunrjs
+    + [ ] Document ingest
+        + [ ] first pass of ingest is to generate/update metadata
+            + [ ] read each Markdown file
+            + [ ] parse out any front matter as metadata
+            + [ ] use document body for full text field
+        + [ ] store metadata results in dataset one document per record
+        + [ ] generate default frames based on common fields like title, author, pub date
+        + [ ] allow additional frames as needed
+        + [ ] store parsed metadata in dataset keyed by paths to docs
+    +[ ] Indexing
+        + [ ] for each frame generte a LunrJS index
+    + Search 
+        + [ ] An index aware widget for search (i.e. can turn on/off indexes for searchable corpus)
+    + [ ] reads markdown document including front matter creating metadata records stored in dataset
+    + [ ] search widget support
+        + [ ] generate a search widget if JS enabled
+        + [ ] Generate a default search page in Markdown for embedded widget
 + [ ] Add support for metadata taken from Namaste (Name as text) in the directory
 + [ ] Align templating and feature set with Hugo while retaining the approach of simple commands responsible for simple actions in a pipe line
 + [ ] Remove the default template and ship distribution with a set of standard templates
