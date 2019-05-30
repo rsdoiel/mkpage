@@ -7,9 +7,16 @@
 
 ## Next
 
++ [ ] Add configuration adjustment via front matter
++ [ ] Add mapping of front matter to mkpage paraments passed to templates
 + [x] Add simple redirect support to _ws_
     + [x] via simple CSV file (from target column, to destination column)
++ [ ] implement lunr index generation from front mater in markdown pages and the full body text of markdown pages
++ [ ] consider support mmark as well as Blackfriday markdown engines
 + [ ] python wrapper for mkpage and simple demo of a mini CMS implemented with py_dataset and mkpage.
++ [ ] define themes via minimal set templates and a configuration
+    + [ ] minimal theme would be two templates index.tmpl and page.tmpl
+    + [ ] CSS and other assets could either be inlined or symlink to appropriate locations in the htdoc root of staging site
 
 ## Someday, Maybe
 
