@@ -48,21 +48,22 @@ and integrating data from the [NOAA weather website](http://weather.gov).
 
 ```template
     {{ define "weather.tmpl" }}
-    Date: {{ .now}}
-
-    Hello {{ .name -}},
+    Date: {{- .now}}
     
-    Forecast:
-
-    {{index .weather.data.weather 0}}
-
+    Hello {{.name -}},
+        
+    The current weather is
+    
+    {{index .weatherForecast.data.weather 0}}
+    
     Thank you
-
+    
     {{.signature}}
+    
     {{ end }}
 ```
 
-To render the template above (i.e. [forecast.tmpl](examples/forecast.tmpl)) is expecting values from various data sources.
+To render the template above (i.e. [weather.tmpl](examples/weather.tmpl)) is expecting values from various data sources.
 This break down is as follows.
 
 + "now" and "name" are explicit strings
