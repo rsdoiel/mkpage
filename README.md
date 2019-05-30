@@ -29,13 +29,13 @@ _mkpage_ command accepts key value pairs and applies them to a Golang [text/temp
 
 ```template
     {{ define "weather.tmpl" }}
-    Date: {{ .now}}
+    Date: {{- .now}}
 
-    Hello {{ .name -}},
+    Hello {{.name -}},
     
-    Forecast:
+    The current weather is
 
-    {{index .weather.data.weather 0}}
+    {{index .weatherForecast.data.weather 0}}
 
     Thank you
 
@@ -43,7 +43,7 @@ _mkpage_ command accepts key value pairs and applies them to a Golang [text/temp
     {{ end }}
 ```
 
-To render the template above (i.e. [forecast.tmpl](examples/forecast.tmpl)) is expecting values from various data sources.  This break down is as follows.
+To render the template above (i.e. [weather.tmpl](examples/weather.tmpl)) is expecting values from various data sources.  This break down is as follows.
 
 + "now" and "name" are explicit strings
     + "now" integrates getting data from the Unix _date_ command
