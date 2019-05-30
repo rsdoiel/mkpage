@@ -40,7 +40,7 @@ import (
 
 const (
 	// Version of the mkpage package.
-	Version = `v0.0.25`
+	Version = `v0.0.25-rsdoiel`
 
 	// LicenseText provides a string template for rendering cli license info
 	LicenseText = `

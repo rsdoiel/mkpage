@@ -33,8 +33,8 @@ import (
 
 	// Caltech Library packages
 	"github.com/caltechlibrary/cli"
-	"github.com/caltechlibrary/mkpage"
 	"github.com/caltechlibrary/wsfn"
+	"github.com/rsdoiel/mkpage"
 
 	// Other packages
 	"golang.org/x/crypto/acme/autocert"
