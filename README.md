@@ -1,7 +1,7 @@
 
 # mkpage
 
-> this is a fork of Caltech Library's mkpage package for Go
+> this is a fork of Caltech Library's mkpage and tmplfn packages for Go
 
 _mkpage_ is a deconstructed, post modern, content management system for generating static websites.  It is suited to building sites hosted on services like Github Pages or Amazon's S3. It is comprised of a set of command line utilities that augment the standard suite of Unix/Posix commands available on most Posix based operating systems (e.g. Linux, Mac OS X, Raspberry Pi and Windows systems that have a port of Bash).
 
