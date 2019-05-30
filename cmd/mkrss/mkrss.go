@@ -64,14 +64,15 @@ articles in htdocs/myblog/YYYY/MM/DD.
 `
 
 	// Standard options
-	showHelp             bool
-	showLicense          bool
-	showVersion          bool
-	showExamples         bool
-	inputFName           string
-	outputFName          string
-	quiet                bool
-	generateMarkdownDocs bool
+	showHelp         bool
+	showLicense      bool
+	showVersion      bool
+	showExamples     bool
+	inputFName       string
+	outputFName      string
+	quiet            bool
+	generateMarkdown bool
+	generateManPage  bool
 
 	// App specific options
 	excludeList        string
@@ -96,7 +97,7 @@ func main() {
 	appName := app.AppName()
 
 	// App Parameters (non-options)
-	app.AddParams(`HTDOCS`, `[RSS_FILENAME]`)
+	app.SetParams(`HTDOCS`, `[RSS_FILENAME]`)
 
 	// Add Help Docs
 	app.AddHelp("license", []byte(fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version)))
@@ -111,7 +112,8 @@ func main() {
 	app.StringVar(&inputFName, "i,input", "", "set input filename")
 	app.StringVar(&outputFName, "o,output", "", "set output filename")
 	app.BoolVar(&quiet, "quiet", false, "suppress error messages")
-	app.BoolVar(&generateMarkdownDocs, "generate-markdown-docs", false, "generate markdown documentation")
+	app.BoolVar(&generateMarkdown, "generate-markdown", false, "generate markdown documentation")
+	app.BoolVar(&generateManPage, "generate-manpage", false, "generate man page")
 
 	// App specific options
 	app.StringVar(&excludeList, "e", "", "A colon delimited list of path exclusions")
@@ -144,8 +146,12 @@ func main() {
 	defer cli.CloseFile(outputFName, app.Out)
 
 	// Process options
-	if generateMarkdownDocs {
-		app.GenerateMarkdownDocs(app.Out)
+	if generateMarkdown {
+		app.GenerateMarkdown(app.Out)
+		os.Exit(0)
+	}
+	if generateManPage {
+		app.GenerateManPage(app.Out)
 		os.Exit(0)
 	}
 	if showHelp || showExamples {

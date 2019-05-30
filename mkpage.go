@@ -34,12 +34,13 @@ import (
 	"time"
 
 	// 3rd Party Packages
-	"github.com/russross/blackfriday"
+	//"github.com/russross/blackfriday"
+	"gopkg.in/russross/blackfriday.v2"
 )
 
 const (
 	// Version of the mkpage package.
-	Version = `v0.0.22`
+	Version = `v0.0.25`
 
 	// LicenseText provides a string template for rendering cli license info
 	LicenseText = `
@@ -110,19 +111,19 @@ func ResolveData(data map[string]string) (map[string]interface{}, error) {
 		case strings.HasPrefix(val, TextPrefix) == true:
 			out[key] = strings.TrimPrefix(val, TextPrefix)
 		case strings.HasPrefix(val, MarkdownPrefix) == true:
-			out[key] = string(blackfriday.MarkdownCommon([]byte(strings.TrimPrefix(val, MarkdownPrefix))))
+			out[key] = string(blackfriday.Run([]byte(strings.TrimPrefix(val, MarkdownPrefix))))
 		case strings.HasPrefix(val, JSONPrefix) == true:
 			var o interface{}
 			err := json.Unmarshal(bytes.TrimPrefix([]byte(val), []byte(JSONPrefix)), &o)
 			if err != nil {
-				return out, fmt.Errorf("Can't JSON decode %s, %s", val, err)
+				return out, fmt.Errorf("Can't JSON decode (%s) %s, %s", key, val, err)
 			}
 			out[key] = o
 
 		case strings.HasPrefix(val, "http://") == true || strings.HasPrefix(val, "https://") == true:
 			resp, err := http.Get(val)
 			if err != nil {
-				return out, fmt.Errorf("Error from %s, %s", val, err)
+				return out, fmt.Errorf("Error from (%s) %s, %s", key, val, err)
 			}
 			defer resp.Body.Close()
 			if resp.StatusCode == 200 {
@@ -136,11 +137,11 @@ func ResolveData(data map[string]string) (map[string]interface{}, error) {
 						var o interface{}
 						err := json.Unmarshal(buf, &o)
 						if err != nil {
-							return out, fmt.Errorf("Can't JSON decode %s, %s", val, err)
+							return out, fmt.Errorf("Can't JSON decode (%s) %s, %s", key, val, err)
 						}
 						out[key] = o
 					case isContentType(contentTypes, "text/markdown") == true:
-						out[key] = string(blackfriday.MarkdownCommon(buf))
+						out[key] = string(blackfriday.Run(buf))
 					default:
 						out[key] = string(buf)
 					}
@@ -151,17 +152,17 @@ func ResolveData(data map[string]string) (map[string]interface{}, error) {
 		default:
 			buf, err := ioutil.ReadFile(val)
 			if err != nil {
-				return out, fmt.Errorf("Can't read %s, %s", val, err)
+				return out, fmt.Errorf("Can't read (%s) %q, %s", key, val, err)
 			}
 			ext := path.Ext(val)
 			switch {
 			case strings.Compare(ext, ".md") == 0:
-				out[key] = string(blackfriday.MarkdownCommon(buf))
+				out[key] = string(blackfriday.Run(buf))
 			case strings.Compare(ext, ".json") == 0:
 				var o interface{}
 				err := json.Unmarshal(buf, &o)
 				if err != nil {
-					return out, fmt.Errorf("Can't JSON decode %s, %s", val, err)
+					return out, fmt.Errorf("Can't JSON decode (%s) %s, %s", key, val, err)
 				}
 				out[key] = o
 			default:
@@ -261,7 +262,7 @@ func MarkdownToSlides(fname string, mdSource []byte) []*Slide {
 			NextNo:  (i + 1),
 			FirstNo: 0,
 			LastNo:  lastSlide,
-			Content: string(blackfriday.MarkdownCommon(s)),
+			Content: string(blackfriday.Run(s)),
 		})
 	}
 	return slides

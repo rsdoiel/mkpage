@@ -1,10 +1,8 @@
 //
-// byline reads a Markdown file and returns the first byline
-// encountered.  A byline, by default, is identified by the RegExp
-// `^[B|b]y\s+(\w|\s)+ [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$`
-// This can be overwritten with another definition using an option.
+// reldocpath.go takes a source document path and a target document path with same base path
+// returning a relative path to the target file.
 //
-// @Author R. S. Doiel, <rsdoiel@caltech.edu>
+// @author R. S. Doiel, <rsdoiel@caltech.edu>
 //
 // Copyright (c) 2018, Caltech
 // All rights not granted herein are expressly reserved by Caltech.
@@ -22,7 +20,6 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"os"
 
@@ -33,80 +30,69 @@ import (
 
 var (
 	description = `
-%s extracts a byline from a Markdown file. By default it reads
-from standard in and writes to standard out but can read/write
-to specific files using an option.
+SYNOPSIS
+
+Given a source document path, a target document path calculate and
+the implied common base path calculate the relative path for target.
 `
 
 	examples = `
-Extract a byline from article.md.
+EXAMPLE
 
-    cat article.md | %s
+Given
 
-This will display the %s if one is found in article.md.
+    %s chapter-01/lesson-03.html css/site.css
+
+would output
+
+    .../css/site.css
 `
 
-	// Standard Options
-	showHelp             bool
-	showLicense          bool
-	showVersion          bool
-	showExamples         bool
-	inputFName           string
-	outputFName          string
-	quiet                bool
-	generateMarkdownDocs bool
-
-	// App Options
-	bylineExp string
+	// Standard options
+	showHelp         bool
+	showVersion      bool
+	showLicense      bool
+	showExamples     bool
+	generateMarkdown bool
+	generateManPage  bool
+	quiet            bool
 )
 
 func main() {
 	app := cli.NewCli(mkpage.Version)
 	appName := app.AppName()
 
-	// Standard Options
+	// Define the command line parameters (non-options)
+	app.SetParams(`SOURCE_DOC_PATH`, `TARGET_DOC_PATH`)
+
+	// Configuration and command line interation
+	app.AddHelp("license", []byte(fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version)))
+	app.AddHelp("description", []byte(description))
+	app.AddHelp("examples", []byte(fmt.Sprintf(examples, appName)))
+
+	// Standard options
 	app.BoolVar(&showHelp, "h,help", false, "display help")
 	app.BoolVar(&showLicense, "l,license", false, "display license")
 	app.BoolVar(&showVersion, "v,version", false, "display version")
 	app.BoolVar(&showExamples, "examples", false, "display example(s)")
-	app.StringVar(&inputFName, "i,input", "", "input filename")
-	app.StringVar(&outputFName, "o,output", "", "output filename")
+	app.BoolVar(&generateMarkdown, "generate-markdown", false, "generate markdown documentation")
+	app.BoolVar(&generateManPage, "generate-manpage", false, "generate man page")
 	app.BoolVar(&quiet, "quiet", false, "suppress error messages")
-	app.BoolVar(&generateMarkdownDocs, "generate-markdown-docs", false, "generate Markdown documentation")
-
-	// App Options
-	app.StringVar(&bylineExp, "b,byline", mkpage.BylineExp, "set byline regexp")
-
-	// Configuration and command line interation
-	app.AddHelp("license", []byte(fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version)))
-	app.AddHelp("description", []byte(fmt.Sprintf(description, appName)))
-	app.AddHelp("examples", []byte(fmt.Sprintf(examples, appName, appName)))
 
 	app.Parse()
 	args := app.Args()
 
-	// Setup IO
-	var err error
-	app.Eout = os.Stderr
-
-	app.In, err = cli.Open(inputFName, os.Stdin)
-	cli.ExitOnError(app.Eout, err, quiet)
-	defer cli.CloseFile(inputFName, app.In)
-
-	app.Out, err = cli.Create(outputFName, os.Stdout)
-	cli.ExitOnError(app.Eout, err, quiet)
-	defer cli.CloseFile(outputFName, app.Out)
-
-	// Handle Options
-	if generateMarkdownDocs {
-		app.GenerateMarkdownDocs(app.Out)
+	if generateMarkdown {
+		app.GenerateMarkdown(app.Out)
+		os.Exit(0)
+	}
+	if generateManPage {
+		app.GenerateManPage(app.Out)
 		os.Exit(0)
 	}
 	if showHelp || showExamples {
 		if len(args) > 0 {
 			fmt.Fprintln(app.Out, app.Help(args...))
-		} else if showExamples {
-			fmt.Fprintln(app.Out, app.Help("examples"))
 		} else {
 			app.Usage(app.Out)
 		}
@@ -121,13 +107,9 @@ func main() {
 		os.Exit(0)
 	}
 
-	scanner := bufio.NewScanner(app.In)
-	for scanner.Scan() {
-		s := mkpage.Grep(bylineExp, scanner.Text())
-		if len(s) > 0 {
-			fmt.Fprintf(app.Out, "%s", s)
-			os.Exit(0)
-		}
+	if len(args) != 2 {
+		cli.ExitOnError(app.Eout, fmt.Errorf("Expected a source and target file path\n For help try: %s -help", appName), quiet)
 	}
-	os.Exit(1)
+	source, target := args[0], args[1]
+	fmt.Fprintf(app.Out, `%s`, mkpage.RelativeDocPath(source, target))
 }

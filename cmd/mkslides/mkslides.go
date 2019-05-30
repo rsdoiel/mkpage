@@ -116,14 +116,15 @@ This would result in the following webpages
 
 var (
 	// Standard Options
-	showHelp             bool
-	showVersion          bool
-	showLicense          bool
-	showExamples         bool
-	inputFName           string
-	outputFName          string
-	quiet                bool
-	generateMarkdownDocs bool
+	showHelp         bool
+	showVersion      bool
+	showLicense      bool
+	showExamples     bool
+	inputFName       string
+	outputFName      string
+	quiet            bool
+	generateMarkdown bool
+	generateManPage  bool
 
 	// Application Options
 	cssPath           string
@@ -139,7 +140,7 @@ func main() {
 	appName := app.AppName()
 
 	// Document Application Parameters
-	app.AddParams(`[KEY/VALUE DATA PAIRS]`, `MARKDOWN_FILE`, `[TEMPLATE_FILENAMES]`)
+	app.SetParams(`[KEY/VALUE DATA PAIRS]`, `MARKDOWN_FILE`, `[TEMPLATE_FILENAMES]`)
 
 	// Add Help Docs
 	app.AddHelp("license", []byte(fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version)))
@@ -157,6 +158,8 @@ func main() {
 	app.BoolVar(&showVersion, "v", false, "display version")
 	app.BoolVar(&showVersion, "version", false, "display version")
 	app.BoolVar(&showExamples, "example", false, "display example(s)")
+	app.BoolVar(&generateMarkdown, "generate-markdown", false, "generate Markdown documentation")
+	app.BoolVar(&generateManPage, "generate-manpage", false, "generate man page")
 
 	// Application specific options
 	app.StringVar(&cssPath, "c", "", "Specify the CSS file to use")
@@ -176,8 +179,12 @@ func main() {
 	args := app.Args()
 
 	// Process options and update the environment as needed.
-	if generateMarkdownDocs {
-		app.GenerateMarkdownDocs(app.Out)
+	if generateMarkdown {
+		app.GenerateMarkdown(app.Out)
+		os.Exit(0)
+	}
+	if generateManPage {
+		app.GenerateManPage(app.Out)
 		os.Exit(0)
 	}
 	if showHelp || showExamples {

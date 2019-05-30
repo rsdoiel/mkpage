@@ -1,9 +1,5 @@
 //
-// titleine reads a Markdown file and returns the first title
-// encountered.  By default that is the first line starting with
-// '# '.
-//
-// @Author R. S. Doiel, <rsdoiel@caltech.edu>
+// urldecode.go is a simple command line utility to decode a string in a URL friendly way.
 //
 // Copyright (c) 2018, Caltech
 // All rights not granted herein are expressly reserved by Caltech.
@@ -21,49 +17,62 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
+	"io/ioutil"
+	"net/url"
 	"os"
+	"strings"
 
-	// My packages
+	// CaltechLibrary Packages
 	"github.com/caltechlibrary/cli"
 	"github.com/caltechlibrary/mkpage"
 )
 
 var (
 	description = `
+
 SYNOPSIS
 
-%s extracts the first title line from a Markdown file. By default it reads
-from standard in and writes to standard out but can read/write
-to specific files using an option.
+%s is a simple command line utility to URL decode content. By default
+it reads from standard input and writes to standard out.  You can
+also specifty the string to decode as a command line parameter.
+
 `
 
 	examples = `
-EXAMPLE
 
-cat article.md | %s
+EXAMPLES
 
-This will display the title of an article.md.
+    echo 'This%%20is%%20the%%20string%%20to%%20encode%%20&%%20nothing%%20else%%0A' | %s
+
+would yield
+
+    This is the string to encode & nothing else!
+
 `
 
 	// Standard Options
-	showHelp             bool
-	showLicense          bool
-	showVersion          bool
-	showExamples         bool
-	inputFName           string
-	outputFName          string
-	generateMarkdownDocs bool
-	quiet                bool
+	showHelp         bool
+	showLicense      bool
+	showVersion      bool
+	showExamples     bool
+	inputFName       string
+	outputFName      string
+	newLine          bool
+	generateMarkdown bool
+	generateManPage  bool
+	quiet            bool
 
 	// App Options
-	titlelineExp string
+	useQueryUnescape bool
 )
 
 func main() {
 	app := cli.NewCli(mkpage.Version)
 	appName := app.AppName()
+
+	// Document non-option parameters
+	app.SetParams(`[STRING_TO_ENCODE]`)
 
 	// Add Help Docs
 	app.AddHelp("license", []byte(fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version)))
@@ -75,34 +84,18 @@ func main() {
 	app.BoolVar(&showLicense, "l,license", false, "display license")
 	app.BoolVar(&showVersion, "v,version", false, "display version")
 	app.BoolVar(&showExamples, "examples", false, "display example(s)")
-	app.StringVar(&inputFName, "i,input", "", "input filename")
-	app.StringVar(&outputFName, "o,output", "", "output filename")
-	app.BoolVar(&generateMarkdownDocs, "generate-markdown-docs", false, "generate markdown documentation")
+	app.StringVar(&inputFName, "i,input", "", "set input filename")
+	app.StringVar(&outputFName, "o,output", "", "set output filename")
+	app.BoolVar(&newLine, "nl,newline", false, "if true add a trailing newline to output")
+	app.BoolVar(&generateMarkdown, "generate-markdown", false, "generate markdown documentation")
+	app.BoolVar(&generateManPage, "generate-manpage", false, "generate man page")
 	app.BoolVar(&quiet, "quiet", false, "suppress error messages")
 
 	// App Options
-	app.StringVar(&titlelineExp, "t,title", mkpage.TitleExp, "set title regexp")
+	app.BoolVar(&useQueryUnescape, "q,query", false, "use query escape (pluses for spaces)")
 
 	app.Parse()
 	args := app.Args()
-
-	// Configuration and command line interation
-	if showHelp || showExamples {
-		if len(args) > 0 {
-			fmt.Fprintln(app.Out, app.Help(args...))
-		} else {
-			app.Usage(app.Out)
-		}
-		os.Exit(0)
-	}
-	if showLicense {
-		fmt.Fprintln(app.Out, app.License())
-		os.Exit(0)
-	}
-	if showVersion {
-		fmt.Fprintln(app.Out, app.Version())
-		os.Exit(0)
-	}
 
 	// Setup IO
 	var err error
@@ -116,13 +109,54 @@ func main() {
 	cli.ExitOnError(app.Eout, err, quiet)
 	defer cli.CloseFile(outputFName, app.Out)
 
-	scanner := bufio.NewScanner(app.In)
-	for scanner.Scan() {
-		s := mkpage.Grep(titlelineExp, scanner.Text())
-		if len(s) > 0 {
-			fmt.Fprintf(app.Out, "%s", s[2:])
-			os.Exit(0)
-		}
+	// Handle the default options
+	if generateMarkdown {
+		app.GenerateMarkdown(app.Out)
+		os.Exit(0)
 	}
-	os.Exit(1)
+	if generateManPage {
+		app.GenerateManPage(app.Out)
+		os.Exit(0)
+	}
+	if showHelp || showExamples {
+		if len(args) > 0 {
+			fmt.Fprintln(app.Out, app.Help(args...))
+		} else {
+			app.Usage(app.Out)
+		}
+		os.Exit(0)
+	}
+	if showVersion {
+		fmt.Fprintln(app.Out, app.Version())
+		os.Exit(0)
+	}
+	if showLicense {
+		fmt.Fprintln(app.Out, app.License())
+		os.Exit(0)
+	}
+
+	nl := "\n"
+	if newLine == false {
+		nl = ""
+	}
+
+	var (
+		src string
+		s   string
+	)
+
+	if len(args) > 0 {
+		src = strings.Join(args, " ")
+	} else {
+		buf, err := ioutil.ReadAll(app.In)
+		cli.ExitOnError(app.Eout, err, quiet)
+		src = fmt.Sprintf("%s", buf)
+	}
+	if useQueryUnescape {
+		s, err = url.QueryUnescape(src)
+	} else {
+		s, err = url.PathUnescape(src)
+	}
+	cli.ExitOnError(app.Eout, err, quiet)
+	fmt.Fprintf(app.Out, "%s%s", s, nl)
 }

@@ -46,7 +46,7 @@
 
 <ul>
 <li>files (the default data source)</li>
-<li>explicit strings (using a hint prefix, e.g. &ldquo;text:&ldquo;, &ldquo;markdown:&ldquo;, &ldquo;json:&ldquo;)</li>
+<li>explicit strings (using a hint prefix, e.g. &ldquo;text:&rdquo;, &ldquo;markdown:&rdquo;, &ldquo;json:&rdquo;)</li>
 <li>URLs as data sources (prefixed with http:// and https:// as appropriate)</li>
 </ul>
 
@@ -315,33 +315,43 @@ We have a <em>signature.tmpl</em> and <em>postscript.tmpl</em> files as sub temp
     {{ .Name }}, somewhere next door to reality
 
     {{ end }}
+```   
+
+#### postscript.tmpl
+
 </code></pre>
 
-<h4>postscript.tmpl</h4>
-
-<pre><code>    {{ define &quot;postscript.tmpl&quot; }}
-    (P.S. What is comming at you is coming from you, {{rfc3339 &quot;now&quot;}})
-    {{ end }}
+<pre><code>{{ define &quot;postscript.tmpl&quot; }}
+(P.S. What is comming at you is coming from you, {{rfc3339 &quot;now&quot;}})
+{{ end }}
 </code></pre>
 
-<h4>Putting it all together</h4>
+<pre><code>
+#### Putting it all together
 
-<pre><code>    mkpage &quot;ToName=text:Mojo Sam&quot; &quot;Name=text:Jack Flanders&quot; letter.tmpl signature.tmpl postscript.tmpl
 </code></pre>
 
-<p>This should output somthing like</p>
-
-<pre><code>    Dear Mojo Sam,
-
-    Hope all is well.  I will be with you shortly though not necessarily
-    on the same plane of existance.
-
-    Sincerly,
-
-    Jack Flanders, somewhere next door to reality
-
-    (P.S. What is comming at you is coming from you, 2016-12-12T16:17:14-08:00)
+<pre><code>mkpage &quot;ToName=text:Mojo Sam&quot; &quot;Name=text:Jack Flanders&quot; letter.tmpl signature.tmpl postscript.tmpl
 </code></pre>
+
+<pre><code>
+This should output somthing like
+
+</code></pre>
+
+<pre><code>Dear Mojo Sam,
+
+Hope all is well.  I will be with you shortly though not necessarily
+on the same plane of existance.
+
+Sincerly,
+
+Jack Flanders, somewhere next door to reality
+
+(P.S. What is comming at you is coming from you, 2016-12-12T16:17:14-08:00)
+</code></pre>
+
+<p>&rdquo;`</p>
 
 </section>
 

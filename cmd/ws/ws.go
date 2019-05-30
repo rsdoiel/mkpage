@@ -19,8 +19,12 @@
 package main
 
 import (
+	"bytes"
 	"crypto/tls"
+	"encoding/csv"
 	"fmt"
+	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -86,21 +90,23 @@ issue the cert, see https://letsencrypt.org for details)
 `
 
 	// Standard options
-	showHelp             bool
-	showVersion          bool
-	showLicense          bool
-	showExamples         bool
-	outputFName          string
-	generateMarkdownDocs bool
-	quiet                bool
+	showHelp         bool
+	showVersion      bool
+	showLicense      bool
+	showExamples     bool
+	outputFName      string
+	generateMarkdown bool
+	generateManPage  bool
+	quiet            bool
 
 	// local app options
-	uri         string
-	docRoot     string
-	sslKey      string
-	sslCert     string
-	letsEncrypt bool
-	CORSOrigin  string
+	uri          string
+	docRoot      string
+	sslKey       string
+	sslCert      string
+	letsEncrypt  bool
+	CORSOrigin   string
+	redirectsCSV string
 )
 
 func logRequest(r *http.Request) {
@@ -119,7 +125,7 @@ func main() {
 	appName := app.AppName()
 
 	// Document non-option parameters
-	app.AddParams(`[DOCROOT]`)
+	app.SetParams(`[DOCROOT]`)
 
 	// Add Help Docs
 	app.AddHelp("license", []byte(fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version)))
@@ -143,7 +149,8 @@ func main() {
 	app.BoolVar(&showVersion, "v", false, "display version")
 	app.BoolVar(&showVersion, "version", false, "display version")
 	app.BoolVar(&showExamples, "example", false, "display example(s)")
-	app.BoolVar(&generateMarkdownDocs, "generate-markdown-docs", false, "generate markdown documentation")
+	app.BoolVar(&generateMarkdown, "generate-markdown", false, "generate markdown documentation")
+	app.BoolVar(&generateManPage, "generate-manpage", false, "generate man page")
 	app.BoolVar(&quiet, "quiet", false, "suppress error messages")
 
 	// Application Options
@@ -157,6 +164,7 @@ func main() {
 	app.StringVar(&sslCert, "cert", "", "Set the path for the SSL Cert")
 	app.BoolVar(&letsEncrypt, "acme", false, "Enable Let's Encypt ACME TLS support")
 	app.StringVar(&CORSOrigin, "cors-origin", "*", "Set the CORS Origin Policy to a specific host or *")
+	app.StringVar(&redirectsCSV, "redirects-csv", "", "Use target,destination replacement paths defined in CSV file")
 
 	app.Parse()
 	args := app.Args()
@@ -171,8 +179,12 @@ func main() {
 	defer cli.CloseFile(outputFName, app.Out)
 
 	// Process flags and update the environment as needed.
-	if generateMarkdownDocs {
-		app.GenerateMarkdownDocs(app.Out)
+	if generateMarkdown {
+		app.GenerateMarkdown(app.Out)
+		os.Exit(0)
+	}
+	if generateManPage {
+		app.GenerateManPage(app.Out)
 		os.Exit(0)
 	}
 	if showHelp || showExamples {
@@ -212,6 +224,41 @@ func main() {
 
 	cors := wsfn.CORSPolicy{
 		Origin: CORSOrigin,
+	}
+	// Setup redirects defined the redirects CSV
+	if redirectsCSV != "" {
+		src, err := ioutil.ReadFile(redirectsCSV)
+		if err != nil {
+			log.Fatalf("Can't read %s, %s", redirectsCSV, err)
+		}
+		r := csv.NewReader(bytes.NewReader(src))
+		// Allow support for comment rows
+		r.Comment = '#'
+		for {
+			row, err := r.Read()
+			if err == io.EOF {
+				break
+			}
+			if err != nil {
+				log.Fatalf("Can't read %s, %s", redirectsCSV, err)
+			}
+			if len(row) == 2 {
+				// Define direct here.
+				target := ""
+				destination := ""
+				if strings.HasPrefix(row[0], "/") {
+					target = row[0]
+				} else {
+					target = "/" + row[0]
+				}
+				if strings.HasPrefix(row[1], "/") {
+					destination = row[1]
+				} else {
+					destination = "/" + row[1]
+				}
+				wsfn.AddRedirectRoute(target, destination)
+			}
+		}
 	}
 	http.Handle("/", cors.Handle(http.FileServer(http.Dir(docRoot))))
 	if letsEncrypt == true {
@@ -264,10 +311,18 @@ func main() {
 		err = pSvr.ListenAndServe()
 		cli.ExitOnError(app.Eout, err, quiet)
 	} else if u.Scheme == "https" {
-		err = http.ListenAndServeTLS(u.Host, sslCert, sslKey, wsfn.RequestLogger(wsfn.StaticRouter(http.DefaultServeMux)))
+		if wsfn.HasRedirectRoutes() {
+			err = http.ListenAndServeTLS(u.Host, sslCert, sslKey, wsfn.RequestLogger(wsfn.StaticRouter(wsfn.RedirectRouter(http.DefaultServeMux))))
+		} else {
+			err = http.ListenAndServeTLS(u.Host, sslCert, sslKey, wsfn.RequestLogger(wsfn.StaticRouter(http.DefaultServeMux)))
+		}
 		cli.ExitOnError(app.Eout, err, quiet)
 	} else {
-		err = http.ListenAndServe(u.Host, wsfn.RequestLogger(wsfn.StaticRouter(http.DefaultServeMux)))
+		if wsfn.HasRedirectRoutes() {
+			err = http.ListenAndServe(u.Host, wsfn.RequestLogger(wsfn.StaticRouter(wsfn.RedirectRouter(http.DefaultServeMux))))
+		} else {
+			err = http.ListenAndServe(u.Host, wsfn.RequestLogger(wsfn.StaticRouter(http.DefaultServeMux)))
+		}
 		cli.ExitOnError(app.Eout, err, quiet)
 	}
 }
