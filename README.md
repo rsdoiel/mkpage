@@ -68,7 +68,7 @@ This break down is as follows.
 
 + "now" and "name" are explicit strings
     + "now" integrates getting data from the Unix _date_ command
-+ "weather" comes from a URL which returns a JSON document
++ "weatherForecast" comes from a URL which returns a JSON document
     + ".data.weather" is the path into the JSON document
     + _index_ is a function that lets us pull out the initial value in the array
 + "signature" comes from a file in our local disc
