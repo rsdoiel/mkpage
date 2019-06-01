@@ -20,17 +20,17 @@ also specifty the string to encode as a command line parameter.
 Below are a set of options available.
 
 ```
-    -examples           display example(s)
-    -generate-manpage   generate man page
-    -generate-markdown  generate markdown documentation
-    -h, -help           display help
-    -i, -input          set input filename
-    -l, -license        display license
-    -nl, -newline       add a trailing newline to output
-    -o, -output         set output filename
-    -q, -query          use query escape (pluses for spaces)
-    -quiet              suppress error messages
-    -v, -version        display version
+    -examples            display example(s)
+    -generate-manpage    generate man page
+    -generate-markdown   generate markdown documentation
+    -h, -help            display help
+    -i, -input           set input filename
+    -l, -license         display license
+    -nl, -newline        add a trailing newline to output
+    -o, -output          set output filename
+    -q, -query           use query escape (pluses for spaces)
+    -quiet               suppress error messages
+    -v, -version         display version
 ```
 
 

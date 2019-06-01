@@ -46,4 +46,3 @@ This will display the front matter if found in article.md.
 Will also do the same.
 
 
-frontmatter v0.0.25-rsdoiel

@@ -54,27 +54,27 @@ Environment variables can be overridden by corresponding options
 Below are a set of options available. Options will override any corresponding environment settings.
 
 ```
-    -c                   Specify the CSS file to use
-    -css                 Specify the CSS file to use
-    -example             display example(s)
-    -generate-manpage    generate man page
-    -generate-markdown   generate Markdown documentation
-    -h                   display help
-    -help                display help
-    -j                   Specify the JavaScript file to use
-    -js                  Specify the JavaScript file to use
-    -l                   display license
-    -license             display license
-    -m                   Markdown filename
-    -markdown            Markdown filename
-    -p                   Presentation title
-    -presentation-title  Presentation title
-    -s                   display the default template
-    -show-template       display the default template
-    -t                   A colon delimited list of HTML templates to use
-    -templates           A colon delimited list of HTML templates to use
-    -v                   display version
-    -version             display version
+    -c                    Specify the CSS file to use
+    -css                  Specify the CSS file to use
+    -example              display example(s)
+    -generate-manpage     generate man page
+    -generate-markdown    generate Markdown documentation
+    -h                    display help
+    -help                 display help
+    -j                    Specify the JavaScript file to use
+    -js                   Specify the JavaScript file to use
+    -l                    display license
+    -license              display license
+    -m                    Markdown filename
+    -markdown             Markdown filename
+    -p                    Presentation title
+    -presentation-title   Presentation title
+    -s                    display the default template
+    -show-template        display the default template
+    -t                    A colon delimited list of HTML templates to use
+    -templates            A colon delimited list of HTML templates to use
+    -v                    display version
+    -version              display version
 ```
 
 
