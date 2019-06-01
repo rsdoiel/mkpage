@@ -3,7 +3,7 @@
 //
 // @author R. S. Doiel, <rsdoiel@caltech.edu>
 //
-// Copyright (c) 2018, Caltech
+// Copyright (c) 2019, Caltech
 // All rights not granted herein are expressly reserved by Caltech.
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,9 +25,6 @@ import (
 	"strings"
 	"testing"
 	"text/template"
-
-	// 3rd Party Packages
-	"github.com/russross/blackfriday"
 )
 
 func TestResolveData(t *testing.T) {
@@ -74,7 +71,7 @@ func TestResolveData(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	expected := string(blackfriday.Run(src))
+	expected := string(markdownProcessor(src))
 
 	if err := checkMap("Nav", expected, data); err != nil {
 		t.Error(err)
@@ -86,7 +83,7 @@ func TestResolveData(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	expected = string(blackfriday.Run(src))
+	expected = string(markdownProcessor(src))
 
 	if err := checkMap("Content", expected, data); err != nil {
 		t.Error(err)

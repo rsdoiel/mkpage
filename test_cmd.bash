@@ -10,7 +10,6 @@ function assert_exists() {
         echo "$1: $2 does not exists"
         exit 1
     fi
-
 }
 
 function assert_equal() {

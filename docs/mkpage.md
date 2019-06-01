@@ -1,3 +1,8 @@
+---
+{
+    "has_code": true
+}
+---
 
 # mkpage
 

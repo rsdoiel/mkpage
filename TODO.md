@@ -4,14 +4,20 @@
 ## Bugs
 
 + [ ] After April 17, 2018 use the new NOAA weather API for example in help and README.md
++ [x] Copyright year needs updating in source files
 
 ## Next
 
++ [x] Add cli for extracting front matter
++ [x] *mkpage* should skip over front matter when rendering
 + [x] Add simple redirect support to _ws_
     + [x] via simple CSV file (from target column, to destination column)
 
 ## Someday, Maybe
 
++ [ ] Add a tool to generate and search lunr indexes
++ [ ] Add a HugoLike template support to tmplfn use by mkpage.
++ [ ] make markdown engine (blackfriday v2) configurable from front matter
 + [ ] Add support for metadata taken from Namaste (Name as text) in the directory
 + [ ] Align templating and feature set with Hugo while retaining the approach of simple commands responsible for simple actions in a pipe line
 + [ ] Remove the default template and ship distribution with a set of standard templates

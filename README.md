@@ -28,6 +28,7 @@ The following command line tools come with _mkpage_
 + [mkslides](docs/mkslides.html) -- a HTML slide generator based on the approach in _mkpage_
 + [mkrss](docs/mkrss.html) -- an RSS feed generator for content authored in Markdown and rendered to HTML
 + [sitemapper](docs/sitemapper.html) -- an XML Sitemap generator
++ [frontmatter](docs/frontmatter.html) -- a front matter extractor
 + [byline](docs/byline.html) -- a tool for extracting bylines from Markdown files
 + [titleline](docs/titleline.html) -- a tool for extracting the first title (H1) in a Markdown document
 + [reldocpath](docs/reldocpath.html) -- a relative path calculator, useful for pathing hrefs and src attributes in a website
@@ -122,6 +123,15 @@ the same template engine as *mkpage*
 
 *mkrss* will scan a directory tree for Markdown files and add each markdown file with
 a corresponding HTML file to the RSS feed generated.
+
+#### frontmatter
+
+*frontmatter* will extract a Markdown files' front matter so you can
+process it with another tool. When you used in conjunction with *mkpage*
+you can render the same file into metadata about the file and 
+HTML output. This is handy if you're using the front matter to build
+up metadata in an HTML template or building a corpus JSON document
+for use with browser side search engines like [Lunrjs](https://lunrjs.com).
 
 #### byline
 

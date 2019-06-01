@@ -1,5 +1,8 @@
 //
-// urldecode.go is a simple command line utility to decode a string in a URL friendly way.
+// frontmatter.go - is a command line tool that reads a Markdown file
+// and returns the frontmatter portion.
+//
+// @Author R. S. Doiel, <rsdoiel@caltech.edu>
 //
 // Copyright (c) 2019, Caltech
 // All rights not granted herein are expressly reserved by Caltech.
@@ -19,36 +22,31 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
-	"net/url"
 	"os"
-	"strings"
 
-	// CaltechLibrary Packages
+	// My packages
 	"github.com/caltechlibrary/cli"
-	"github.com/caltechlibrary/mkpage"
+	"github.com/rsdoiel/mkpage"
 )
 
 var (
 	description = `
-
-SYNOPSIS
-
-%s is a simple command line utility to URL decode content. By default
-it reads from standard input and writes to standard out.  You can
-also specifty the string to decode as a command line parameter.
-
+%s extracts a front matter from a Markdown file.
+If no front matter is present then an empty file 
+is returned. NOTE: %s doesn't process the front 
+matter it only extracts it.
 `
 
 	examples = `
+Extract a front matter from article.md.
 
-EXAMPLES
+    cat article.md | %s
 
-    echo 'This%%20is%%20the%%20string%%20to%%20encode%%20&%%20nothing%%20else%%0A' | %s
+This will display the front matter if found in article.md.
 
-would yield
+    %s -i article.md
 
-    This is the string to encode & nothing else!
-
+Will also do the same.
 `
 
 	// Standard Options
@@ -58,49 +56,38 @@ would yield
 	showExamples     bool
 	inputFName       string
 	outputFName      string
-	newLine          bool
+	quiet            bool
 	generateMarkdown bool
 	generateManPage  bool
-	quiet            bool
-
-	// App Options
-	useQueryUnescape bool
 )
 
 func main() {
 	app := cli.NewCli(mkpage.Version)
 	appName := app.AppName()
 
-	// Document non-option parameters
-	app.SetParams(`[STRING_TO_ENCODE]`)
-
-	// Add Help Docs
-	app.AddHelp("license", []byte(fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version)))
-	app.AddHelp("description", []byte(fmt.Sprintf(description, appName)))
-	app.AddHelp("examples", []byte(fmt.Sprintf(examples, appName)))
-
 	// Standard Options
 	app.BoolVar(&showHelp, "h,help", false, "display help")
 	app.BoolVar(&showLicense, "l,license", false, "display license")
 	app.BoolVar(&showVersion, "v,version", false, "display version")
 	app.BoolVar(&showExamples, "examples", false, "display example(s)")
-	app.StringVar(&inputFName, "i,input", "", "set input filename")
-	app.StringVar(&outputFName, "o,output", "", "set output filename")
-	app.BoolVar(&newLine, "nl,newline", false, "if true add a trailing newline to output")
-	app.BoolVar(&generateMarkdown, "generate-markdown", false, "generate markdown documentation")
-	app.BoolVar(&generateManPage, "generate-manpage", false, "generate man page")
+	app.StringVar(&inputFName, "i,input", "", "input filename")
+	app.StringVar(&outputFName, "o,output", "", "output filename")
 	app.BoolVar(&quiet, "quiet", false, "suppress error messages")
+	app.BoolVar(&generateMarkdown, "generate-markdown", false, "generate Markdown documentation")
+	app.BoolVar(&generateManPage, "generate-manpage", false, "generate man page")
 
-	// App Options
-	app.BoolVar(&useQueryUnescape, "q,query", false, "use query escape (pluses for spaces)")
+	// Configuration and command line interation
+	app.AddHelp("license", []byte(fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version)))
+	app.AddHelp("description", []byte(fmt.Sprintf(description, appName, appName)))
+	app.AddHelp("examples", []byte(fmt.Sprintf(examples, appName, appName)))
 
 	app.Parse()
 	args := app.Args()
 
 	// Setup IO
 	var err error
-
 	app.Eout = os.Stderr
+
 	app.In, err = cli.Open(inputFName, os.Stdin)
 	cli.ExitOnError(app.Eout, err, quiet)
 	defer cli.CloseFile(inputFName, app.In)
@@ -109,7 +96,7 @@ func main() {
 	cli.ExitOnError(app.Eout, err, quiet)
 	defer cli.CloseFile(outputFName, app.Out)
 
-	// Handle the default options
+	// Handle Options
 	if generateMarkdown {
 		app.GenerateMarkdown(app.Out)
 		os.Exit(0)
@@ -121,42 +108,29 @@ func main() {
 	if showHelp || showExamples {
 		if len(args) > 0 {
 			fmt.Fprintln(app.Out, app.Help(args...))
+		} else if showExamples {
+			fmt.Fprintln(app.Out, app.Help("examples"))
 		} else {
 			app.Usage(app.Out)
 		}
 		os.Exit(0)
 	}
-	if showVersion {
-		fmt.Fprintln(app.Out, app.Version())
-		os.Exit(0)
-	}
 	if showLicense {
-		fmt.Fprintln(app.Out, app.License())
+		fmt.Println(app.License())
+		os.Exit(0)
+	}
+	if showVersion {
+		fmt.Println(app.Version())
 		os.Exit(0)
 	}
 
-	nl := "\n"
-	if newLine == false {
-		nl = ""
+	//NOTE: read input and pass front matter to output.
+	buf, err := ioutil.ReadAll(app.In)
+	if err != nil {
+		fmt.Fprintf(app.Eout, "%s", err)
+		os.Exit(1)
 	}
-
-	var (
-		src string
-		s   string
-	)
-
-	if len(args) > 0 {
-		src = strings.Join(args, " ")
-	} else {
-		buf, err := ioutil.ReadAll(app.In)
-		cli.ExitOnError(app.Eout, err, quiet)
-		src = fmt.Sprintf("%s", buf)
-	}
-	if useQueryUnescape {
-		s, err = url.QueryUnescape(src)
-	} else {
-		s, err = url.PathUnescape(src)
-	}
-	cli.ExitOnError(app.Eout, err, quiet)
-	fmt.Fprintf(app.Out, "%s%s", s, nl)
+	frontMatterSrc, _ := mkpage.SplitFrontMatter(buf)
+	fmt.Fprintf(app.Out, "%s", frontMatterSrc)
+	os.Exit(0)
 }

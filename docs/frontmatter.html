@@ -28,42 +28,51 @@
 </nav>
 
 <section>
-<h1>urlencode</h1>
+<h1>frontmatter</h1>
 
 <h2>USAGE</h2>
 
-<pre><code>urlencode [OPTIONS] [STRING_TO_ENCODE]
+<pre><code>frontmatter [OPTIONS]
 </code></pre>
 
-<h2>SYNOPSIS</h2>
+<h3>DESCRIPTION</h3>
 
-<p>urlencode is a simple command line utility to URL encode content. By default
-it reads from standard input and writes to standard out.  You can
-also specifty the string to encode as a command line parameter.</p>
+<p>frontmatter extracts a front matter from a Markdown file.
+If no front matter is present then an empty file
+is returned. NOTE: frontmatter doesn&rsquo;t process the front
+matter it only extracts it. You&rsquo;ll need to process it with
+another tool.</p>
 
-<h2>OPTIONS</h2>
+<h3>OPTIONS</h3>
 
-<pre><code>	-h	display help
-	-help	display help
-	-i	set input filename
-	-input	set input filename
-	-l	display license
-	-license	display license
-	-o	set output filename
-	-output	set output filename
-	-v	display version
-	-version	display version
+<p>Below are a set of options available.</p>
+
+<pre><code>    -examples            display example(s)
+    -generate-manpage    generate man page
+    -generate-markdown   generate Markdown documentation
+    -h, -help            display help
+    -i, -input           input filename
+    -l, -license         display license
+    -o, -output          output filename
+    -quiet               suppress error messages
+    -v, -version         display version
 </code></pre>
 
-<h2>EXAMPLES</h2>
+<h3>EXAMPLES</h3>
 
-<pre><code class="language-shell">    echo &quot;This is the string to encode &amp; nothing else!&quot; | urlencode
+<p>Extract a front matter from article.md.</p>
+
+<pre><code>cat article.md | frontmatter
 </code></pre>
 
-<p>would yield</p>
+<p>This will display the front matter if found in article.md.</p>
 
-<pre><code>    This%20is%20the%20string%20to%20encode%20&amp;%20nothing%20else%0A
+<pre><code>frontmatter -i article.md
 </code></pre>
+
+<p>Will also do the same.</p>
+
+<p>frontmatter v0.0.25-rsdoiel</p>
 
 </section>
 
