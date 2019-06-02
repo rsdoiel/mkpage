@@ -128,6 +128,8 @@ func main() {
 		os.Exit(1)
 	}
 	frontMatterSrc, _ := mkpage.SplitFrontMatter(buf)
-	fmt.Fprintf(app.Out, "%s", frontMatterSrc)
+	if len(frontMatterSrc) > 0 {
+		fmt.Fprintf(app.Out, "%s", frontMatterSrc)
+	}
 	os.Exit(0)
 }
