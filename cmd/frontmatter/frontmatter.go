@@ -20,9 +20,15 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
+
+	// 3rd Party packages
+	"github.com/BurntSushi/toml"
+	"gopkg.in/yaml.v2"
 
 	// My packages
 	"github.com/caltechlibrary/cli"
@@ -56,6 +62,9 @@ Will also do the same.
 	quiet            bool
 	generateMarkdown bool
 	generateManPage  bool
+
+	// App Options
+	jsonFormat bool
 )
 
 func main() {
@@ -77,6 +86,9 @@ func main() {
 	app.AddHelp("license", []byte(fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version)))
 	app.AddHelp("description", []byte(fmt.Sprintf(description, appName, appName, appName)))
 	app.AddHelp("examples", []byte(fmt.Sprintf(examples, appName, appName)))
+
+	// App options
+	app.BoolVar(&jsonFormat, "j,json", false, "output as JSON")
 
 	app.Parse()
 	args := app.Args()
@@ -129,6 +141,42 @@ func main() {
 	}
 	frontMatterSrc, _ := mkpage.SplitFrontMatter(buf)
 	if len(frontMatterSrc) > 0 {
+		if jsonFormat {
+			obj := make(map[string]interface{})
+			switch {
+			case bytes.HasPrefix(buf, []byte("+++\n")):
+				// Make sure we have valid Toml
+				if err := toml.Unmarshal(frontMatterSrc, &obj); err != nil {
+					fmt.Fprintf(app.Eout, "Toml error: %s", err)
+					os.Exit(1)
+				}
+			case bytes.HasPrefix(buf, []byte("---\n")):
+				// Make sure we have valid Yaml
+				m := make(map[interface{}]interface{})
+				if err := yaml.Unmarshal(frontMatterSrc, &m); err != nil {
+					fmt.Fprintf(app.Eout, "Yaml error: %s", err)
+					os.Exit(1)
+				}
+				fmt.Fprint(app.Eout, "WARNING: Yaml to JSON not supported\n")
+				fmt.Fprintf(app.Out, "%s", frontMatterSrc)
+				os.Exit(0)
+			default:
+				// Make sure we have valid JSON
+				if err := json.Unmarshal(frontMatterSrc, &obj); err != nil {
+					fmt.Fprintf(app.Eout, "JSON error: %s", err)
+					os.Exit(1)
+				}
+			}
+			if src, err := json.MarshalIndent(obj, "", "    "); err != nil {
+				fmt.Fprintf(app.Eout, "%+v\n", obj)
+				fmt.Fprintf(app.Eout, "%s\n", src)
+				fmt.Fprintf(app.Eout, "JSON marshal error: %s", err)
+				os.Exit(0)
+			} else {
+				fmt.Fprintf(app.Out, "%s", src)
+				os.Exit(0)
+			}
+		}
 		fmt.Fprintf(app.Out, "%s", frontMatterSrc)
 	}
 	os.Exit(0)
