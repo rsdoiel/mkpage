@@ -28,7 +28,9 @@ import (
 
 	// 3rd Party packages
 	"github.com/BurntSushi/toml"
-	"gopkg.in/yaml.v2"
+	//"gopkg.in/yaml.v2"
+	// ghodss Yaml implements the yaml 2 json func, wraps go-yaml
+	"github.com/ghodss/yaml"
 
 	// My packages
 	"github.com/caltechlibrary/cli"
@@ -151,15 +153,13 @@ func main() {
 					os.Exit(1)
 				}
 			case bytes.HasPrefix(buf, []byte("---\n")):
-				// Make sure we have valid Yaml
-				m := make(map[interface{}]interface{})
-				if err := yaml.Unmarshal(frontMatterSrc, &m); err != nil {
-					fmt.Fprintf(app.Eout, "Yaml error: %s", err)
+				if src, err := yaml.YAMLToJSON(frontMatterSrc); err != nil {
+					fmt.Fprintf(app.Eout, "Yaml to JSON error: %s", err)
 					os.Exit(1)
+				} else {
+					fmt.Fprintf(app.Out, "%s", src)
+					os.Exit(0)
 				}
-				fmt.Fprint(app.Eout, "WARNING: Yaml to JSON not supported\n")
-				fmt.Fprintf(app.Out, "%s", frontMatterSrc)
-				os.Exit(0)
 			default:
 				// Make sure we have valid JSON
 				if err := json.Unmarshal(frontMatterSrc, &obj); err != nil {
