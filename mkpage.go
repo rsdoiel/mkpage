@@ -95,11 +95,22 @@ var (
 // source and Markdown source. If either is missing an empty []byte
 // is returned for the missing element.
 func SplitFrontMatter(input []byte) ([]byte, []byte) {
+	var parts [][]byte
 	// Handle case of no front matter
-	if !bytes.HasPrefix(input, []byte("---\n")) {
+	if !bytes.HasPrefix(input, []byte("---\n")) &&
+		!bytes.HasPrefix(input, []byte("+++n")) &&
+		!bytes.HasPrefix(input, []byte("{\n")) {
 		return []byte(""), input
 	}
-	parts := bytes.SplitN(bytes.TrimPrefix(input, []byte("---\n")), []byte("\n---\n"), 2)
+	if bytes.HasPrefix(input, []byte("---\n")) {
+		parts = bytes.SplitN(bytes.TrimPrefix(input, []byte("---\n")), []byte("\n---\n"), 2)
+	}
+	if bytes.HasPrefix(input, []byte("+++n")) {
+		parts = bytes.SplitN(bytes.TrimPrefix(input, []byte("+++n")), []byte("\n+++n"), 2)
+	}
+	if bytes.HasPrefix(input, []byte("{n")) {
+		parts = bytes.SplitN(bytes.TrimPrefix(input, []byte("{n")), []byte("\n}n"), 2)
+	}
 	return parts[0], parts[1]
 }
 

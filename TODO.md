@@ -5,6 +5,7 @@
 
 + [ ] After April 17, 2018 use the new NOAA weather API for example in help and README.md
 + [x] Copyright year needs updating in source files
++ [ ] Need to handle Toml, JSOM front matter based on their respective start/end delimiters
 
 ## Next
 
