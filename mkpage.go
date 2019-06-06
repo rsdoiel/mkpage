@@ -34,7 +34,6 @@ import (
 	"time"
 
 	// 3rd Party Packages
-	//"github.com/russross/blackfriday"
 	"gopkg.in/russross/blackfriday.v2"
 )
 
@@ -91,6 +90,33 @@ var (
 	DefaultSlideTemplateSource string
 )
 
+// markdownProcessor wraps blackfriday.Run() resolving front matter
+// inputs if present.
+func markdownProcessor(input []byte) []byte {
+	// Process font matter
+	if bytes.HasPrefix(input, []byte("---\n")) {
+		frontMatterSrc, mdSrc := SplitFrontMatter(input)
+		//FIXME: Apply front matter here. E.g. change Blackfriday
+		// options, handle var substitions like Hugo/Jeykill
+		fmt.Printf("DEBUG frontMatterSrc:\n%s\n", frontMatterSrc)
+		return blackfriday.Run(mdSrc)
+	}
+	// Hand of to Blackfriday.Run()
+	return blackfriday.Run(input)
+}
+
+// SplitFronMatter() takes a []byte input splits intofront matter
+// source and Markdown source. If either is missing an empty []byte
+// is returned for the missing element.
+func SplitFrontMatter(input []byte) ([]byte, []byte) {
+	// Handle case of no front matter
+	if !bytes.HasPrefix(input, []byte("---\n")) {
+		return []byte(""), input
+	}
+	parts := bytes.SplitN(bytes.TrimPrefix(input, []byte("---\n")), []byte("\n---\n"), 2)
+	return parts[0], parts[1]
+}
+
 // ResolveData takes a data map and reads in the files and URL sources
 // as needed turning the data into strings to be applied to the template.
 func ResolveData(data map[string]string) (map[string]interface{}, error) {
@@ -111,7 +137,7 @@ func ResolveData(data map[string]string) (map[string]interface{}, error) {
 		case strings.HasPrefix(val, TextPrefix) == true:
 			out[key] = strings.TrimPrefix(val, TextPrefix)
 		case strings.HasPrefix(val, MarkdownPrefix) == true:
-			out[key] = string(blackfriday.Run([]byte(strings.TrimPrefix(val, MarkdownPrefix))))
+			out[key] = string(markdownProcessor([]byte(strings.TrimPrefix(val, MarkdownPrefix))))
 		case strings.HasPrefix(val, JSONPrefix) == true:
 			var o interface{}
 			err := json.Unmarshal(bytes.TrimPrefix([]byte(val), []byte(JSONPrefix)), &o)
@@ -141,7 +167,7 @@ func ResolveData(data map[string]string) (map[string]interface{}, error) {
 						}
 						out[key] = o
 					case isContentType(contentTypes, "text/markdown") == true:
-						out[key] = string(blackfriday.Run(buf))
+						out[key] = string(markdownProcessor(buf))
 					default:
 						out[key] = string(buf)
 					}
@@ -157,7 +183,7 @@ func ResolveData(data map[string]string) (map[string]interface{}, error) {
 			ext := path.Ext(val)
 			switch {
 			case strings.Compare(ext, ".md") == 0:
-				out[key] = string(blackfriday.Run(buf))
+				out[key] = string(markdownProcessor(buf))
 			case strings.Compare(ext, ".json") == 0:
 				var o interface{}
 				err := json.Unmarshal(buf, &o)
@@ -262,7 +288,7 @@ func MarkdownToSlides(fname string, mdSource []byte) []*Slide {
 			NextNo:  (i + 1),
 			FirstNo: 0,
 			LastNo:  lastSlide,
-			Content: string(blackfriday.Run(s)),
+			Content: string(markdownProcessor(s)),
 		})
 	}
 	return slides

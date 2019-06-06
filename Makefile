@@ -20,7 +20,7 @@ endif
 build: bin/mkpage$(EXT) bin/mkslides$(EXT) bin/mkrss$(EXT) \
 	bin/sitemapper$(EXT) bin/byline$(EXT) bin/titleline$(EXT) \
 	bin/reldocpath$(EXT) bin/urlencode$(EXT) bin/urldecode$(EXT) \
-	bin/ws$(EXT) 
+	bin/ws$(EXT) bin/frontmatter$(EXT)
 
 mkpage.go: assets.go codesnip.go
 
@@ -58,6 +58,8 @@ bin/urldecode$(EXT): cmd/urldecode/urldecode.go
 bin/ws$(EXT): mkpage.go cmd/ws/ws.go
 	go build -o bin/ws$(EXT) cmd/ws/ws.go
 
+bin/frontmatter$(ext): mkpage.go cmd/frontmatter/frontmatter.go
+	go build -o bin/frontmatter$(EXT) cmd/frontmatter/frontmatter.go
 
 lint:
 	golint mkpage.go
@@ -72,6 +74,7 @@ lint:
 	golint cmd/urlencode/urlencode.go
 	golint cmd/urldecode/urldecode.go
 	golint cmd/ws/ws.go
+	golint cmd/frontmatter/frontmatter.go
 
 format:
 	gofmt -w mkpage.go
@@ -86,11 +89,12 @@ format:
 	gofmt -w cmd/urlencode/urlencode.go
 	gofmt -w cmd/urldecode/urldecode.go
 	gofmt -w cmd/ws/ws.go
+	gofmt -w cmd/frontmatter/frontmatter.go
 
 test: bin/mkpage$(EXT) bin/mkslides$(EXT) bin/mkrss$(EXT) \
 	bin/sitemapper$(EXT) bin/byline$(EXT) bin/titleline$(EXT) \
 	bin/reldocpath$(EXT) bin/urlencode$(EXT) bin/urldecode$(EXT) \
-	bin/ws$(EXT)  FORCE
+	bin/ws$(EXT) bin/frontmatter$(EXT)  FORCE
 	go test
 	bash test_cmd.bash
 
@@ -119,6 +123,7 @@ man: build
 	bin/urldecode -generate-manpage | nroff -Tutf8 -man > man/man1/urldecode.1
 	bin/urlencode -generate-manpage | nroff -Tutf8 -man > man/man1/urlencode.1
 	bin/ws -generate-manpage | nroff -Tutf8 -man > man/man1/ws.1
+	bin/frontmatter -generate-manpage | nroff -Tutf8 -man > man/man1/frontmatter.1
 
 install: assets.go
 	env GOBIN=$(GOPATH)/bin go install cmd/mkpage/mkpage.go
@@ -131,6 +136,7 @@ install: assets.go
 	env GOBIN=$(GOPATH)/bin go install cmd/urlencode/urlencode.go
 	env GOBIN=$(GOPATH)/bin go install cmd/urldecode/urldecode.go
 	env GOBIN=$(GOPATH)/bin go install cmd/ws/ws.go
+	env GOBIN=$(GOPATH)/bin go install cmd/frontmatter/frontmatter.go
 
 
 dist/linux-amd64:
@@ -145,6 +151,7 @@ dist/linux-amd64:
 	env  GOOS=linux GOARCH=amd64 go build -o dist/bin/urlencode cmd/urlencode/urlencode.go
 	env  GOOS=linux GOARCH=amd64 go build -o dist/bin/urldecode cmd/urldecode/urldecode.go
 	env  GOOS=linux GOARCH=amd64 go build -o dist/bin/ws cmd/ws/ws.go
+	env  GOOS=linux GOARCH=amd64 go build -o dist/bin/frontmatter cmd/frontmatter/frontmatter.go
 	cd dist && zip -r $(PROJECT)-$(VERSION)-linux-amd64.zip README.md LICENSE INSTALL.md bin/* docs/* how-to/* templates/*
 	rm -fR dist/bin
 
@@ -162,6 +169,7 @@ dist/windows-amd64:
 	env  GOOS=windows GOARCH=amd64 go build -o dist/bin/urlencode.exe cmd/urlencode/urlencode.go
 	env  GOOS=windows GOARCH=amd64 go build -o dist/bin/urldecode.exe cmd/urldecode/urldecode.go
 	env  GOOS=windows GOARCH=amd64 go build -o dist/bin/ws.exe cmd/ws/ws.go
+	env  GOOS=windofrontmatter GOARCH=amd64 go build -o dist/bin/frontmatter.exe cmd/frontmatter/frontmatter.go
 	cd dist && zip -r $(PROJECT)-$(VERSION)-windows-amd64.zip README.md LICENSE INSTALL.md bin/* docs/* how-to/* templates/*
 	rm -fR dist/bin
 
@@ -177,6 +185,7 @@ dist/macosx-amd64:
 	env  GOOS=darwin GOARCH=amd64 go build -o dist/bin/urlencode cmd/urlencode/urlencode.go
 	env  GOOS=darwin GOARCH=amd64 go build -o dist/bin/urldecode cmd/urldecode/urldecode.go
 	env  GOOS=darwin GOARCH=amd64 go build -o dist/bin/ws cmd/ws/ws.go
+	env  GOOS=darwin GOARCH=amd64 go build -o dist/bin/frontmatter cmd/frontmatter/frontmatter.go
 	cd dist && zip -r $(PROJECT)-$(VERSION)-macosx-amd64.zip README.md LICENSE INSTALL.md bin/* docs/* how-to/* templates/*
 	rm -fR dist/bin
 
@@ -192,6 +201,7 @@ dist/raspbian-arm7:
 	env  GOOS=linux GOARCH=arm GOARM=7 go build -o dist/bin/urlencode cmd/urlencode/urlencode.go
 	env  GOOS=linux GOARCH=arm GOARM=7 go build -o dist/bin/urldecode cmd/urldecode/urldecode.go
 	env  GOOS=linux GOARCH=arm GOARM=7 go build -o dist/bin/ws cmd/ws/ws.go
+	env  GOOS=linux GOARCH=arm GOARM=7 go build -o dist/bin/frontmatter cmd/frontmatter/frontmatter.go
 	cd dist && zip -r $(PROJECT)-$(VERSION)-raspbian-arm7.zip README.md LICENSE INSTALL.md bin/* docs/* how-to/* templates/*
 	rm -fR dist/bin
 
@@ -211,6 +221,7 @@ distribute_docs:
 	cp -v docs/urldecode.md dist/docs/
 	cp -v docs/urlencode.md dist/docs/
 	cp -v docs/ws.md dist/docs/
+	cp -v docs/frontmatter.md dist/docs/
 	cp -v how-to/go-template-recipes.md dist/how-to/
 	cp -v how-to/the-basics.md dist/how-to/
 	cp -vR templates dist/
