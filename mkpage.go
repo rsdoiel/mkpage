@@ -65,6 +65,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 	MarkdownPrefix = "markdown:"
 	// TextPrefix designates a string as text/plain not needed processing
 	TextPrefix = "text:"
+	// FountainPrefex designates a string as Fountain formatted content
+	FountainPrefix = "fountain:"
 
 	// SOMEDAY: should add XML, BibTeX, YaML support...
 
@@ -117,6 +119,13 @@ func markdownProcessor(input []byte) []byte {
 	return blackfriday.Run(mdSrc)
 }
 
+// fountainProcessor wraps fountain.Run() splitting off the front
+// matter if present.
+func fountainProcessor(input []byte) []byte {
+	_, fountainSrc := SplitFrontMatter(input)
+	return fountain.Run(fountainSrc)
+}
+
 // ResolveData takes a data map and reads in the files and URL sources
 // as needed turning the data into strings to be applied to the template.
 func ResolveData(data map[string]string) (map[string]interface{}, error) {
@@ -138,6 +147,8 @@ func ResolveData(data map[string]string) (map[string]interface{}, error) {
 			out[key] = strings.TrimPrefix(val, TextPrefix)
 		case strings.HasPrefix(val, MarkdownPrefix) == true:
 			out[key] = string(markdownProcessor([]byte(strings.TrimPrefix(val, MarkdownPrefix))))
+		case strings.HasPrefix(val, FountainPrefix) == true:
+			out[key] = string(fountainProcessor([]byte(strings.TrimPrefix(val, FountainPrefix))))
 		case strings.HasPrefix(val, JSONPrefix) == true:
 			var o interface{}
 			err := json.Unmarshal(bytes.TrimPrefix([]byte(val), []byte(JSONPrefix)), &o)
@@ -168,6 +179,8 @@ func ResolveData(data map[string]string) (map[string]interface{}, error) {
 						out[key] = o
 					case isContentType(contentTypes, "text/markdown") == true:
 						out[key] = string(markdownProcessor(buf))
+					case isContentType(contentTypes, "text/fountain") == true:
+						out[key] = string(fountainProcessor(buf))
 					default:
 						out[key] = string(buf)
 					}
@@ -182,6 +195,9 @@ func ResolveData(data map[string]string) (map[string]interface{}, error) {
 			}
 			ext := path.Ext(val)
 			switch {
+			case strings.Compare(ext, ".fountain") == true ||
+				strings.Compare(ext, ".spmd") == true:
+				out[key] = string(fountainProcessor(buf))
 			case strings.Compare(ext, ".md") == 0:
 				out[key] = string(markdownProcessor(buf))
 			case strings.Compare(ext, ".json") == 0:
