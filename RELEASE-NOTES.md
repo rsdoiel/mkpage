@@ -1,6 +1,13 @@
 
 # Release Notes
 
+## v0.0.26
+
++ Compiled with Go's 1.12 templates supporting variable creation and substution
++ *frontmatter* command line tool for extracting the Hugo/Rmarkdown front matter from a Markdown file so you can process it separately, by default frontmatter reads from standard in and writes to stand out so you can use it as a datasource in mkpage
++ *mkpage* now skips over front matter like that used in Hugo and Rmarkdown 
+
+
 ## v0.0.18
 
 + Templates are now all assumed to start with a define with the master template listed first and matching its basename

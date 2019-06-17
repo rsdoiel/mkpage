@@ -7,6 +7,7 @@
 + [mkslides](./mkslides.html)
 + [byline](./byline.html)
 + [ws](./ws.html)
++ [frontmatter](./frontmatter.html)
 + [urldecode](./urldecode.html)
 + [sitemapper](./sitemapper.html)
 + [reldocpath](./reldocpath.html)

@@ -3,7 +3,7 @@
 //
 // @author R. S. Doiel, <rsdoiel@caltech.edu>
 //
-// Copyright (c) 2018, Caltech
+// Copyright (c) 2019, Caltech
 // All rights not granted herein are expressly reserved by Caltech.
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -38,14 +38,13 @@ import (
 )
 
 const (
-	// Version of the mkpage package.
-	Version = `v0.0.25-rsdoiel`
+	Version = `v0.0.27`
 
 	// LicenseText provides a string template for rendering cli license info
 	LicenseText = `
 %s %s
 
-Copyright (c) 2018, Caltech
+Copyright (c) 2019, Caltech
 All rights not granted herein are expressly reserved by Caltech.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -90,31 +89,32 @@ var (
 	DefaultSlideTemplateSource string
 )
 
-// markdownProcessor wraps blackfriday.Run() resolving front matter
-// inputs if present.
-func markdownProcessor(input []byte) []byte {
-	// Process font matter
-	if bytes.HasPrefix(input, []byte("---\n")) {
-		frontMatterSrc, mdSrc := SplitFrontMatter(input)
-		//FIXME: Apply front matter here. E.g. change Blackfriday
-		// options, handle var substitions like Hugo/Jeykill
-		fmt.Printf("DEBUG frontMatterSrc:\n%s\n", frontMatterSrc)
-		return blackfriday.Run(mdSrc)
-	}
-	// Hand of to Blackfriday.Run()
-	return blackfriday.Run(input)
-}
-
-// SplitFronMatter() takes a []byte input splits intofront matter
+// SplitFronMatter takes a []byte input splits it into front matter
 // source and Markdown source. If either is missing an empty []byte
 // is returned for the missing element.
 func SplitFrontMatter(input []byte) ([]byte, []byte) {
-	// Handle case of no front matter
-	if !bytes.HasPrefix(input, []byte("---\n")) {
-		return []byte(""), input
+	if bytes.HasPrefix(input, []byte("---\n")) {
+		parts := bytes.SplitN(bytes.TrimPrefix(input, []byte("---\n")), []byte("\n---\n"), 2)
+		return parts[0], parts[1]
 	}
-	parts := bytes.SplitN(bytes.TrimPrefix(input, []byte("---\n")), []byte("\n---\n"), 2)
-	return parts[0], parts[1]
+	if bytes.HasPrefix(input, []byte("+++\n")) {
+		parts := bytes.SplitN(bytes.TrimPrefix(input, []byte("+++\n")), []byte("\n+++\n"), 2)
+		return parts[0], parts[1]
+	}
+	if bytes.HasPrefix(input, []byte("{\n")) {
+		parts := bytes.SplitN(bytes.TrimPrefix(input, []byte("{\n")), []byte("\n}\n"), 2)
+		src := []byte(fmt.Sprintf("{\n%s\n}\n", parts[0]))
+		return src, parts[1]
+	}
+	// Handle case of no front matter
+	return []byte(""), input
+}
+
+// markdownProcessor wraps blackfriday.Run() splitting off the front
+// matter if present.
+func markdownProcessor(input []byte) []byte {
+	_, mdSrc := SplitFrontMatter(input)
+	return blackfriday.Run(mdSrc)
 }
 
 // ResolveData takes a data map and reads in the files and URL sources

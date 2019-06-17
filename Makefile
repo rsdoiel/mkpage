@@ -58,8 +58,9 @@ bin/urldecode$(EXT): cmd/urldecode/urldecode.go
 bin/ws$(EXT): mkpage.go cmd/ws/ws.go
 	go build -o bin/ws$(EXT) cmd/ws/ws.go
 
-bin/frontmatter$(ext): mkpage.go cmd/frontmatter/frontmatter.go
+bin/frontmatter$(EXT): mkpage.go cmd/frontmatter/frontmatter.go
 	go build -o bin/frontmatter$(EXT) cmd/frontmatter/frontmatter.go
+
 
 lint:
 	golint mkpage.go
@@ -169,7 +170,7 @@ dist/windows-amd64:
 	env  GOOS=windows GOARCH=amd64 go build -o dist/bin/urlencode.exe cmd/urlencode/urlencode.go
 	env  GOOS=windows GOARCH=amd64 go build -o dist/bin/urldecode.exe cmd/urldecode/urldecode.go
 	env  GOOS=windows GOARCH=amd64 go build -o dist/bin/ws.exe cmd/ws/ws.go
-	env  GOOS=windofrontmatter GOARCH=amd64 go build -o dist/bin/frontmatter.exe cmd/frontmatter/frontmatter.go
+	env  GOOS=windows GOARCH=amd64 go build -o dist/bin/frontmatter.exe cmd/frontmatter/frontmatter.go
 	cd dist && zip -r $(PROJECT)-$(VERSION)-windows-amd64.zip README.md LICENSE INSTALL.md bin/* docs/* how-to/* templates/*
 	rm -fR dist/bin
 

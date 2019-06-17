@@ -1,8 +1,6 @@
 //
-// byline reads a Markdown file and returns the first byline
-// encountered.  A byline, by default, is identified by the RegExp
-// `^[B|b]y\s+(\w|\s)+ [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$`
-// This can be overwritten with another definition using an option.
+// frontmatter.go - is a command line tool that reads a Markdown file
+// and returns the frontmatter portion.
 //
 // @Author R. S. Doiel, <rsdoiel@caltech.edu>
 //
@@ -22,28 +20,38 @@
 package main
 
 import (
-	"bufio"
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"os"
+
+	// 3rd Party packages
+	"github.com/BurntSushi/toml"
+	//"gopkg.in/yaml.v2"
+	// ghodss Yaml implements the yaml 2 json func, wraps go-yaml
+	"github.com/ghodss/yaml"
 
 	// My packages
 	"github.com/caltechlibrary/cli"
-	"github.com/rsdoiel/mkpage"
+	"github.com/caltechlibrary/mkpage"
 )
 
 var (
 	description = `
-%s extracts a byline from a Markdown file. By default it reads
-from standard in and writes to standard out but can read/write
-to specific files using an option.
+%s extracts a front matter from a Markdown file. If no front matter is present then an empty file is returned. Note %s doesn’t process the data extracted. It returns it unprocessed. Other tools can be used to process the front matter appropriately. By default %s reads from standard in and writes to standard out. This makes it very suitable for pipeline processing or for passing JSON formatted front matter back to mkpage for integration into the templates processed.
 `
 
 	examples = `
-Extract a byline from article.md.
+Extract a front matter from article.md.
 
     cat article.md | %s
 
-This will display the %s if one is found in article.md.
+This will display the front matter if found in article.md.
+
+    %s -i article.md
+
+Will also do the same.
 `
 
 	// Standard Options
@@ -58,7 +66,7 @@ This will display the %s if one is found in article.md.
 	generateManPage  bool
 
 	// App Options
-	bylineExp string
+	jsonFormat bool
 )
 
 func main() {
@@ -76,13 +84,13 @@ func main() {
 	app.BoolVar(&generateMarkdown, "generate-markdown", false, "generate Markdown documentation")
 	app.BoolVar(&generateManPage, "generate-manpage", false, "generate man page")
 
-	// App Options
-	app.StringVar(&bylineExp, "b,byline", mkpage.BylineExp, "set byline regexp")
-
 	// Configuration and command line interation
 	app.AddHelp("license", []byte(fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version)))
-	app.AddHelp("description", []byte(fmt.Sprintf(description, appName)))
+	app.AddHelp("description", []byte(fmt.Sprintf(description, appName, appName, appName)))
 	app.AddHelp("examples", []byte(fmt.Sprintf(examples, appName, appName)))
+
+	// App options
+	app.BoolVar(&jsonFormat, "j,json", false, "output as JSON")
 
 	app.Parse()
 	args := app.Args()
@@ -127,13 +135,49 @@ func main() {
 		os.Exit(0)
 	}
 
-	scanner := bufio.NewScanner(app.In)
-	for scanner.Scan() {
-		s := mkpage.Grep(bylineExp, scanner.Text())
-		if len(s) > 0 {
-			fmt.Fprintf(app.Out, "%s", s)
-			os.Exit(0)
-		}
+	//NOTE: read input and pass front matter to output.
+	buf, err := ioutil.ReadAll(app.In)
+	if err != nil {
+		fmt.Fprintf(app.Eout, "%s", err)
+		os.Exit(1)
 	}
-	os.Exit(1)
+	frontMatterSrc, _ := mkpage.SplitFrontMatter(buf)
+	if len(frontMatterSrc) > 0 {
+		if jsonFormat {
+			obj := make(map[string]interface{})
+			switch {
+			case bytes.HasPrefix(buf, []byte("+++\n")):
+				// Make sure we have valid Toml
+				if err := toml.Unmarshal(frontMatterSrc, &obj); err != nil {
+					fmt.Fprintf(app.Eout, "Toml error: %s", err)
+					os.Exit(1)
+				}
+			case bytes.HasPrefix(buf, []byte("---\n")):
+				if src, err := yaml.YAMLToJSON(frontMatterSrc); err != nil {
+					fmt.Fprintf(app.Eout, "Yaml to JSON error: %s", err)
+					os.Exit(1)
+				} else {
+					fmt.Fprintf(app.Out, "%s", src)
+					os.Exit(0)
+				}
+			default:
+				// Make sure we have valid JSON
+				if err := json.Unmarshal(frontMatterSrc, &obj); err != nil {
+					fmt.Fprintf(app.Eout, "JSON error: %s", err)
+					os.Exit(1)
+				}
+			}
+			if src, err := json.MarshalIndent(obj, "", "    "); err != nil {
+				fmt.Fprintf(app.Eout, "%+v\n", obj)
+				fmt.Fprintf(app.Eout, "%s\n", src)
+				fmt.Fprintf(app.Eout, "JSON marshal error: %s", err)
+				os.Exit(0)
+			} else {
+				fmt.Fprintf(app.Out, "%s", src)
+				os.Exit(0)
+			}
+		}
+		fmt.Fprintf(app.Out, "%s", frontMatterSrc)
+	}
+	os.Exit(0)
 }

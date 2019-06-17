@@ -1,14 +1,15 @@
 
 # USAGE
 
-	byline [OPTIONS]
+	frontmatter [OPTIONS]
 
 ## DESCRIPTION
 
 
-byline extracts a byline from a Markdown file. By default it reads
-from standard in and writes to standard out but can read/write
-to specific files using an option.
+frontmatter extracts a front matter from a Markdown file.
+If no front matter is present then an empty file 
+is returned. NOTE: frontmatter doesn't process the front 
+matter it only extracts it.
 
 
 ## OPTIONS
@@ -16,7 +17,6 @@ to specific files using an option.
 Below are a set of options available.
 
 ```
-    -b, -byline          set byline regexp
     -examples            display example(s)
     -generate-manpage    generate man page
     -generate-markdown   generate Markdown documentation
@@ -32,11 +32,15 @@ Below are a set of options available.
 ## EXAMPLES
 
 
-Extract a byline from article.md.
+Extract a front matter from article.md.
 
-    cat article.md | byline
+    cat article.md | frontmatter
 
-This will display the byline if one is found in article.md.
+This will display the front matter if found in article.md.
+
+    frontmatter -i article.md
+
+Will also do the same.
 
 
-byline v0.0.26
+frontmatter v0.0.25-rsdoiel
