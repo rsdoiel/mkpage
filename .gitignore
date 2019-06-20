@@ -26,7 +26,16 @@ _testmain.go
 # Project ignores
 bin/*
 dist/*
+demo/*
+examples/*
+testdata/*.html
 *~
 *.swp
 *.zip
 temp.html
+copyright.html
+DEVELOPERS.html
+RELEASE-NOTES.html
+RELEASES.html
+TODO.html
+*.diff

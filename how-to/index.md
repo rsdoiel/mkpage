@@ -12,3 +12,4 @@ working with Go based text/templates.
 + [Simple](simple/) -- Setting a page's CSS path, Title and Content area
 + [Simple w/Nav](simple-with-nav/) -- A simple page include navigation from Markdown
 + [Go Template Recipes](go-template-recipes.html) -- A collection of go template recipes
++ [Fountain content](fountain-demo) -- An interview with a Dog

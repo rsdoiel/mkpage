@@ -141,7 +141,7 @@ func main() {
 		fmt.Fprintf(app.Eout, "%s", err)
 		os.Exit(1)
 	}
-	frontMatterSrc, _ := mkpage.SplitFrontMatter(buf)
+	_, frontMatterSrc, _ := mkpage.SplitFrontMatter(buf)
 	if len(frontMatterSrc) > 0 {
 		if jsonFormat {
 			obj := make(map[string]interface{})

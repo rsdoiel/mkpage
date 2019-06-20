@@ -60,6 +60,7 @@ Redistribution and use in source and binary forms, with or without modification,
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 `
+
 	// Prefix for explicit string types
 
 	// JSONPrefix designates a string as JSON formatted content
@@ -79,6 +80,12 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 	BylineExp = (`^[B|b]y\s+(\w|\s|.)+` + DateExp + "$")
 	// TitleExp is the default format used by mkpage utilities
 	TitleExp = `^#\s+(\w|\s|.)+$`
+
+	// Front Matter Types
+	FrontMatterIsUnknown = iota
+	FrontMatterIsYAML
+	FrontMatterIsTOML
+	FrontMatterIsJSON
 )
 
 var (
@@ -97,28 +104,30 @@ var (
 // SplitFronMatter takes a []byte input splits it into front matter
 // source and Markdown source. If either is missing an empty []byte
 // is returned for the missing element.
-func SplitFrontMatter(input []byte) ([]byte, []byte) {
+func SplitFrontMatter(input []byte) (int, []byte, []byte) {
+	// YAML front matter uses ---
 	if bytes.HasPrefix(input, []byte("---\n")) {
 		parts := bytes.SplitN(bytes.TrimPrefix(input, []byte("---\n")), []byte("\n---\n"), 2)
-		return parts[0], parts[1]
+		return FrontMatterIsYAML, parts[0], parts[1]
 	}
 	if bytes.HasPrefix(input, []byte("+++\n")) {
 		parts := bytes.SplitN(bytes.TrimPrefix(input, []byte("+++\n")), []byte("\n+++\n"), 2)
-		return parts[0], parts[1]
+		return FrontMatterIsTOML, parts[0], parts[1]
 	}
 	if bytes.HasPrefix(input, []byte("{\n")) {
 		parts := bytes.SplitN(bytes.TrimPrefix(input, []byte("{\n")), []byte("\n}\n"), 2)
 		src := []byte(fmt.Sprintf("{\n%s\n}\n", parts[0]))
-		return src, parts[1]
+		return FrontMatterIsJSON, src, parts[1]
 	}
 	// Handle case of no front matter
-	return []byte(""), input
+	return FrontMatterIsUnknown, []byte(""), input
 }
 
 // markdownProcessor wraps blackfriday.Run() splitting off the front
 // matter if present.
 func markdownProcessor(input []byte) []byte {
-	_, mdSrc := SplitFrontMatter(input)
+	_, _, mdSrc := SplitFrontMatter(input)
+	//FIXME: should inspect front matter for Markdown parsing configuration
 	return blackfriday.Run(mdSrc)
 }
 
@@ -126,43 +135,56 @@ func markdownProcessor(input []byte) []byte {
 // matter if present.
 func fountainProcessor(input []byte) []byte {
 	var err error
-	frontMatterSrc, fountainSrc := SplitFrontMatter(input)
+
+	// Settings
+	asHTMLPage := false
+	inlineCSS := false
+	linkCSS := false
+	includeCSS := ""
+
+	frontMatterType, frontMatterSrc, fountainSrc := SplitFrontMatter(input)
 	//FIXME: Need to look for fountain settings in front matter
 	m := map[string]interface{}{}
 
 	// Convert Front Matter to JSON
-	switch {
-	case bytes.HasPrefix(frontMatterSrc, []byte("---")):
+	switch frontMatterType {
+	case FrontMatterIsYAML:
 		// YAML Front Matter
 		jsonSrc, err := yaml.YAMLToJSON(frontMatterSrc)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "WARNING can't parse YAML front matter, %s\n", err)
 			jsonSrc = []byte{}
 		}
-		err = json.Unmarshal(jsonSrc, &m)
+		ymap := map[string]interface{}{}
+		err = json.Unmarshal(jsonSrc, &ymap)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "WARNING can't parse converted YAML, %s\n", err)
-			m = map[string]interface{}{}
+		} else if m2, ok := ymap["fountain"]; ok == true {
+			for k, v := range m2.(map[string]interface{}) {
+				m[k] = v
+			}
 		}
-	case bytes.HasPrefix(frontMatterSrc, []byte("~~~")):
+	case FrontMatterIsTOML:
 		// TOML Front Matter
-		_, err = toml.Decode(fmt.Sprintf("%s", frontMatterSrc), &m)
+		tmap := map[string]interface{}{}
+		_, err = toml.Decode(fmt.Sprintf("%s", frontMatterSrc), &tmap)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "WARNING can't parse TOML front matter, %s\n", err)
-			m = map[string]interface{}{}
+		} else if m2, ok := tmap["fountain"]; ok == true {
+			for k, v := range m2.(map[string]interface{}) {
+				m[k] = v
+			}
 		}
-	case bytes.HasPrefix(frontMatterSrc, []byte("{")):
+	case FrontMatterIsJSON:
 		// JSON Front Matter
 		err := json.Unmarshal(frontMatterSrc, &m)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "WARNING can't parse JSON front matter, %s\n", err)
 		}
+	default:
+		fmt.Fprintf(os.Stderr, "WARNING unknown front matter format\n")
 	}
 
-	asHTMLPage := false
-	inlineCSS := false
-	linkCSS := false
-	includeCSS := ""
 	for k, v := range m {
 		switch k {
 		case "page":
