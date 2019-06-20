@@ -47,7 +47,7 @@ process that best fits your needs.</p>
 <p>The following command line tools come with <em>mkpage</em></p>
 
 <ul>
-<li><a href="docs/mkpage.html">mkpage</a> &ndash; a single page renderer with support for Markdown, JSON and Go text templates</li>
+<li><a href="docs/mkpage.html">mkpage</a> &ndash; a single page renderer with support for Markdown, <a href="https://fountain.io">Fountain</a>, JSON and Go text templates</li>
 <li><a href="docs/mkslides.html">mkslides</a> &ndash; a HTML slide generator based on the approach in <em>mkpage</em></li>
 <li><a href="docs/mkrss.html">mkrss</a> &ndash; an RSS feed generator for content authored in Markdown and rendered to HTML</li>
 <li><a href="docs/sitemapper.html">sitemapper</a> &ndash; an XML Sitemap generator</li>
@@ -65,7 +65,7 @@ The key side of a pair corresponds to the template element names that will be re
 version of the document. If a key was called &ldquo;Content&rdquo; the template element would look like <code>{{ .Content }}</code>.
 The value of &ldquo;Content&rdquo; would replace <code>{{ .Content }}</code>. Go text/templates elements can do more than
 that but the is the core idea.  On the value side of the key/value pair you have strings of one of
-three formats - plain text, markdown and JSON.  These three formatted strings can be explicit strings,
+four formats - plain text, markdown, <a href="https://fountain.io">fountain</a> and JSON.  These four formatted strings can be explicit strings,
 data from a file or content retrieved via a URL.  Here&rsquo;s a basic demonstration of sampling of capabilities
 and integrating data from the <a href="http://weather.gov">NOAA weather website</a>.</p>
 
