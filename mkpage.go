@@ -34,6 +34,9 @@ import (
 	"time"
 
 	// 3rd Party Packages
+	"github.com/BurntSushi/toml"
+	"github.com/ghodss/yaml"
+	"github.com/rsdoiel/fountain"
 	"gopkg.in/russross/blackfriday.v2"
 )
 
@@ -122,8 +125,76 @@ func markdownProcessor(input []byte) []byte {
 // fountainProcessor wraps fountain.Run() splitting off the front
 // matter if present.
 func fountainProcessor(input []byte) []byte {
-	_, fountainSrc := SplitFrontMatter(input)
-	return fountain.Run(fountainSrc)
+	var err error
+	frontMatterSrc, fountainSrc := SplitFrontMatter(input)
+	//FIXME: Need to look for fountain settings in front matter
+	m := map[string]interface{}{}
+
+	// Convert Front Matter to JSON
+	switch {
+	case bytes.HasPrefix(frontMatterSrc, []byte("---")):
+		// YAML Front Matter
+		jsonSrc, err := yaml.YAMLToJSON(frontMatterSrc)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "WARNING can't parse YAML front matter, %s\n", err)
+			jsonSrc = []byte{}
+		}
+		err = json.Unmarshal(jsonSrc, &m)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "WARNING can't parse converted YAML, %s\n", err)
+			m = map[string]interface{}{}
+		}
+	case bytes.HasPrefix(frontMatterSrc, []byte("~~~")):
+		// TOML Front Matter
+		_, err = toml.Decode(fmt.Sprintf("%s", frontMatterSrc), &m)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "WARNING can't parse TOML front matter, %s\n", err)
+			m = map[string]interface{}{}
+		}
+	case bytes.HasPrefix(frontMatterSrc, []byte("{")):
+		// JSON Front Matter
+		err := json.Unmarshal(frontMatterSrc, &m)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "WARNING can't parse JSON front matter, %s\n", err)
+		}
+	}
+
+	asHTMLPage := false
+	inlineCSS := false
+	linkCSS := false
+	includeCSS := ""
+	for k, v := range m {
+		switch k {
+		case "page":
+			if v.(bool) == true {
+				asHTMLPage = true
+			}
+		case "link_css":
+			if v.(bool) == true {
+				linkCSS = true
+			}
+		case "inline_css":
+			if v.(bool) == true {
+				inlineCSS = true
+			}
+		case "css":
+			if v.(string) != "" {
+				includeCSS = v.(string)
+			}
+		default:
+			fmt.Fprintf(os.Stderr, "WARNING skipping %q, don't understand directive\n", k)
+		}
+	}
+
+	fountain.AsHTMLPage = asHTMLPage
+	fountain.InlineCSS = inlineCSS
+	fountain.LinkCSS = linkCSS
+	fountain.CSS = includeCSS
+	src, err := fountain.Run(fountainSrc)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "WARNING: %s\n", err)
+	}
+	return src
 }
 
 // ResolveData takes a data map and reads in the files and URL sources
@@ -195,8 +266,8 @@ func ResolveData(data map[string]string) (map[string]interface{}, error) {
 			}
 			ext := path.Ext(val)
 			switch {
-			case strings.Compare(ext, ".fountain") == true ||
-				strings.Compare(ext, ".spmd") == true:
+			case strings.Compare(ext, ".fountain") == 0 ||
+				strings.Compare(ext, ".spmd") == 0:
 				out[key] = string(fountainProcessor(buf))
 			case strings.Compare(ext, ".md") == 0:
 				out[key] = string(markdownProcessor(buf))
