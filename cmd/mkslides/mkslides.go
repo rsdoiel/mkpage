@@ -28,8 +28,8 @@ import (
 
 	// Caltech Library packages
 	"github.com/caltechlibrary/cli"
-	"github.com/rsdoiel/mkpage"
-	"github.com/rsdoiel/mkpage/tmplfn"
+	"github.com/caltechlibrary/mkpage"
+	"github.com/caltechlibrary/tmplfn"
 )
 
 const (

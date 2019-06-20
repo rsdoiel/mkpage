@@ -29,7 +29,7 @@ import (
 
 	// Caltech Library packages
 	"github.com/caltechlibrary/cli"
-	"github.com/rsdoiel/mkpage"
+	"github.com/caltechlibrary/mkpage"
 )
 
 type locInfo struct {

@@ -31,8 +31,8 @@ import (
 
 	// My packages
 	"github.com/caltechlibrary/cli"
+	"github.com/caltechlibrary/mkpage"
 	"github.com/caltechlibrary/rss2"
-	"github.com/rsdoiel/mkpage"
 )
 
 var (

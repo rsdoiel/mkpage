@@ -25,7 +25,7 @@ import (
 
 	// CaltechLibrary Packages
 	"github.com/caltechlibrary/cli"
-	"github.com/rsdoiel/mkpage"
+	"github.com/caltechlibrary/mkpage"
 )
 
 var (
