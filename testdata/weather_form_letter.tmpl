@@ -1,0 +1,12 @@
+Date: {{.now}}
+
+Hello {{.name -}},
+     
+The weather forecast:
+{{ range .weather.data.text}}
+    + {{ . -}}
+{{end}}
+ 
+Thank you
+
+{{.signature}}

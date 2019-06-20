@@ -34,7 +34,7 @@ function GenerateNav() {
 }
 
 echo "Checking necessary software is installed"
-SoftwareCheck mkpage reldocpath titleline ws
+SoftwareCheck mkpage reldocpath titleline ws frontmatter
 
 echo "Generating nav.md from current Markdown files found"
 GenerateNav

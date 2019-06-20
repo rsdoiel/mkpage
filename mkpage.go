@@ -3,7 +3,7 @@
 //
 // @author R. S. Doiel, <rsdoiel@caltech.edu>
 //
-// Copyright (c) 2018, Caltech
+// Copyright (c) 2019, Caltech
 // All rights not granted herein are expressly reserved by Caltech.
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,19 +34,20 @@ import (
 	"time"
 
 	// 3rd Party Packages
-	//"github.com/russross/blackfriday"
+	"github.com/BurntSushi/toml"
+	"github.com/ghodss/yaml"
+	"github.com/rsdoiel/fountain"
 	"gopkg.in/russross/blackfriday.v2"
 )
 
 const (
-	// Version of the mkpage package.
-	Version = `v0.0.25`
+	Version = `v0.0.27`
 
 	// LicenseText provides a string template for rendering cli license info
 	LicenseText = `
 %s %s
 
-Copyright (c) 2018, Caltech
+Copyright (c) 2019, Caltech
 All rights not granted herein are expressly reserved by Caltech.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -67,6 +68,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 	MarkdownPrefix = "markdown:"
 	// TextPrefix designates a string as text/plain not needed processing
 	TextPrefix = "text:"
+	// FountainPrefex designates a string as Fountain formatted content
+	FountainPrefix = "fountain:"
 
 	// SOMEDAY: should add XML, BibTeX, YaML support...
 
@@ -91,6 +94,109 @@ var (
 	DefaultSlideTemplateSource string
 )
 
+// SplitFronMatter takes a []byte input splits it into front matter
+// source and Markdown source. If either is missing an empty []byte
+// is returned for the missing element.
+func SplitFrontMatter(input []byte) ([]byte, []byte) {
+	if bytes.HasPrefix(input, []byte("---\n")) {
+		parts := bytes.SplitN(bytes.TrimPrefix(input, []byte("---\n")), []byte("\n---\n"), 2)
+		return parts[0], parts[1]
+	}
+	if bytes.HasPrefix(input, []byte("+++\n")) {
+		parts := bytes.SplitN(bytes.TrimPrefix(input, []byte("+++\n")), []byte("\n+++\n"), 2)
+		return parts[0], parts[1]
+	}
+	if bytes.HasPrefix(input, []byte("{\n")) {
+		parts := bytes.SplitN(bytes.TrimPrefix(input, []byte("{\n")), []byte("\n}\n"), 2)
+		src := []byte(fmt.Sprintf("{\n%s\n}\n", parts[0]))
+		return src, parts[1]
+	}
+	// Handle case of no front matter
+	return []byte(""), input
+}
+
+// markdownProcessor wraps blackfriday.Run() splitting off the front
+// matter if present.
+func markdownProcessor(input []byte) []byte {
+	_, mdSrc := SplitFrontMatter(input)
+	return blackfriday.Run(mdSrc)
+}
+
+// fountainProcessor wraps fountain.Run() splitting off the front
+// matter if present.
+func fountainProcessor(input []byte) []byte {
+	var err error
+	frontMatterSrc, fountainSrc := SplitFrontMatter(input)
+	//FIXME: Need to look for fountain settings in front matter
+	m := map[string]interface{}{}
+
+	// Convert Front Matter to JSON
+	switch {
+	case bytes.HasPrefix(frontMatterSrc, []byte("---")):
+		// YAML Front Matter
+		jsonSrc, err := yaml.YAMLToJSON(frontMatterSrc)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "WARNING can't parse YAML front matter, %s\n", err)
+			jsonSrc = []byte{}
+		}
+		err = json.Unmarshal(jsonSrc, &m)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "WARNING can't parse converted YAML, %s\n", err)
+			m = map[string]interface{}{}
+		}
+	case bytes.HasPrefix(frontMatterSrc, []byte("~~~")):
+		// TOML Front Matter
+		_, err = toml.Decode(fmt.Sprintf("%s", frontMatterSrc), &m)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "WARNING can't parse TOML front matter, %s\n", err)
+			m = map[string]interface{}{}
+		}
+	case bytes.HasPrefix(frontMatterSrc, []byte("{")):
+		// JSON Front Matter
+		err := json.Unmarshal(frontMatterSrc, &m)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "WARNING can't parse JSON front matter, %s\n", err)
+		}
+	}
+
+	asHTMLPage := false
+	inlineCSS := false
+	linkCSS := false
+	includeCSS := ""
+	for k, v := range m {
+		switch k {
+		case "page":
+			if v.(bool) == true {
+				asHTMLPage = true
+			}
+		case "link_css":
+			if v.(bool) == true {
+				linkCSS = true
+			}
+		case "inline_css":
+			if v.(bool) == true {
+				inlineCSS = true
+			}
+		case "css":
+			if v.(string) != "" {
+				includeCSS = v.(string)
+			}
+		default:
+			fmt.Fprintf(os.Stderr, "WARNING skipping %q, don't understand directive\n", k)
+		}
+	}
+
+	fountain.AsHTMLPage = asHTMLPage
+	fountain.InlineCSS = inlineCSS
+	fountain.LinkCSS = linkCSS
+	fountain.CSS = includeCSS
+	src, err := fountain.Run(fountainSrc)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "WARNING: %s\n", err)
+	}
+	return src
+}
+
 // ResolveData takes a data map and reads in the files and URL sources
 // as needed turning the data into strings to be applied to the template.
 func ResolveData(data map[string]string) (map[string]interface{}, error) {
@@ -111,7 +217,9 @@ func ResolveData(data map[string]string) (map[string]interface{}, error) {
 		case strings.HasPrefix(val, TextPrefix) == true:
 			out[key] = strings.TrimPrefix(val, TextPrefix)
 		case strings.HasPrefix(val, MarkdownPrefix) == true:
-			out[key] = string(blackfriday.Run([]byte(strings.TrimPrefix(val, MarkdownPrefix))))
+			out[key] = string(markdownProcessor([]byte(strings.TrimPrefix(val, MarkdownPrefix))))
+		case strings.HasPrefix(val, FountainPrefix) == true:
+			out[key] = string(fountainProcessor([]byte(strings.TrimPrefix(val, FountainPrefix))))
 		case strings.HasPrefix(val, JSONPrefix) == true:
 			var o interface{}
 			err := json.Unmarshal(bytes.TrimPrefix([]byte(val), []byte(JSONPrefix)), &o)
@@ -141,7 +249,9 @@ func ResolveData(data map[string]string) (map[string]interface{}, error) {
 						}
 						out[key] = o
 					case isContentType(contentTypes, "text/markdown") == true:
-						out[key] = string(blackfriday.Run(buf))
+						out[key] = string(markdownProcessor(buf))
+					case isContentType(contentTypes, "text/fountain") == true:
+						out[key] = string(fountainProcessor(buf))
 					default:
 						out[key] = string(buf)
 					}
@@ -156,8 +266,11 @@ func ResolveData(data map[string]string) (map[string]interface{}, error) {
 			}
 			ext := path.Ext(val)
 			switch {
+			case strings.Compare(ext, ".fountain") == 0 ||
+				strings.Compare(ext, ".spmd") == 0:
+				out[key] = string(fountainProcessor(buf))
 			case strings.Compare(ext, ".md") == 0:
-				out[key] = string(blackfriday.Run(buf))
+				out[key] = string(markdownProcessor(buf))
 			case strings.Compare(ext, ".json") == 0:
 				var o interface{}
 				err := json.Unmarshal(buf, &o)
@@ -262,7 +375,7 @@ func MarkdownToSlides(fname string, mdSource []byte) []*Slide {
 			NextNo:  (i + 1),
 			FirstNo: 0,
 			LastNo:  lastSlide,
-			Content: string(blackfriday.Run(s)),
+			Content: string(markdownProcessor(s)),
 		})
 	}
 	return slides

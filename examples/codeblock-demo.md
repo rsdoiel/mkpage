@@ -1,3 +1,9 @@
+---
+{
+
+    "has_code": true
+}
+---
 
 # This is a demo of the codeblock function from tmplfn
 

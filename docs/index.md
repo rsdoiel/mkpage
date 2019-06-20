@@ -1,3 +1,8 @@
+---
+{
+    "has_code": false
+}
+---
 
 # mkpage utilities
 
@@ -11,6 +16,7 @@ line tools.
 + [mkslides](mkslides.html) -- assembles a HTML slide show from a Markdown file
 + [reldocpath](reldocpath.html) -- calculates a relative path (useful for getting the path to CSS right)
 + [sitemapper](sitemapper.html) -- sitemapper generates an XML sitemap file based on found HTML content
++ [frontmatter](frontmatter.html) -- extracts front matter from a Markdown document for further processing
 + [titleline](titleline.html) -- extracts the first title (first single # line) from a Markdown document
 + [urldecode](urldecode.html) -- converts a string from URL encoding to plain text
 + [urlencode](urlencode.html) -- converts a string from plain text into URL encoding

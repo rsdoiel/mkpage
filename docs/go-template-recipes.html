@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>mkpage: Experimental deconstructed content system</title>
+    <link href="../css/site.css" rel="stylesheet" />
+<head>
+<body>
+    <header>
+        <h1>mkpage: Experimental deconstructed content system</h1>
+    </header>
+    <section><h1>Go text/template recipes</h1>
+
+<p><em>mkpage</em> template engine is Go&rsquo;s <a href="https://golang.org/pkg/text/template/">text/template</a>. Go&rsquo;s templates
+provide a flexible and simple <a href="https://en.wikipedia.org/wiki/Domain-specific_language">DSL</a> describing
+how to assemble a document based on a data structure passed to it.  <em>mkpage</em> uses a list of key/value
+pairs on the command line to populate the data structure the template package expects.  This includes
+support for JSON formatted text from strings, files and URL response. It also support transforming
+markdown content into HTML before assembling the final template.</p>
+
+<p>While Go&rsquo;s template package is not complicated to use it doesn&rsquo;t come with allot of examples or tutorials.
+Most articles you find on Go&rsquo;s template packages either focus on web server code or are for sophisticated
+static content generators like <a href="http://gohugo.io">Hugo</a>. Hugo extends Go&rsquo;s template DSL providing
+capabilities that rival or surpose older static content generators like <a href="https://jekyllrb.com/">Jekyll</a>
+and <a href="http://jade-lang.com/">Jade</a>.</p>
+
+<p><em>mkpage</em> uses Go v1.7&rsquo;s template package as is. No bells or whistles.  That isn&rsquo;t necessarily a bad thing.
+<em>mkpage</em> is meant to be a an easy system for producing <em>simple content</em> from plain text, markdown
+text, and JSON. The limit set of features is itself a feature of <em>mkpage</em>.  Other systems like <a href="https://gohugo.io">Hugo</a>
+are what you want if your have more complicated needs.</p>
+
+<p>While vanilla Go templates are not as richly featured they are suitable for a wide variety of content
+from webpages, to XML feed document to BibTeX files. This recipe list demonstrates some of Go&rsquo;s
+template capabilities as well as how to leverage the simple capabilities of <em>mkpage</em> to solve
+common data rendering problems. In this set of tutorials you&rsquo;ll walk through both examples of
+how to use <em>mkpage</em> as well as write simple Go templates.</p>
+
+<h2>The Recipes</h2>
+
+<h3>only three data formats are supported</h3>
+
+<p><em>mkpage</em> supports three formats of text</p>
+
+<ul>
+<li>text/plain</li>
+<li>text/markdown</li>
+<li>application/json</li>
+</ul>
+
+<h3>only three data sources are supported</h3>
+
+<p><em>mkpage</em> supports three data sources</p>
+
+<ul>
+<li>explicit strings (prividing a hint prefix, e.g. &ldquo;text:&ldquo;, &ldquo;markdown:&ldquo;, &ldquo;json:&ldquo;)</li>
+<li>files (the default data source)</li>
+<li>URLs as data sources (prefixed with http:// and https:// as appropriate)</li>
+</ul>
+
+<h3>Examples</h3>
+
+<h4>explicit stings, a get well card</h4>
+
+<p>In this example we want to add a name to a simple get well message.</p>
+
+<p>Our template is called <em><a href="examples/get-well.tmpl">get-well.tmpl</a></em>. It looks like</p>
+
+<pre><code class="language-go">    Dear {{ .name -}},
+
+    Hope you are feeling better today.
+
+    Sencerly,
+
+    Mojo Sam
+</code></pre>
+
+<p>On the command line we can run <em>mkpage</em> with the following options</p>
+
+<pre><code class="language-shell">    mkpage &quot;name=text:Little Frieda&quot; get-well.tmpl
+</code></pre>
+
+<p>The output would look like</p>
+
+<pre><code class="language-text">    Little Frieda,
+
+    Hope you are feeling better today.
+
+    Sencerly,
+
+    Mojo Sam
+</code></pre>
+
+<h5>Explanation</h5>
+
+<p>The key &ldquo;name&rdquo; has a string value of &ldquo;Little Frieda&rdquo;.  The template indicates this needs to be included
+after the word &ldquo;Dear&rdquo;. The key &ldquo;name&rdquo; is proceeded by a period or dot.  The substitution happens between
+the opening &ldquo;{{&rdquo; and closing &ldquo;}}&rdquo;.  Notice the &ldquo;-&rdquo; before the closing &ldquo;}}&rdquo;. This tells the template
+engine to not allow spacas after the value and the next non-space character (i.e. the comma of the
+opening line).</p>
+
+<h4>JSON data, a key/value blob report</h4>
+
+<p>In this example we construct a JSON object as part of the key/value pairs on the command line and
+pass it through the blob.tmpl template that displays they pairs.</p>
+
+<p>The command envokation looks like</p>
+
+<pre><code class="language-shell">    mkpage 'blob=json:{&quot;one&quot;:1,&quot;two&quot;:2}' blob.tmpl
+</code></pre>
+
+<p>The template is a simple range construct (e.g. <a href="examples/blob.tmpl">blob.tmpl</a>).</p>
+
+<pre><code class="language-go">    {{range $key,$val := .blob }}
+        Key: {{ $key }} Value: {{ $val -}}
+    {{end}}
+</code></pre>
+
+<p>Results in text like</p>
+
+<pre><code class="language-text">    
+       Key: one Value: 1
+       Key: two Value: 2
+
+</code></pre>
+
+<h5>Explanation</h5>
+
+<p>We use the range function to iterate over the key/value pairs of our JSON object. Additionally
+we assign those values to the template variables called &ldquo;$key&rdquo; and &ldquo;$val&rdquo;. These are then used
+to format our output. Also notice the trailing values &ldquo;-&rdquo; which supresses and extra new line.</p>
+
+<h3>Files are data source</h3>
+
+<h4>Wraping a Markdown document in HTML</h4>
+
+<p>In this example we want to embed a &ldquo;story&rdquo; in a simple HTML document. The <em>story</em> is
+written in Markdown format. Here&rsquo;s the simple template (i.e. <a href="examples/simple-page.tmpl">simple-page.tmpl</a>)</p>
+
+<pre><code class="language-go">    &lt;!DOCTYPE html&gt;
+    &lt;html&gt;
+        &lt;head&gt;&lt;title&gt;Stories&lt;/title&gt;&lt;/head&gt;
+        &lt;body&gt;
+        {{ .story }}
+        &lt;/body&gt;
+    &lt;/html&gt;
+</code></pre>
+
+<p>The command line would look something like</p>
+
+<pre><code class="language-shell">    mkpage &quot;story=my-story.md&quot; simple-page.tmpl &gt; my-story.html
+</code></pre>
+
+<h5>Explanation</h5>
+
+<p>On the command line <em>story</em> is assumed to point to a file named &ldquo;my-story.md&rdquo;. The reason a file
+is assumed is because there is no hint prefix or URL prefix at the start of the value. Because the
+file ends in the file extension &ldquo;.md&rdquo; it is assume to be a Markdown file and processed accordingly
+before being assemble in the template.</p>
+
+<h3>URL as data source</h3>
+
+<h4>JSON data, a weather forecast</h4>
+
+<p>In this example we get the current weather forecast for Guam.  The source of the weather information
+is <a href="http://noaa.gov">NOAA</a>&rsquo;s <a href="http://weather.gov">National Weather Services</a> website.  By including the
+parameter &ldquo;FcstType=json&rdquo; at the end of the URL you get a JSON version of the weather forecast rather
+than the HTML or XML alternatives.</p>
+
+<ul>
+<li>data source: <a href="http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&amp;lon=144.74977715100056&amp;FcstType=json">http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&amp;lon=144.74977715100056&amp;FcstType=json</a></li>
+</ul>
+
+<p>Our template will be call <em><a href="examples/forecast.tmpl">forecast.tmpl</a></em>. It will be used to produce a Markdown file of weather related
+information obtained from the JSON response.</p>
+
+<pre><code class="language-go">    {{with $co := .forecast.currentobservation}}
+    Current Observation:
+
+        + {{ $co.name }}
+        + Elevation: {{ $co.elev }}
+        + Latitude: {{ $co.latitude }}
+        + Longitude: {{ $co.longitude }}
+        + Date: {{ $co.Date }}
+        + Temp: {{ $co.Temp }}
+        + Dew Point: {{ $co.Dewp }}
+        + Relative Humidity: {{ $co.Relh }}
+        + Winds: {{ $co.Winds }}
+        + Wind direction: {{ $co.Windd }}
+        + Gust: {{ $co.Gust }}
+        + Visibility: {{ $co.Visibility }}
+
+    {{end}}
+
+    Forecast:
+    {{range .forecast.data.text }}
+        + {{ . -}}
+    {{end}}
+</code></pre>
+
+<p>The command line for <em>mkpage</em> would look like</p>
+
+<pre><code class="language-shell">    mkpage &quot;forecast=http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&amp;lon=144.74977715100056&amp;FcstType=json&quot; forecast.tmpl
+</code></pre>
+
+<p>The resulting page should look something like</p>
+
+<pre><code class="language-text">
+    Current Observation:
+
+        + Agana, Guam International Airport
+        + Elevation: 299
+        + Latitude: 13.48
+        + Longitude: 144.8
+        + Date: 5 Aug 08:54 am ChST
+        + Temp: 82
+        + Dew Point: 79
+        + Relative Humidity: 89
+        + Winds: 12
+        + Wind direction: 220
+        + Gust: 0
+        + Visibility: 10.00
+
+
+    Forecast:
+
+        + Scattered showers and thunderstorms.  Mostly cloudy, with a high near 84. Breezy, with a southwest wind 23 to 25 mph, with gusts as high as 32 mph.  Chance of precipitation is 40%.
+        + Scattered showers and thunderstorms.  Mostly cloudy, with a low around 79. Breezy, with a southwest wind 15 to 20 mph, with gusts as high as 25 mph.  Chance of precipitation is 40%.
+        + Mostly cloudy, with a high near 88. Heat index values as high as 99. Breezy, with a southwest wind 17 to 21 mph, with gusts as high as 26 mph. 
+        + Mostly cloudy, with a low around 79. Southwest wind 13 to 17 mph, with gusts as high as 22 mph. 
+        + Mostly cloudy, with a high near 88. Southwest wind 14 to 17 mph, with gusts as high as 22 mph. 
+        + Mostly cloudy, with a low around 79.
+        + Mostly sunny, with a high near 89.
+        + Partly cloudy, with a low around 80.
+        + Scattered showers and thunderstorms.  Mostly cloudy, with a high near 89. Chance of precipitation is 40%.
+        + Scattered showers and thunderstorms.  Mostly cloudy, with a low around 79. Chance of precipitation is 40%.
+        + Scattered showers and thunderstorms.  Mostly cloudy, with a high near 89. Chance of precipitation is 40%.
+        + Scattered showers and thunderstorms.  Mostly cloudy, with a low around 79. Chance of precipitation is 40%.
+        + Partly sunny, with a high near 89.
+</code></pre>
+
+<h3>Multiple templates</h3>
+
+<p>It is come in more complex website to separate elements into their own templates and pull them together with a master one.
+In this example will use three tempaltes - <a href="examples/letter.tmpl">letter.tmpl</a> (the master template),
+<a href="examples/signature.tmpl">signature.tmpl</a> and <a href="examples/postscript.tmpl">postscript.tmpl</a>.</p>
+
+<h4>letter.tmpl</h4>
+
+<pre><code class="language-template">    {{- with .ToName}}Hello {{ . -}},{{- else}}Hello,{{end}}
+    
+    This is an example of a letter.
+    
+    Sincerly,
+    
+    {{ template &quot;signature.tmpl&quot; . }}
+    
+    {{ template &quot;postscript.tmpl&quot; . }}
+</code></pre>
+
+<h4>signature.tmpl</h4>
+
+<pre><code class="language-template">    {{with .Name}}{{- . -}}{{else}}Anonymous{{end}}
+</code></pre>
+
+<h4>postscript.tmpl</h4>
+
+<pre><code class="language-template">    (P. S. {{with .ToName}}{{- . }}, {{end -}} what is coming at is coming from you)
+</code></pre>
+
+<h4>Putting it together</h4>
+
+<pre><code class="language-shell">    mkpage &quot;ToName=text:Mojo Sam&quot; &quot;Name=text:Jack Flanders&quot; \
+        examples/letter.tmpl examples/signature.tmpl examples/postscript.tmpl
+</code></pre>
+
+<h4>This output</h4>
+
+<p>Should be something like&ndash;</p>
+
+<pre><code>    Hello Mojo Sam,
+    
+    This is an example of a letter.
+    
+    Sincerly,
+    
+    Jack Flanders
+    
+    (P. S. Mojo Sam, what is coming at is coming from you)
+</code></pre>
+</section>
+    <nav><ul>
+<li><a href="/">Home</a></li>
+<li><a href="../">README</a></li>
+<li><a href="../license.html">LICENSE</a></li>
+<li><a href="../install.html">INSTALL</a></li>
+<li><a href="./">Documentation</a></li>
+<li><a href="https://github.com/rsdoiel/mkpage">Github</a></li>
+</ul>
+</nav>
+    <footer>
+    copyright (c) 2017 R. S. Doiel
+    See: <a href="license.html">LICENSE</a>
+    </footer>
+</body>
+</html>

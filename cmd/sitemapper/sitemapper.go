@@ -3,7 +3,7 @@
 //
 // @author R. S. Doiel, <rsdoiel@caltech.edu>
 //
-// Copyright (c) 2018, Caltech
+// Copyright (c) 2019, Caltech
 // All rights not granted herein are expressly reserved by Caltech.
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,7 +29,7 @@ import (
 
 	// Caltech Library packages
 	"github.com/caltechlibrary/cli"
-	"github.com/caltechlibrary/mkpage"
+	"github.com/rsdoiel/mkpage"
 )
 
 type locInfo struct {

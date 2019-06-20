@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {{with .Title -}}<title>{{- . -}}</title>{{- end }}
+    {{with .CSSPath -}}<link rel="stylesheet" href="{{- . -}}">{{- end}}
+</head>
+<body>
+    <header>
+        {{with .Title -}}<h1>{{- . -}}</h1>{{- end}}
+    </header>
+    <nav>
+        <a href="/">Home</a>
+    </nav>
+    {{with .Content}}<section>{{- . -}}</section>{{- end}}
+    <footer>Simple is a theme that works with  three elements Title, CSSPath, and Content</footer>
+</body>
+</html>

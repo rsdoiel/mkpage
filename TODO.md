@@ -4,40 +4,21 @@
 ## Bugs
 
 + [ ] After April 17, 2018 use the new NOAA weather API for example in help and README.md
++ [x] Copyright year needs updating in source files
++ [ ] Need to handle Toml, JSOM front matter based on their respective start/end delimiters
 
 ## Next
 
-+ [ ] Add configuration adjustment via front matter
-+ [ ] Add mapping of front matter to mkpage paraments passed to templates
++ [x] Add cli for extracting front matter
++ [x] *mkpage* should skip over front matter when rendering
 + [x] Add simple redirect support to _ws_
     + [x] via simple CSV file (from target column, to destination column)
-+ [ ] implement lunr index generation from front mater in markdown pages and the full body text of markdown pages
-+ [ ] consider support mmark as well as Blackfriday markdown engines
-+ [ ] python wrapper for mkpage and simple demo of a mini CMS implemented with py_dataset and mkpage.
-+ [ ] define themes via minimal set templates and a configuration
-    + [ ] minimal theme would be two templates index.tmpl and page.tmpl
-    + [ ] CSS and other assets could either be inlined or symlink to appropriate locations in the htdoc root of staging site
 
 ## Someday, Maybe
 
-+ [ ] Search via Lunrjs
-    + [ ] Document ingest
-        + [ ] first pass of ingest is to generate/update metadata
-            + [ ] read each Markdown file
-            + [ ] parse out any front matter as metadata
-            + [ ] use document body for full text field
-        + [ ] store metadata results in dataset one document per record
-        + [ ] generate default frames based on common fields like title, author, pub date
-        + [ ] allow additional frames as needed
-        + [ ] store parsed metadata in dataset keyed by paths to docs
-    +[ ] Indexing
-        + [ ] for each frame generte a LunrJS index
-    + Search 
-        + [ ] An index aware widget for search (i.e. can turn on/off indexes for searchable corpus)
-    + [ ] reads markdown document including front matter creating metadata records stored in dataset
-    + [ ] search widget support
-        + [ ] generate a search widget if JS enabled
-        + [ ] Generate a default search page in Markdown for embedded widget
++ [ ] Add a tool to generate and search lunr indexes
++ [ ] Add a HugoLike template support to tmplfn use by mkpage.
++ [ ] make markdown engine (blackfriday v2) configurable from front matter
 + [ ] Add support for metadata taken from Namaste (Name as text) in the directory
 + [ ] Align templating and feature set with Hugo while retaining the approach of simple commands responsible for simple actions in a pipe line
 + [ ] Remove the default template and ship distribution with a set of standard templates

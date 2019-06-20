@@ -3,7 +3,7 @@
 
 ## Requirements
 
-+ go 1.8.3 or better
++ go 1.12 or better
 + _make_ if you want to the _Makefile_ to build the project.
 + [pkgassets](https://github.com/caltechlibrary/pkgassets) for generating a new _assets.go_
 + Caltech Library Go Packages
