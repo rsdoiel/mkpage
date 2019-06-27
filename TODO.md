@@ -3,48 +3,51 @@
 
 ## Bugs
 
-+ [ ] After April 17, 2018 use the new NOAA weather API for example in help and README.md
++ [ ] After April 17, 2018 use the new NOAA weather API for example in help and README.md (or replace with a new example)
 + [x] Copyright year needs updating in source files
 + [x] Need to handle Toml, JSON front matter based on their respective start/end delimiters
 
-## Next
+## Next (road to v1.0.0)
 
-+ [ ] Review Hugo's style sitemap variables
-+ [ ] Add support for Hugo Front Matter's predefined variables into rendata resolving system (i.e. treat as if they were specified on the command line as key/data pairs)
-    + [ ] aliases
-    + [ ] audio
-    + [ ] date
-    + [ ] description
-    + [ ] draft (bool)
-    + [ ] expiryDate
-    + [ ] headless
-    + [ ] images
-    + [ ] isCJKLanguage
-    + [ ] keywords
-    + [ ] layout
-    + [ ] lastmod
-    + [ ] linkTitle
-    + [ ] markdup (We'll support Markdown and Fountain add others later)
-    + [ ] outputs (output formats)
-    + [ ] publishDate
-    + [ ] resources
-    + [ ] series
-    + [ ] slug
-    + [ ] summary
-    + [ ] title
-    + [ ] type
-    + [ ] url
-    + [ ] videos
-    + [ ] weight
-+ [ ] Add Support for Hugo style User Defined Front Matter variables
-    + Values are passed as ".Params.\*"
-+ [ ] Add Support for Hugo style Front Matter configuration of BlackFriday (and Fountain) engines
-+ [ ] mkpage populate a set of `.MkPage` variables accessible to template
-    + [ ] `.MkPage.Version` (semver only)
-    + [ ] `.MkPage.Environment` (target environment, e.g. macOS, Windows)
-    + [ ] `.MkPage.CommitHash` (git commit hash of mkpage)
-    + [ ] `.MkPage.BuildDate` (build date of mkpage)
-    + [ ] `.MkPage.Generator` (generator string, like defined for RSS 2)
++ [ ] Evaluate switching from Blackfriday to GoMarkdown
++ [ ] Add support for [Go Markdown](https://github.com/gomarkdown/markdown)
++ [ ] Add support for [MMark](https://github.com/mmarkdown/mmark)
++ [ ] Add support for rendering remarkjs content
++ [ ] Add support for use "markup" in front matter to pick engine
++ [ ] Add support for passing configuration to markup engine from front matter
++ [ ] Figure out how to comingle Markdown, Fountain, remarkjs safely 
++ [ ] mkpage front matter based on library metadata practices, codemeta.json and relavant Scheme.org scheme
+    + [ ] `.DOI` the DOI associated with a page
+    + [ ] `.Creator` should be an array of creator info (e.g. ORCID, given_name, family_name)
+    + [ ] `.Title`
+    + [ ] `.Date`
+    + [ ] `.PublishDate`
+    + [ ] `.Lastmod`
+    + [ ] `.Description`
+    + [ ] `.Draft` (bool)
+    + [ ] `.Keywords`
+    + [ ] `.LinkTitle`
+    + [ ] `.Markdup` (e.g. markdown, fountain, remarkjs)
+    + [ ] `.Series`
+    + [ ] `.Slug`
+    + [ ] `.Type` (e.g. post, article, homepage)
+    + [ ] `.Permalink`  (e.g. resolver URL)
+    + [ ] `.Language`
+    + [ ] `.Params` holds any user defined and supplied elements in the front matter
+    + [ ] `.Markdown` holds settings to pass to the Blackfriday renderer 
+    + [ ] `.Fountain` holds settings to pass to the Fountain 2 renderer
+    + [ ] `.Remarkjs` holds the settings for our remarkjs engine
++ [ ] mkpage Sitemap support
+    + Current sitemap cli is too naive for sites more than a couple dozen pages
+    + Need to support possibly nested sitemap XML references
+    + Review Hugo's sitemap support for ideas
+    + Need some sort of front matter to identify where/if content would show up in sitemap
++ [ ] mkpage slide support needs to align with remarkjs
+    + See https://github.com/gnab/remark, https://remarkjs.com and https://github.com/gnab/remark/wiki
+    + [ ] Change slide splits from `--` to `---` to conform to remarkjs.com behavior
+    + [ ] Consider merging mkpage and mkslide (fewer tools less to learn), consider front matter changes
+    + [ ] Add support for slide notes delimited by `???`
++ [ ] Add Support for Hugo style Front Matter configuration of BlackFriday and Fountain engines
 + [x] Add cli for extracting front matter
 + [x] *mkpage* should skip over front matter when rendering
 + [x] Add simple redirect support to _ws_
@@ -52,6 +55,76 @@
 
 ## Someday, Maybe
 
++ [ ] Should **mkpage** support [RMarkdown](https://rmarkdown.rstudio.com/)?
+    + See [RMarkdown, Definitive Guide](https://bookdown.org/yihui/rmarkdown/)
+    + Requirements
+        + Use of exec to pass content to RMarkdown via separate process
+        + an R with RMarkdown installed
++ [ ] Should **mkpage** populate a `.Page` variable with page level metadata?
+    + See https://gohugo.io/variables/page/ for definitions in Hugo
+    + [ ] `.Alaises` aliases to this page (need to clarify this with mkpage's approach)
+    + [ ] `.Content` the content itself defined after the front matter
+    + [ ] `.Data` data specific to this type of page
+    + [ ] `.Date` 
+    + [ ] `.Description`
+    + [ ] `.Dir`
+    + [ ] `.Draft`
+    + [ ] `.ExpiryDate`
+    + [ ] `.File` see `.File` for sub-fields
+    + [ ] `.FuzzyWordCount` (how fuzzy?)
+    + [ ] `.MkPage` see `.MkPage` for sub-fields
+    + [ ] `.IsHome`
+    + [ ] `.IsNode`
+    + [ ] `.IsPage` always true (why include it?)
+    + [ ] `.IsTranslated` 
+    + [ ] `.Keywords`
+    + [ ] `.Kind`
+    + [ ] `.Language`
+    + [ ] `.Lastmod`
+    + [ ] `.LinkTitle`
+    + [ ] `.Next`
+    + [ ] `.NextInSection`
+    + [ ] `.OutputFormats`
+    + [ ] `.Pages`
+    + [ ] `.Permalink`
+    + [ ] `.Plain` strip HTML tags (e.g. what you might want to index with Lunr)
+    + [ ] `.PlainWords` content stripped for HTML tags and returned as a slice of string ([]string)
+    + [ ] `.PreviousInSection`
+    + [ ] `.PublishDate`
+    + [ ] `.RawContent` (page content without front matter)
+    + [ ] `.ReadingTime`
+    + [ ] `.Resources`
+    + [ ] `.Ref`
+    + [ ] `.RelPermalink`
+    + [ ] `.Summary`
+    + [ ] `.TableOfContents`
+    + [ ] `.Title`
+    + [ ] `.Translations`
+    + [ ] `.TranslationKey`
+    + [ ] `.Truncated`
+    + [ ] `.Type`
+    + [ ] `.UniqueID` an MD5 Checksum of the file path (relative to content root)
+    + [ ] `.Weight`
+    + [ ] `.WordCount`
++ [ ] Should **mkpage** populate a `.File` variable with file related metadata
+    + [ ] `.File.Path` (the path relative to the current working directory, content root)
+    + [ ] `.File.LogicalName` (e.g. foo.en.md)
+    + [ ] `.File.TranslationBaseName` (e.g. path.Base() in Go minus any language extension (e.g. foo from foo.en.md))
+    + [ ] `.File.ContentBaseName` (e.g. same as TranslationalBaseName for compatibility with Hugo, not sure about Leaf bundle support)
+    + [ ] `.File.BaseFileName` (e.g. path.Base(), without extention, e.g. foo.en.md -> foo.en)
+    + [ ] `.File.Ext` (e.g. path.Ext())
+    + [ ] `.File.Lang` (look at how Hugo handles this, probably uses the two letter language code)
+    + [ ] `.File.Dir` (e.g. path.Dir() from current working directory, content root)
++ [ ] Should **mkpage** populate a set of `.MkPage` variables accessible to template or another varname populated and with option to override?
+    + [ ] `.MkPage.Version` (semver)
+    + [ ] `.MkPage.Generator` (generator string like used in RSS 2)
++ [ ] Should **mkpage** support "shortcodes"?
+    + Per Hugo videos, "Shortcodes are partials for content"
+    + See https://gohugo.io/templates/shortcode-templates/
+    + [ ] Hugo's shortcode is built closely on Go templates using `.Get` for args (positional or k/v), `.Inner` for content contained be a start/end shortcode
+    + [ ] Hugo's shortcode as delimited by `{{< shortcode_name >}}` or `{{< shortcode_name >}}{{< /shortcode_name >}}`
+    + [ ] Hugo will run shortcode through markdown render engine if prefix/suffix is `{{% shortcode %}}`
++ [ ] Review Hugo's style sitemap variables
 + [ ] Become more Hugo compatible and friendly
     + [ ] Add Hugo style Shortcode support
     + [ ] Add Hugo style Taxonomy variables

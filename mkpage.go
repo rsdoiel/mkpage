@@ -36,7 +36,21 @@ import (
 	// 3rd Party Packages
 	"github.com/BurntSushi/toml"
 	"github.com/ghodss/yaml"
+	"github.com/gomarkdown/markdown"
+	//"github.com/gomarkdown/markdown/ast"
+	"github.com/gomarkdown/markdown/html"
+	"github.com/gomarkdown/markdown/parser"
+	/*
+		"github.com/mmarkdown/mmark/mast"
+		"github.com/mmarkdown/mmark/mparser"
+		"github.com/mmarkdown/mmark/render/man"
+		mmarkout "github.com/mmarkdown/mmark/render/markdown"
+		"github.com/mmarkdown/mmark/render/mhtml"
+		"github.com/mmarkdown/mmark/render/xml"
+		"github.com/mmarkdown/mmark/render/xml2"
+	*/
 	"github.com/rsdoiel/fountain"
+	// FIXME: Should this be depreciated? duplicative of gomarkdown
 	"gopkg.in/russross/blackfriday.v2"
 )
 
@@ -123,95 +137,334 @@ func SplitFrontMatter(input []byte) (int, []byte, []byte) {
 	return FrontMatterIsUnknown, []byte(""), input
 }
 
-// markdownProcessor wraps blackfriday.Run() splitting off the front
-// matter if present.
-func markdownProcessor(input []byte) []byte {
-	_, _, mdSrc := SplitFrontMatter(input)
-	//FIXME: should inspect front matter for Markdown parsing configuration
-	return blackfriday.Run(mdSrc)
-}
-
-// fountainProcessor wraps fountain.Run() splitting off the front
-// matter if present.
-func fountainProcessor(input []byte) []byte {
-	var err error
-
-	// Settings
-	asHTMLPage := false
-	inlineCSS := false
-	linkCSS := false
-	includeCSS := ""
-
-	frontMatterType, frontMatterSrc, fountainSrc := SplitFrontMatter(input)
-	//FIXME: Need to look for fountain settings in front matter
+// processorConfig takes front matter and returns
+// a map[string]interface{}{} containing configuration for a target
+// markup engine.
+func processorConfig(frontMatterType int, frontMatterSrc []byte) (map[string]interface{}, error) {
 	m := map[string]interface{}{}
-
 	// Convert Front Matter to JSON
 	switch frontMatterType {
 	case FrontMatterIsYAML:
 		// YAML Front Matter
 		jsonSrc, err := yaml.YAMLToJSON(frontMatterSrc)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "WARNING can't parse YAML front matter, %s\n", err)
-			jsonSrc = []byte{}
+			return nil, fmt.Errorf("Can't parse YAML front matter, %s", err)
 		}
-		ymap := map[string]interface{}{}
-		err = json.Unmarshal(jsonSrc, &ymap)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "WARNING can't parse converted YAML, %s\n", err)
-		} else if m2, ok := ymap["fountain"]; ok == true {
-			for k, v := range m2.(map[string]interface{}) {
-				m[k] = v
-			}
+		if err = json.Unmarshal(jsonSrc, &m); err != nil {
+			return nil, err
 		}
 	case FrontMatterIsTOML:
 		// TOML Front Matter
-		tmap := map[string]interface{}{}
-		_, err = toml.Decode(fmt.Sprintf("%s", frontMatterSrc), &tmap)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "WARNING can't parse TOML front matter, %s\n", err)
-		} else if m2, ok := tmap["fountain"]; ok == true {
-			for k, v := range m2.(map[string]interface{}) {
-				m[k] = v
-			}
+		if _, err := toml.Decode(fmt.Sprintf("%s", frontMatterSrc), &m); err != nil {
+			return nil, err
 		}
 	case FrontMatterIsJSON:
 		// JSON Front Matter
-		err := json.Unmarshal(frontMatterSrc, &m)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "WARNING can't parse JSON front matter, %s\n", err)
+		if err := json.Unmarshal(frontMatterSrc, &m); err != nil {
+			return nil, err
 		}
 	default:
-		fmt.Fprintf(os.Stderr, "WARNING unknown front matter format\n")
+		return nil, fmt.Errorf("unknown front matter format")
 	}
+	return m, nil
+}
 
-	for k, v := range m {
-		switch k {
-		case "page":
-			if v.(bool) == true {
-				asHTMLPage = true
+// blackfridayExtensions takes a config (map[string]interface{}) and
+// returns the ORed extenions flags for map["blackfriday"].
+func blackfridayExtensions(config map[string]interface{}) blackfriday.Extensions {
+	ext := blackfriday.NoExtensions
+	if thing, ok := config["blackfriday"]; ok == true {
+		extensions := thing.(map[string]interface{})
+		for k, v := range extensions {
+			onoff := false
+			option := k
+			switch v.(type) {
+			case int:
+				onoff = v.(int) == 1
+			case int64:
+				onoff = v.(int64) == 1
+			case bool:
+				onoff = v.(bool)
+			case string:
+				onoff = strings.ToLower(v.(string)) == "true"
 			}
-		case "link_css":
-			if v.(bool) == true {
-				linkCSS = true
+			if onoff {
+				switch option {
+				case "NoIntraEmphasis":
+					ext |= blackfriday.NoIntraEmphasis
+				case "Tables":
+					ext |= blackfriday.Tables
+				case "FencedCode":
+					ext |= blackfriday.FencedCode
+				case "Autolink":
+					ext |= blackfriday.Autolink
+				case "Strikethrough":
+					ext |= blackfriday.Strikethrough
+				case "LaxHTMLBlocks":
+					ext |= blackfriday.LaxHTMLBlocks
+				case "SpaceHeadings":
+					ext |= blackfriday.SpaceHeadings
+				case "HardLineBreak":
+					ext |= blackfriday.HardLineBreak
+				case "TabSizeEight":
+					ext |= blackfriday.TabSizeEight
+				case "Footnotes":
+					ext |= blackfriday.Footnotes
+				case "NoEmptyLineBeforeBlock":
+					ext |= blackfriday.NoEmptyLineBeforeBlock
+				case "HeadingIDs":
+					ext |= blackfriday.HeadingIDs
+				case "Titleblock":
+					ext |= blackfriday.Titleblock
+				case "AutoHeadingIDs":
+					ext |= blackfriday.AutoHeadingIDs
+				case "BackslashLineBreak":
+					ext |= blackfriday.BackslashLineBreak
+				case "DefinitionLists":
+					ext |= blackfriday.DefinitionLists
+				//case "CommonHTMLFlags":
+				//	ext |= blackfriday.CommonHTMLFlags
+				case "CommonExtensions":
+					ext |= blackfriday.CommonExtensions
+				}
 			}
-		case "inline_css":
-			if v.(bool) == true {
-				inlineCSS = true
-			}
-		case "css":
-			if v.(string) != "" {
-				includeCSS = v.(string)
-			}
-		default:
-			fmt.Fprintf(os.Stderr, "WARNING skipping %q, don't understand directive\n", k)
 		}
 	}
+	return ext
+}
 
-	fountain.AsHTMLPage = asHTMLPage
-	fountain.InlineCSS = inlineCSS
-	fountain.LinkCSS = linkCSS
-	fountain.CSS = includeCSS
+// gomarkdownExtensions takes a config (map[string]interface{}) and
+// returns the ORed extenions flags for map["markdown"].
+func gomarkdownExtensions(config map[string]interface{}) parser.Extensions {
+	ext := parser.NoExtensions
+	if thing, ok := config["markdown"]; ok == true {
+		extensions := thing.(map[string]interface{})
+		for k, v := range extensions {
+			onoff := false
+			option := k
+			switch v.(type) {
+			case int:
+				onoff = v.(int) == 1
+			case int64:
+				onoff = v.(int64) == 1
+			case bool:
+				onoff = v.(bool)
+			case string:
+				onoff = strings.ToLower(v.(string)) == "true"
+			}
+			fmt.Fprintf(os.Stderr, "DEBUG option %s value %t\n", option, onoff)
+			if onoff {
+				switch option {
+				case "NoIntraEmphasis":
+					ext |= parser.NoIntraEmphasis
+				case "Tables":
+					ext |= parser.Tables
+				case "FencedCode":
+					ext |= parser.FencedCode
+				case "Autolink":
+					ext |= parser.Autolink
+				case "Strikethrough":
+					ext |= parser.Strikethrough
+				case "LaxHTMLBlocks":
+					ext |= parser.LaxHTMLBlocks
+				case "SpaceHeadings":
+					ext |= parser.SpaceHeadings
+				case "HardLineBreak":
+					ext |= parser.HardLineBreak
+				case "TabSizeEight":
+					ext |= parser.TabSizeEight
+				case "Footnotes":
+					ext |= parser.Footnotes
+				case "NoEmptyLineBeforeBlock":
+					ext |= parser.NoEmptyLineBeforeBlock
+				case "HeadingIDs":
+					ext |= parser.HeadingIDs
+				case "Titleblock":
+					ext |= parser.Titleblock
+				case "AutoHeadingIDs":
+					ext |= parser.AutoHeadingIDs
+				case "BackslashLineBreak":
+					ext |= parser.BackslashLineBreak
+				case "DefinitionLists":
+					ext |= parser.DefinitionLists
+				case "MathJax":
+					ext |= parser.MathJax
+				case "OrderedListStart":
+					ext |= parser.OrderedListStart
+				case "Attributes":
+					ext |= parser.Attributes
+				case "SuperSubscript":
+					ext |= parser.SuperSubscript
+				case "CommonExtensions":
+					ext |= parser.CommonExtensions
+				}
+			}
+		}
+	}
+	fmt.Fprintf(os.Stderr, "DEBUG extensions value %d\n", ext)
+	return ext
+}
+
+// gomarkdownRenderOptions config (map[string]interface{}) and
+// returns the ORed extenions flags for map["markdown"].
+func gomarkdownRenderOptions(config map[string]interface{}) html.Flags {
+	flag := html.FlagsNone
+	if thing, ok := config["markdown"]; ok == true {
+		flags := thing.(map[string]interface{})
+		for k, v := range flags {
+			option := k
+			onoff := false
+			switch v.(type) {
+			case int:
+				onoff = v.(int) == 1
+			case int64:
+				onoff = v.(int64) == 1
+			case bool:
+				onoff = v.(bool)
+			case string:
+				onoff = strings.ToLower(v.(string)) == "true"
+			}
+			fmt.Fprintf(os.Stderr, "DEBUG render option %s value %t\n", option, onoff)
+			if onoff {
+				switch option {
+				case "SkipHTML":
+					flag |= html.SkipHTML
+				case "SkipImages":
+					flag |= html.SkipImages
+				case "SkipLinks":
+					flag |= html.SkipLinks
+				case "Safelink":
+					flag |= html.Safelink
+				case "NofollowLinks":
+					flag |= html.NofollowLinks
+				case "NoreferrerLinks":
+					flag |= html.NoreferrerLinks
+				case "HrefTargetBlank":
+					flag |= html.HrefTargetBlank
+				case "CompletePage":
+					flag |= html.CompletePage
+				case "UseXHTML":
+					flag |= html.UseXHTML
+				case "FootnoteReturnLinks":
+					flag |= html.FootnoteReturnLinks
+				case "FootnoteNoHRTag":
+					flag |= html.FootnoteNoHRTag
+				case "Smartypants":
+					flag |= html.Smartypants
+				case "SmartypantsFractions":
+					flag |= html.SmartypantsFractions
+				case "SmartypantsDashes":
+					flag |= html.SmartypantsDashes
+				case "SmartypantsLatexDashes":
+					flag |= html.SmartypantsLatexDashes
+				case "SmartypantsAngledQuotes":
+					flag |= html.SmartypantsAngledQuotes
+				case "SmartypantsQuotesNBSP":
+					flag |= html.SmartypantsQuotesNBSP
+				case "TOC":
+					flag |= html.TOC
+				case "CommonFlags":
+					flag |= html.CommonFlags
+				}
+			}
+		}
+	}
+	fmt.Fprintf(os.Stderr, "DEBUG render options value %d\n", flag)
+	return flag
+}
+
+// markdownProcessor wraps gomarkdown, mmark, fountain and blackfriday.v2
+// handling the splitting off the front matter if present and configuration
+// via front matter.
+func markdownProcessor(input []byte) ([]byte, error) {
+	frontMatterType, frontMatterSrc, mdSrc := SplitFrontMatter(input)
+	//NOTE: should inspect front matter for Markdown parsing configuration
+	config, err := processorConfig(frontMatterType, frontMatterSrc)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Fprintf(os.Stderr, "DEBUG config -> %+v\n", config)
+	if thing, ok := config["markup"]; ok == true {
+		markup := thing.(string)
+		fmt.Fprintf(os.Stderr, "DEBUG markup is %s\n", markup)
+		switch markup {
+		case "markdown":
+			//FIXME: Should this be the default processor?
+			// Should I drop blackfriday?
+			ext := gomarkdownExtensions(config)
+			p := parser.NewWithExtensions(ext)
+
+			htmlFlags := gomarkdownRenderOptions(config)
+			opts := html.RendererOptions{Flags: htmlFlags}
+			r := html.NewRenderer(opts)
+
+			return markdown.ToHTML(mdSrc, p, r)
+		case "fountain":
+			return fountainProcessor(input)
+		case "blackfriday":
+			ext := blackfridayExtensions(config)
+			//FIXME: Should support blackfriday.HTMLFlags too
+			if ext == blackfriday.NoExtensions {
+				return blackfriday.Run(mdSrc, blackfriday.WithNoExtensions()), nil
+			} else {
+				return blackfriday.Run(mdSrc, blackfriday.WithExtensions(ext)), nil
+			}
+		default:
+			return nil, fmt.Errorf("unknown markup engine")
+		}
+	}
+	// Default to gomarkdown markdown processor
+	// with CommonExtensions and CommonHTMLFlags
+	p := parser.NewWithExtensions(parser.CommonExtensions)
+	opts := html.RendererOptions{Flags: html.CommonFlags}
+	r := html.NewRenderer(opts)
+	return markdown.ToHTML(mdSrc, p, r), nil
+
+	// NOTE: Might want to have default as
+	//return blackfriday.Run(mdSrc, blackfriday.WithExtensions(blackfriday.ComonExtensions|blackfriday.CommonHTMLFlags))
+	// NOTE: Old default was
+	//return blackfriday.Run(mdSrc)
+}
+
+// fountainProcessor wraps fountain.Run() splitting off the front
+// matter if present.
+func fountainProcessor(input []byte) ([]byte, error) {
+	var err error
+
+	frontMatterType, frontMatterSrc, fountainSrc := SplitFrontMatter(input)
+	config, err := processorConfig(frontMatterType, frontMatterSrc)
+	if err != nil {
+		return nil, err
+	}
+	// Default Settings (override via front matter directives)
+	fountain.AsHTMLPage = false
+	fountain.InlineCSS = false
+	fountain.LinkCSS = false
+	fountain.IncludeCSS = ""
+	if thing, ok := config["fountain"]; ok == true {
+		cfg := thing.(map[string]interface{})
+		for k, v := range cfg {
+			switch v.(type) {
+			case bool:
+				onoff := v.(bool)
+				switch k {
+				case "AsHTMLPage":
+					fountain.AsHTMLPage = onoff
+				case "InlineCSS":
+					fountain.InlineCSS = onoff
+				case "LinkCSS":
+					fountain.LinkCSS = onoff
+
+				}
+			case string:
+				if k == "IncludeCSS" {
+					fountain.IncludeCSS = v.(string)
+				}
+			default:
+				return nil, fmt.Errorf("Unknown fountain option %q", k)
+			}
+		}
+	}
 	src, err := fountain.Run(fountainSrc)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "WARNING: %s\n", err)
@@ -222,7 +475,9 @@ func fountainProcessor(input []byte) []byte {
 // ResolveData takes a data map and reads in the files and URL sources
 // as needed turning the data into strings to be applied to the template.
 func ResolveData(data map[string]string) (map[string]interface{}, error) {
-	var out map[string]interface{}
+	var (
+		out map[string]interface{}
+	)
 
 	isContentType := func(vals []string, target string) bool {
 		for _, h := range vals {
@@ -239,9 +494,17 @@ func ResolveData(data map[string]string) (map[string]interface{}, error) {
 		case strings.HasPrefix(val, TextPrefix) == true:
 			out[key] = strings.TrimPrefix(val, TextPrefix)
 		case strings.HasPrefix(val, MarkdownPrefix) == true:
-			out[key] = string(markdownProcessor([]byte(strings.TrimPrefix(val, MarkdownPrefix))))
+			src, err := markdownProcessor([]byte(strings.TrimPrefix(val, MarkdownPrefix)))
+			if err != nil {
+				return out, err
+			}
+			out[key] = fmt.Sprintf("%s", src)
 		case strings.HasPrefix(val, FountainPrefix) == true:
-			out[key] = string(fountainProcessor([]byte(strings.TrimPrefix(val, FountainPrefix))))
+			src, err := fountainProcessor([]byte(strings.TrimPrefix(val, FountainPrefix)))
+			if err != nil {
+				return out, err
+			}
+			out[key] = fmt.Sprintf("%s", src)
 		case strings.HasPrefix(val, JSONPrefix) == true:
 			var o interface{}
 			err := json.Unmarshal(bytes.TrimPrefix([]byte(val), []byte(JSONPrefix)), &o)
@@ -249,7 +512,6 @@ func ResolveData(data map[string]string) (map[string]interface{}, error) {
 				return out, fmt.Errorf("Can't JSON decode (%s) %s, %s", key, val, err)
 			}
 			out[key] = o
-
 		case strings.HasPrefix(val, "http://") == true || strings.HasPrefix(val, "https://") == true:
 			resp, err := http.Get(val)
 			if err != nil {
