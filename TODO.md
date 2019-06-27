@@ -5,10 +5,46 @@
 
 + [ ] After April 17, 2018 use the new NOAA weather API for example in help and README.md
 + [x] Copyright year needs updating in source files
-+ [ ] Need to handle Toml, JSOM front matter based on their respective start/end delimiters
++ [x] Need to handle Toml, JSON front matter based on their respective start/end delimiters
 
 ## Next
 
++ [ ] Review Hugo's style sitemap variables
++ [ ] Add support for Hugo Front Matter's predefined variables into rendata resolving system (i.e. treat as if they were specified on the command line as key/data pairs)
+    + [ ] aliases
+    + [ ] audio
+    + [ ] date
+    + [ ] description
+    + [ ] draft (bool)
+    + [ ] expiryDate
+    + [ ] headless
+    + [ ] images
+    + [ ] isCJKLanguage
+    + [ ] keywords
+    + [ ] layout
+    + [ ] lastmod
+    + [ ] linkTitle
+    + [ ] markdup (We'll support Markdown and Fountain add others later)
+    + [ ] outputs (output formats)
+    + [ ] publishDate
+    + [ ] resources
+    + [ ] series
+    + [ ] slug
+    + [ ] summary
+    + [ ] title
+    + [ ] type
+    + [ ] url
+    + [ ] videos
+    + [ ] weight
++ [ ] Add Support for Hugo style User Defined Front Matter variables
+    + Values are passed as ".Params.\*"
++ [ ] Add Support for Hugo style Front Matter configuration of BlackFriday (and Fountain) engines
++ [ ] mkpage populate a set of `.MkPage` variables accessible to template
+    + [ ] `.MkPage.Version` (semver only)
+    + [ ] `.MkPage.Environment` (target environment, e.g. macOS, Windows)
+    + [ ] `.MkPage.CommitHash` (git commit hash of mkpage)
+    + [ ] `.MkPage.BuildDate` (build date of mkpage)
+    + [ ] `.MkPage.Generator` (generator string, like defined for RSS 2)
 + [x] Add cli for extracting front matter
 + [x] *mkpage* should skip over front matter when rendering
 + [x] Add simple redirect support to _ws_
@@ -16,6 +52,14 @@
 
 ## Someday, Maybe
 
++ [ ] Become more Hugo compatible and friendly
+    + [ ] Add Hugo style Shortcode support
+    + [ ] Add Hugo style Taxonomy variables
+    + [ ] Add Hugo style menu entry properites
+    + [ ] Add Hugo style File Variables
+    + [ ] Add Hugo style Page Variables
+    + [ ] Skip Hugo site variables because **mkpage** is page centric
+          and that should be handled by the wrapping Python script
 + [ ] Add a tool to generate and search lunr indexes
 + [ ] Add a HugoLike template support to tmplfn use by mkpage.
 + [ ] make markdown engine (blackfriday v2) configurable from front matter
