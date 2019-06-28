@@ -272,7 +272,8 @@ func main() {
 	cli.ExitOnError(app.Eout, err, quiet)
 
 	// Build the slides
-	slides := mkpage.MarkdownToSlides(mdFName, mdSrc)
+	slides, err := mkpage.MarkdownToSlides(mdFName, mdSrc)
+	cli.ExitOnError(app.Eout, err, quiet)
 
 	// Render the slides
 	for i, slide := range slides {

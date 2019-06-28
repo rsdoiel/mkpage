@@ -137,10 +137,10 @@ func SplitFrontMatter(input []byte) (int, []byte, []byte) {
 	return FrontMatterIsUnknown, []byte(""), input
 }
 
-// processorConfig takes front matter and returns
+// ProcessorConfig takes front matter and returns
 // a map[string]interface{}{} containing configuration for a target
 // markup engine.
-func processorConfig(frontMatterType int, frontMatterSrc []byte) (map[string]interface{}, error) {
+func ProcessorConfig(frontMatterType int, frontMatterSrc []byte) (map[string]interface{}, error) {
 	m := map[string]interface{}{}
 	// Convert Front Matter to JSON
 	switch frontMatterType {
@@ -373,34 +373,50 @@ func gomarkdownRenderOptions(config map[string]interface{}) html.Flags {
 	return flag
 }
 
+// ConfigMarkdown tames a map[string]interface{} and updates
+// the configuration returning parser.Extensions and html.Flag
+// based on the parsed document.
+func ConfigMarkdown(config map[string]interface{}) (parser.Extensions, html.Flags, error) {
+	ext := gomarkdownExtensions(config)
+	htmlFlags := gomarkdownRenderOptions(config)
+	return ext, htmlFlags, nil
+}
+
 // markdownProcessor wraps gomarkdown, mmark, fountain and blackfriday.v2
 // handling the splitting off the front matter if present and configuration
 // via front matter.
 func markdownProcessor(input []byte) ([]byte, error) {
 	frontMatterType, frontMatterSrc, mdSrc := SplitFrontMatter(input)
 	//NOTE: should inspect front matter for Markdown parsing configuration
-	config, err := processorConfig(frontMatterType, frontMatterSrc)
+	config, err := ProcessorConfig(frontMatterType, frontMatterSrc)
 	if err != nil {
 		return nil, err
 	}
+
 	fmt.Fprintf(os.Stderr, "DEBUG config -> %+v\n", config)
 	if thing, ok := config["markup"]; ok == true {
 		markup := thing.(string)
 		fmt.Fprintf(os.Stderr, "DEBUG markup is %s\n", markup)
 		switch markup {
 		case "markdown":
-			//FIXME: Should this be the default processor?
-			// Should I drop blackfriday?
-			ext := gomarkdownExtensions(config)
-			p := parser.NewWithExtensions(ext)
+			ext, htmlFlags, err := ConfigMarkdown(config)
+			if err != nil {
+				return nil, err
+			}
 
-			htmlFlags := gomarkdownRenderOptions(config)
+			p := parser.NewWithExtensions(ext)
 			opts := html.RendererOptions{Flags: htmlFlags}
 			r := html.NewRenderer(opts)
-
-			return markdown.ToHTML(mdSrc, p, r)
+			return markdown.ToHTML(mdSrc, p, r), nil
 		case "fountain":
-			return fountainProcessor(input)
+			if err := ConfigFountain(config); err != nil {
+				return nil, err
+			}
+			src, err := fountain.Run(mdSrc)
+			if err != nil {
+				return nil, err
+			}
+			return src, nil
 		case "blackfriday":
 			ext := blackfridayExtensions(config)
 			//FIXME: Should support blackfriday.HTMLFlags too
@@ -413,34 +429,19 @@ func markdownProcessor(input []byte) ([]byte, error) {
 			return nil, fmt.Errorf("unknown markup engine")
 		}
 	}
+	//FIXME: need to check for default mkpage.* (.toml, .yaml, .json)
 	// Default to gomarkdown markdown processor
 	// with CommonExtensions and CommonHTMLFlags
 	p := parser.NewWithExtensions(parser.CommonExtensions)
 	opts := html.RendererOptions{Flags: html.CommonFlags}
 	r := html.NewRenderer(opts)
 	return markdown.ToHTML(mdSrc, p, r), nil
-
-	// NOTE: Might want to have default as
-	//return blackfriday.Run(mdSrc, blackfriday.WithExtensions(blackfriday.ComonExtensions|blackfriday.CommonHTMLFlags))
-	// NOTE: Old default was
-	//return blackfriday.Run(mdSrc)
 }
 
-// fountainProcessor wraps fountain.Run() splitting off the front
-// matter if present.
-func fountainProcessor(input []byte) ([]byte, error) {
-	var err error
-
-	frontMatterType, frontMatterSrc, fountainSrc := SplitFrontMatter(input)
-	config, err := processorConfig(frontMatterType, frontMatterSrc)
-	if err != nil {
-		return nil, err
-	}
-	// Default Settings (override via front matter directives)
-	fountain.AsHTMLPage = false
-	fountain.InlineCSS = false
-	fountain.LinkCSS = false
-	fountain.IncludeCSS = ""
+// ConfigFountain sets the fountain defaults then applies
+// the map[string]interface{} overwriting the defaults
+// returns error necessary.
+func ConfigFountain(config map[string]interface{}) error {
 	if thing, ok := config["fountain"]; ok == true {
 		cfg := thing.(map[string]interface{})
 		for k, v := range cfg {
@@ -454,22 +455,37 @@ func fountainProcessor(input []byte) ([]byte, error) {
 					fountain.InlineCSS = onoff
 				case "LinkCSS":
 					fountain.LinkCSS = onoff
-
 				}
 			case string:
 				if k == "IncludeCSS" {
-					fountain.IncludeCSS = v.(string)
+					fountain.CSS = v.(string)
 				}
 			default:
-				return nil, fmt.Errorf("Unknown fountain option %q", k)
+				return fmt.Errorf("Unknown fountain option %q", k)
 			}
 		}
 	}
+	return nil
+}
+
+// fountainProcessor wraps fountain.Run() splitting off the front
+// matter if present.
+func fountainProcessor(input []byte) ([]byte, error) {
+	var err error
+
+	frontMatterType, frontMatterSrc, fountainSrc := SplitFrontMatter(input)
+	config, err := ProcessorConfig(frontMatterType, frontMatterSrc)
+	if err != nil {
+		return nil, err
+	}
+	if err := ConfigFountain(config); err != nil {
+		return nil, err
+	}
 	src, err := fountain.Run(fountainSrc)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "WARNING: %s\n", err)
+		return nil, err
 	}
-	return src
+	return src, nil
 }
 
 // ResolveData takes a data map and reads in the files and URL sources
@@ -533,9 +549,17 @@ func ResolveData(data map[string]string) (map[string]interface{}, error) {
 						}
 						out[key] = o
 					case isContentType(contentTypes, "text/markdown") == true:
-						out[key] = string(markdownProcessor(buf))
+						src, err := markdownProcessor(buf)
+						if err != nil {
+							return nil, err
+						}
+						out[key] = fmt.Sprintf("%s", src)
 					case isContentType(contentTypes, "text/fountain") == true:
-						out[key] = string(fountainProcessor(buf))
+						src, err := fountainProcessor(buf)
+						if err != nil {
+							return nil, err
+						}
+						out[key] = fmt.Sprintf("%s", src)
 					default:
 						out[key] = string(buf)
 					}
@@ -552,9 +576,17 @@ func ResolveData(data map[string]string) (map[string]interface{}, error) {
 			switch {
 			case strings.Compare(ext, ".fountain") == 0 ||
 				strings.Compare(ext, ".spmd") == 0:
-				out[key] = string(fountainProcessor(buf))
+				src, err := fountainProcessor(buf)
+				if err != nil {
+					return nil, err
+				}
+				out[key] = fmt.Sprintf("%s", src)
 			case strings.Compare(ext, ".md") == 0:
-				out[key] = string(markdownProcessor(buf))
+				src, err := markdownProcessor(buf)
+				if err != nil {
+					return nil, err
+				}
+				out[key] = fmt.Sprintf("%s", src)
 			case strings.Compare(ext, ".json") == 0:
 				var o interface{}
 				err := json.Unmarshal(buf, &o)
@@ -640,18 +672,22 @@ type Slide struct {
 
 // MarkdownToSlides turns a markdown file into one or more Slide structs
 // Which populate predefined key/value pairs for later rendering in Markdown
-func MarkdownToSlides(fname string, mdSource []byte) []*Slide {
+func MarkdownToSlides(fname string, mdSource []byte) ([]*Slide, error) {
 	var slides []*Slide
 
 	// Note: handle legacy CR/LF endings as well as normal LF line endings
 	if bytes.Contains(mdSource, []byte("\r\n")) {
 		mdSource = bytes.Replace(mdSource, []byte("\r\n"), []byte("\n"), -1)
 	}
-	// Note: We're only spliting on line that contain "--", not lines ending with where text might end with "--"
-	mdSlides := bytes.Split(mdSource, []byte("\n--\n"))
+	// Note: We're only spliting on whole line that contain "---", not lines ending with where text might end with "---"
+	mdSlides := bytes.Split(mdSource, []byte("\n---\n"))
 
 	lastSlide := len(mdSlides) - 1
 	for i, s := range mdSlides {
+		src, err := markdownProcessor(s)
+		if err != nil {
+			return nil, fmt.Errorf("%s slide %d error, %s", fname, i+1, err)
+		}
 		slides = append(slides, &Slide{
 			FName:   strings.TrimSuffix(path.Base(fname), path.Ext(fname)),
 			CurNo:   i,
@@ -659,10 +695,10 @@ func MarkdownToSlides(fname string, mdSource []byte) []*Slide {
 			NextNo:  (i + 1),
 			FirstNo: 0,
 			LastNo:  lastSlide,
-			Content: string(markdownProcessor(s)),
+			Content: fmt.Sprintf("%s", src),
 		})
 	}
-	return slides
+	return slides, nil
 }
 
 // MakeSlide this takes a io.Writer, a template, key/value map pairs and Slide struct.
