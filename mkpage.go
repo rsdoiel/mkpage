@@ -55,7 +55,7 @@ import (
 )
 
 const (
-	Version = `v0.0.28`
+	Version = `v0.0.29`
 
 	// LicenseText provides a string template for rendering cli license info
 	LicenseText = `

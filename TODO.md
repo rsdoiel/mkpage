@@ -9,6 +9,7 @@
 
 ## Next (road to v1.0.0)
 
++ [ ] Read in mkpage.toml, mkpage.json or mkpage.yaml for mkpage config
 + [ ] Evaluate switching from Blackfriday to GoMarkdown
 + [ ] Add support for [Go Markdown](https://github.com/gomarkdown/markdown)
 + [ ] Add support for [MMark](https://github.com/mmarkdown/mmark)
