@@ -18,26 +18,26 @@
 + [ ] Add support for passing configuration to markup engine from front matter
 + [ ] Figure out how to comingle Markdown, Fountain, remarkjs safely 
 + [ ] mkpage front matter based on library metadata practices, codemeta.json and relavant Scheme.org scheme
-    + [ ] `.DOI` the DOI associated with a page
-    + [ ] `.Creator` should be an array of creator info (e.g. ORCID, given_name, family_name)
-    + [ ] `.Title`
-    + [ ] `.Date`
-    + [ ] `.PublishDate`
-    + [ ] `.Lastmod`
-    + [ ] `.Description`
-    + [ ] `.Draft` (bool)
-    + [ ] `.Keywords`
-    + [ ] `.LinkTitle`
-    + [ ] `.Markdup` (e.g. markdown, fountain, remarkjs)
-    + [ ] `.Series`
-    + [ ] `.Slug`
-    + [ ] `.Type` (e.g. post, article, homepage)
-    + [ ] `.Permalink`  (e.g. resolver URL)
-    + [ ] `.Language`
-    + [ ] `.Params` holds any user defined and supplied elements in the front matter
-    + [ ] `.Markdown` holds settings to pass to the Blackfriday renderer 
-    + [ ] `.Fountain` holds settings to pass to the Fountain 2 renderer
-    + [ ] `.Remarkjs` holds the settings for our remarkjs engine
+    + [ ] `.doi` the DOI associated with a page
+    + [ ] `.creator` should be an array of creator info (e.g. ORCID, given_name, family_name)
+    + [ ] `.title`
+    + [ ] `.date`
+    + [ ] `.publishDate`
+    + [ ] `.lastmod`
+    + [ ] `.description`
+    + [ ] `.draft` (bool)
+    + [ ] `.keywords`
+    + [ ] `.linkTitle`
+    + [ ] `.markdup` (e.g. markdown, fountain, blackfriday, maybe remarkjs)
+    + [ ] `.series`
+    + [ ] `.slug`
+    + [ ] `.type` (e.g. post, article, homepage)
+    + [ ] `.permalink`  (e.g. resolver URL)
+    + [ ] `.language`
+    + [x] `.markdown` holds map of settings to pass to the gomarkdown engine
+    + [x] `.fountain` holds map of settings to pass to the Fountain 2 engine
+    + [x] `.blackfriday`hold map of settings to pass to the old Blackfriday v2 engine
+    + [ ] `.remarkjs` holds the settings for our remarkjs engine
 + [ ] mkpage Sitemap support
     + Current sitemap cli is too naive for sites more than a couple dozen pages
     + Need to support possibly nested sitemap XML references
@@ -45,7 +45,7 @@
     + Need some sort of front matter to identify where/if content would show up in sitemap
 + [ ] mkpage slide support needs to align with remarkjs
     + See https://github.com/gnab/remark, https://remarkjs.com and https://github.com/gnab/remark/wiki
-    + [ ] Change slide splits from `--` to `---` to conform to remarkjs.com behavior
+    + [x] Change slide splits from `--` to `---` to conform to remarkjs.com behavior
     + [ ] Consider merging mkpage and mkslide (fewer tools less to learn), consider front matter changes
     + [ ] Add support for slide notes delimited by `???`
 + [ ] Add Support for Hugo style Front Matter configuration of BlackFriday and Fountain engines
