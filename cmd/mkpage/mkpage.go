@@ -1,5 +1,6 @@
 //
-// mkpage is a thought experiment in a light weight template and markdown processor
+// mkpage is a thought experiment in a light weight template and 
+// markup (markdown, fountain) processing.
 //
 // @author R. S. Doiel, <rsdoiel@caltech.edu>
 //

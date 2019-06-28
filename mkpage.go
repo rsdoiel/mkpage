@@ -96,10 +96,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 	TitleExp = `^#\s+(\w|\s|.)+$`
 
 	// Front Matter Types
-	FrontMatterIsUnknown = iota
-	FrontMatterIsYAML
-	FrontMatterIsTOML
-	FrontMatterIsJSON
+	ConfigIsUnknown = iota
+	ConfigIsYAML
+	ConfigIsTOML
+	ConfigIsJSON
 )
 
 var (
@@ -113,6 +113,9 @@ var (
 	// Defaults is a map to assets defined in assets.go which is build with pkgasset and
 	// the contents of the defaults folder in this repository.
 	DefaultSlideTemplateSource string
+
+    // Config holds a global config. Uses the same structure as Front Matter
+    Config map[string]interface{}
 )
 
 // SplitFronMatter takes a []byte input splits it into front matter
@@ -122,29 +125,30 @@ func SplitFrontMatter(input []byte) (int, []byte, []byte) {
 	// YAML front matter uses ---
 	if bytes.HasPrefix(input, []byte("---\n")) {
 		parts := bytes.SplitN(bytes.TrimPrefix(input, []byte("---\n")), []byte("\n---\n"), 2)
-		return FrontMatterIsYAML, parts[0], parts[1]
+		return ConfigIsYAML, parts[0], parts[1]
 	}
 	if bytes.HasPrefix(input, []byte("+++\n")) {
 		parts := bytes.SplitN(bytes.TrimPrefix(input, []byte("+++\n")), []byte("\n+++\n"), 2)
-		return FrontMatterIsTOML, parts[0], parts[1]
+		return ConfigIsTOML, parts[0], parts[1]
 	}
 	if bytes.HasPrefix(input, []byte("{\n")) {
 		parts := bytes.SplitN(bytes.TrimPrefix(input, []byte("{\n")), []byte("\n}\n"), 2)
 		src := []byte(fmt.Sprintf("{\n%s\n}\n", parts[0]))
-		return FrontMatterIsJSON, src, parts[1]
+		return ConfigIsJSON, src, parts[1]
 	}
 	// Handle case of no front matter
-	return FrontMatterIsUnknown, []byte(""), input
+	return ConfigIsUnknown, []byte(""), input
 }
 
 // ProcessorConfig takes front matter and returns
 // a map[string]interface{}{} containing configuration for a target
 // markup engine.
-func ProcessorConfig(frontMatterType int, frontMatterSrc []byte) (map[string]interface{}, error) {
+func ProcessorConfig(configType int, frontMatterSrc []byte) (map[string]interface{}, error) {
+    //FIXME: Need to merge with .Config and return the merged result.
 	m := map[string]interface{}{}
 	// Convert Front Matter to JSON
-	switch frontMatterType {
-	case FrontMatterIsYAML:
+	switch configType {
+	case ConfigIsYAML:
 		// YAML Front Matter
 		jsonSrc, err := yaml.YAMLToJSON(frontMatterSrc)
 		if err != nil {
@@ -153,12 +157,12 @@ func ProcessorConfig(frontMatterType int, frontMatterSrc []byte) (map[string]int
 		if err = json.Unmarshal(jsonSrc, &m); err != nil {
 			return nil, err
 		}
-	case FrontMatterIsTOML:
+	case ConfigIsTOML:
 		// TOML Front Matter
 		if _, err := toml.Decode(fmt.Sprintf("%s", frontMatterSrc), &m); err != nil {
 			return nil, err
 		}
-	case FrontMatterIsJSON:
+	case ConfigIsJSON:
 		// JSON Front Matter
 		if err := json.Unmarshal(frontMatterSrc, &m); err != nil {
 			return nil, err
@@ -252,7 +256,6 @@ func gomarkdownExtensions(config map[string]interface{}) parser.Extensions {
 			case string:
 				onoff = strings.ToLower(v.(string)) == "true"
 			}
-			fmt.Fprintf(os.Stderr, "DEBUG option %s value %t\n", option, onoff)
 			if onoff {
 				switch option {
 				case "NoIntraEmphasis":
@@ -301,7 +304,6 @@ func gomarkdownExtensions(config map[string]interface{}) parser.Extensions {
 			}
 		}
 	}
-	fmt.Fprintf(os.Stderr, "DEBUG extensions value %d\n", ext)
 	return ext
 }
 
@@ -324,7 +326,6 @@ func gomarkdownRenderOptions(config map[string]interface{}) html.Flags {
 			case string:
 				onoff = strings.ToLower(v.(string)) == "true"
 			}
-			fmt.Fprintf(os.Stderr, "DEBUG render option %s value %t\n", option, onoff)
 			if onoff {
 				switch option {
 				case "SkipHTML":
@@ -369,13 +370,15 @@ func gomarkdownRenderOptions(config map[string]interface{}) html.Flags {
 			}
 		}
 	}
-	fmt.Fprintf(os.Stderr, "DEBUG render options value %d\n", flag)
 	return flag
 }
 
 // ConfigMarkdown tames a map[string]interface{} and updates
 // the configuration returning parser.Extensions and html.Flag
-// based on the parsed document.
+// based on the processed map. NOTE: Settings for markdown are
+// objects under m["markdown"]. This lets you pass your whole
+// app config map and still have control of the markdown bit
+// independently.
 func ConfigMarkdown(config map[string]interface{}) (parser.Extensions, html.Flags, error) {
 	ext := gomarkdownExtensions(config)
 	htmlFlags := gomarkdownRenderOptions(config)
@@ -386,17 +389,15 @@ func ConfigMarkdown(config map[string]interface{}) (parser.Extensions, html.Flag
 // handling the splitting off the front matter if present and configuration
 // via front matter.
 func markdownProcessor(input []byte) ([]byte, error) {
-	frontMatterType, frontMatterSrc, mdSrc := SplitFrontMatter(input)
+	configType, frontMatterSrc, mdSrc := SplitFrontMatter(input)
 	//NOTE: should inspect front matter for Markdown parsing configuration
-	config, err := ProcessorConfig(frontMatterType, frontMatterSrc)
+	config, err := ProcessorConfig(configType, frontMatterSrc)
 	if err != nil {
 		return nil, err
 	}
 
-	fmt.Fprintf(os.Stderr, "DEBUG config -> %+v\n", config)
 	if thing, ok := config["markup"]; ok == true {
 		markup := thing.(string)
-		fmt.Fprintf(os.Stderr, "DEBUG markup is %s\n", markup)
 		switch markup {
 		case "markdown":
 			ext, htmlFlags, err := ConfigMarkdown(config)
@@ -473,8 +474,8 @@ func ConfigFountain(config map[string]interface{}) error {
 func fountainProcessor(input []byte) ([]byte, error) {
 	var err error
 
-	frontMatterType, frontMatterSrc, fountainSrc := SplitFrontMatter(input)
-	config, err := ProcessorConfig(frontMatterType, frontMatterSrc)
+	configType, frontMatterSrc, fountainSrc := SplitFrontMatter(input)
+	config, err := ProcessorConfig(configType, frontMatterSrc)
 	if err != nil {
 		return nil, err
 	}
@@ -611,7 +612,7 @@ func MakePage(wr io.Writer, templateName string, tmpl *template.Template, keyVal
 	return tmpl.ExecuteTemplate(wr, templateName, data)
 }
 
-// MakePageString applies the key/value map to the named template tmpl and renders the results to a string and error if someting goes wrong
+// MakePageString applies the key/value map to the named template tmpl and renders the results to a string and error if something goes wrong
 func MakePageString(templateName string, tmpl *template.Template, keyValues map[string]string) (string, error) {
 	var buf bytes.Buffer
 	wr := io.Writer(&buf)
