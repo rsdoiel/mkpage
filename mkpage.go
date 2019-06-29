@@ -37,20 +37,10 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/ghodss/yaml"
 	"github.com/gomarkdown/markdown"
-	//"github.com/gomarkdown/markdown/ast"
 	"github.com/gomarkdown/markdown/html"
 	"github.com/gomarkdown/markdown/parser"
-	/*
-		"github.com/mmarkdown/mmark/mast"
-		"github.com/mmarkdown/mmark/mparser"
-		"github.com/mmarkdown/mmark/render/man"
-		mmarkout "github.com/mmarkdown/mmark/render/markdown"
-		"github.com/mmarkdown/mmark/render/mhtml"
-		"github.com/mmarkdown/mmark/render/xml"
-		"github.com/mmarkdown/mmark/render/xml2"
-	*/
 	"github.com/rsdoiel/fountain"
-	// FIXME: Should this be depreciated? duplicative of gomarkdown
+	// FIXME: Should this be depreciated? It is duplicative of gomarkdown
 	"gopkg.in/russross/blackfriday.v2"
 )
 
@@ -79,7 +69,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 	// JSONPrefix designates a string as JSON formatted content
 	JSONPrefix = "json:"
-	// MarkdownPrefix designates a string as Markdown content
+	// MMarkPrefix designates a string as MMark content
+	MMarkPrefix = "mmark:"
+	// MarkdownPrefix designates a string as Markdown (common mark) content
 	MarkdownPrefix = "markdown:"
 	// TextPrefix designates a string as text/plain not needed processing
 	TextPrefix = "text:"
@@ -114,8 +106,11 @@ var (
 	// the contents of the defaults folder in this repository.
 	DefaultSlideTemplateSource string
 
-    // Config holds a global config. Uses the same structure as Front Matter
-    Config map[string]interface{}
+	// Config holds a global config.
+	// Uses the same structure as Front Matter in that it is
+	// the result of parsing TOML, YAML or JSON into a
+	// map[string]interface{} tree
+	Config map[string]interface{}
 )
 
 // SplitFronMatter takes a []byte input splits it into front matter
@@ -141,10 +136,9 @@ func SplitFrontMatter(input []byte) (int, []byte, []byte) {
 }
 
 // ProcessorConfig takes front matter and returns
-// a map[string]interface{}{} containing configuration for a target
-// markup engine.
+// a map[string]interface{} containing configuration
 func ProcessorConfig(configType int, frontMatterSrc []byte) (map[string]interface{}, error) {
-    //FIXME: Need to merge with .Config and return the merged result.
+	//FIXME: Need to merge with .Config and return the merged result.
 	m := map[string]interface{}{}
 	// Convert Front Matter to JSON
 	switch configType {
@@ -399,6 +393,18 @@ func markdownProcessor(input []byte) ([]byte, error) {
 	if thing, ok := config["markup"]; ok == true {
 		markup := thing.(string)
 		switch markup {
+		case "mmark":
+			ext, htmlFlags, err := ConfigMarkdown(config)
+			if err != nil {
+				return nil, err
+			}
+			// Set markdown to Mmark
+			ext |= parser.Mmark
+
+			p := parser.NewWithExtensions(ext)
+			opts := html.RendererOptions{Flags: htmlFlags}
+			r := html.NewRenderer(opts)
+			return markdown.ToHTML(mdSrc, p, r), nil
 		case "markdown":
 			ext, htmlFlags, err := ConfigMarkdown(config)
 			if err != nil {
