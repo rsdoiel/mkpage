@@ -10,13 +10,13 @@
 ## Next (road to v1.0.0)
 
 + [ ] Read in mkpage.toml, mkpage.json or mkpage.yaml for mkpage config
-+ [ ] Evaluate switching from Blackfriday to GoMarkdown
-+ [ ] Add support for [Go Markdown](https://github.com/gomarkdown/markdown)
-+ [ ] Add support for [MMark](https://github.com/mmarkdown/mmark)
++ [x] Evaluate switching from Blackfriday to GoMarkdown
++ [x] Add support for [Go Markdown](https://github.com/gomarkdown/markdown)
++ [x] Add support for [MMark](https://github.com/mmarkdown/mmark)
 + [ ] Add support for rendering remarkjs content
-+ [ ] Add support for use "markup" in front matter to pick engine
++ [x] Add support for use "markup" in front matter to pick engine
 + [ ] Add support for passing configuration to markup engine from front matter
-+ [ ] Figure out how to comingle Markdown, Fountain, remarkjs safely 
++ [ ] Figure out how to co-mingle Markdown, Fountain, remarkjs safely 
 + [ ] mkpage front matter based on library metadata practices, codemeta.json and relavant Scheme.org scheme
     + [ ] `.doi` the DOI associated with a page
     + [ ] `.creator` should be an array of creator info (e.g. ORCID, given_name, family_name)

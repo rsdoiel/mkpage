@@ -1,0 +1,28 @@
+%%%
+Title = "This is a demo of Mmark support in MkPage!! Yippee!!!"
+
+markup = "mmark"
+
+[mmark]
+
+Bib = true
+Index = true
+CommonMarkdown = true
+HTMLFlags = true
+
+%%%
+
+# This is a demo of Mmark supported features.
+
+Now let's try to include t1.md
+
+{{t1.md}}
+
+An then try to include t2.md
+
+{{t2.md}}
+
+This is the end of d1.mmark. 
+
+The End.
+
