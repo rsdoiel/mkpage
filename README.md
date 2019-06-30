@@ -14,13 +14,9 @@ in your path. Precompiled binaries are available for Linux, Windows and Mac OS X
 well as for the ARM7 versions of Raspbian running on Raspberry Pi.  _mkpage_ is built on Go's text templates.
 The template markup is similar to the [Mustache](https://mustache.github.io/) and 
 [Handlebars](http://handlebarsjs.com/). It is also similar to [Hugo](https://gohugo.io)'s template markup.   _mkpage_ has been easier for us to support when compared with 
-more established static site generators like [Jekyll](https://jekyllrb.com/).
+more established static site generators like [Jekyll](https://jekyllrb.com/) [Hugo](https://gohugo.io) and [Assemble](http://assemble.io/).
 
-_mkpage_'s minimalism turns into an advantage when you combine _mkpage_ with the standard suite of text 
-processing tools available under your typical Unix/Posix like operating sytems. This makes scripting a 
-_mkpage_ project using languages like Bash and Python relatively straight forward.  Each _mkpage_ utility 
-is independent. You can use as few or as many as you like as you when you script the website creation 
-process that best fits your needs.
+_mkpage_'s minimalism turns into an advantage when you combine _mkpage_ with the standard suite of text processing tools available under your typical Unix/Posix like operating sytems. This makes scripting a _mkpage_ project using languages like Bash and Python relatively straight forward.  Each _mkpage_ utility is independent. You can use as few or as many as you like when you script your website creation process. You wind up with a workflow and build process that best fits your needs.
 
 
 The following command line tools come with _mkpage_ 
