@@ -13,6 +13,8 @@ custom_page_map = {
 }
 
 md_fragments = [
+    "t1.md", 
+    "t2.md",
     "nav.md",
     "copyright.md"
 ]

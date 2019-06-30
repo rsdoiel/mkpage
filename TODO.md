@@ -6,9 +6,16 @@
 + [ ] After April 17, 2018 use the new NOAA weather API for example in help and README.md (or replace with a new example)
 + [x] Copyright year needs updating in source files
 + [x] Need to handle Toml, JSON front matter based on their respective start/end delimiters
++ [ ] **sitemapper** needs to respect the 50K/50MB url and size limits per spec, see https://www.sitemaps.org/protocol.html
 
 ## Next (road to v1.0.0)
 
++ [ ] **byline** should pickup a by line from front matter OR the regexp
++ [ ] **titleline** should pickup a title from front matter OR the regexp
++ [ ] **mkslides** should be depreciated in favor of **mkpage** using front matter to indicate an output format of slides.
++ [ ] **sitemapper** should consider front matter in deciding the structure of sitemap.xml, also should allow for more than once sitemap.xml to be generated (E.g. a blog might have its own sitemap, see https://www.sitemaps.org/protocol.html
++ [ ] **frontmatter** needs to handle the YAML vs. TOML issues between Hugo/Assemble style YAML front matter and Mmark style TOML front matter, this should be done via a command line option and possibly by file extension
++ [ ] **mkpage** defaults should be configurable including treating .md as MMark verus .mmark only as MMark file with requiring specifying front matter
 + [ ] Read in mkpage.toml, mkpage.json or mkpage.yaml for mkpage config
 + [x] Evaluate switching from Blackfriday to GoMarkdown
 + [x] Add support for [Go Markdown](https://github.com/gomarkdown/markdown)
