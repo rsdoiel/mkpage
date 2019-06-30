@@ -36,8 +36,8 @@ have a port of Bash).</p>
 dependencies means installation usually boils down to copying the precompiled binaries to a bin directory
 in your path. Precompiled binaries are available for Linux, Windows and Mac OS X running on Intel as
 well as for the ARM7 versions of Raspbian running on Raspberry Pi.  <em>mkpage</em> is built on Go&rsquo;s text templates.
-The template markup similar to the <a href="https://mustache.github.io/">Mustache</a> templates and
-<a href="http://handlebarsjs.com/">Handlebars</a>.  <em>mkpage</em> has been easier for us to support when compared with
+The template markup is similar to the <a href="https://mustache.github.io/">Mustache</a> and
+<a href="http://handlebarsjs.com/">Handlebars</a>. It is also similar to <a href="https://gohugo.io">Hugo</a>&rsquo;s template markup.   <em>mkpage</em> has been easier for us to support when compared with
 more established static site generators like <a href="https://jekyllrb.com/">Jekyll</a>.</p>
 
 <p><em>mkpage</em>&rsquo;s minimalism turns into an advantage when you combine <em>mkpage</em> with the standard suite of text
@@ -49,7 +49,7 @@ process that best fits your needs.</p>
 <p>The following command line tools come with <em>mkpage</em></p>
 
 <ul>
-<li><a href="docs/mkpage.html">mkpage</a> &ndash; a single page renderer with support for Markdown, <a href="https://fountain.io">Fountain</a>, JSON and Go text templates</li>
+<li><a href="docs/mkpage.html">mkpage</a> &ndash; a single page renderer with support for Markdown, <a href="https://mmark.nl">Mmark</a>,  <a href="https://fountain.io">Fountain</a>, JSON and Go text templates</li>
 <li><a href="docs/mkslides.html">mkslides</a> &ndash; a HTML slide generator based on the approach in <em>mkpage</em></li>
 <li><a href="docs/mkrss.html">mkrss</a> &ndash; an RSS feed generator for content authored in Markdown and rendered to HTML</li>
 <li><a href="docs/sitemapper.html">sitemapper</a> &ndash; an XML Sitemap generator</li>
@@ -62,7 +62,7 @@ process that best fits your needs.</p>
 
 <h2>A quick tour</h2>
 
-<p><em>mkpage</em> command accepts key value pairs and applies them to a Golang <a href="https://golang.org/pkg/text/template/">text/template</a>.<br />
+<p><em>mkpage</em> command accepts key value pairs and applies them to a Golang <a href="https://golang.org/pkg/text/template/">text/template</a>.<br>
 The key side of a pair corresponds to the template element names that will be replaced in the render
 version of the document. If a key was called &ldquo;Content&rdquo; the template element would look like <code>{{ .Content }}</code>.
 The value of &ldquo;Content&rdquo; would replace <code>{{ .Content }}</code>. Go text/templates elements can do more than
@@ -183,7 +183,7 @@ a common project directory.</p>
 <p>You know the path from the source document to target document from the project root folder.</p>
 
 <ul>
-<li>Source is <em>course/week/01/readings.html</em><br />
+<li>Source is <em>course/week/01/readings.html</em><br>
 </li>
 <li>Target is <em>css/site.css</em>.</li>
 </ul>

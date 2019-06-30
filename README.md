@@ -12,8 +12,8 @@ _mkpage_ can run on machines as small as a Raspberry Pi.  Its small foot print a
 dependencies means installation usually boils down to copying the precompiled binaries to a bin directory 
 in your path. Precompiled binaries are available for Linux, Windows and Mac OS X running on Intel as 
 well as for the ARM7 versions of Raspbian running on Raspberry Pi.  _mkpage_ is built on Go's text templates.
-The template markup similar to the [Mustache](https://mustache.github.io/) templates and 
-[Handlebars](http://handlebarsjs.com/).  _mkpage_ has been easier for us to support when compared with 
+The template markup is similar to the [Mustache](https://mustache.github.io/) and 
+[Handlebars](http://handlebarsjs.com/). It is also similar to [Hugo](https://gohugo.io)'s template markup.   _mkpage_ has been easier for us to support when compared with 
 more established static site generators like [Jekyll](https://jekyllrb.com/).
 
 _mkpage_'s minimalism turns into an advantage when you combine _mkpage_ with the standard suite of text 
@@ -25,7 +25,7 @@ process that best fits your needs.
 
 The following command line tools come with _mkpage_ 
 
-+ [mkpage](docs/mkpage.html) -- a single page renderer with support for Markdown, [Fountain](https://fountain.io), JSON and Go text templates
++ [mkpage](docs/mkpage.html) -- a single page renderer with support for Markdown, [Mmark](https://mmark.nl),  [Fountain](https://fountain.io), JSON and Go text templates
 + [mkslides](docs/mkslides.html) -- a HTML slide generator based on the approach in _mkpage_
 + [mkrss](docs/mkrss.html) -- an RSS feed generator for content authored in Markdown and rendered to HTML
 + [sitemapper](docs/sitemapper.html) -- an XML Sitemap generator

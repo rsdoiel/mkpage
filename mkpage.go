@@ -51,7 +51,7 @@ import (
 
 const (
 	// Version holds the semver assocaited with this version of mkpage.
-	Version = `v0.0.29`
+	Version = `v0.0.28`
 
 	// LicenseText provides a string template for rendering cli license info
 	LicenseText = `
@@ -159,6 +159,10 @@ func SplitFrontMatter(input []byte) (int, []byte, []byte) {
 func ProcessorConfig(configType int, frontMatterSrc []byte) (map[string]interface{}, error) {
 	//FIXME: Need to merge with .Config and return the merged result.
 	m := map[string]interface{}{}
+	// Do nothing is we have zero front matter to process.
+	if len(frontMatterSrc) == 0 {
+		return m, nil
+	}
 	// Convert Front Matter to JSON
 	switch configType {
 	case ConfigIsYAML:

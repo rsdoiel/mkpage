@@ -8,8 +8,14 @@ from subprocess import Popen, PIPE, run
 custom_page_map = { 
         "README.md" : "index.html",
         "INSTALL.md": "install.html",
-        "LICENSE": "license.html"
+        "LICENSE": "license.html",
+        "DEVELOPERS.md": "developers.html"
 }
+
+md_fragments = [
+    "nav.md",
+    "copyright.md"
+]
 
 #
 # mkpage wrapes the mkpage command from mkpage
@@ -89,10 +95,11 @@ def main(args):
             in_name = ""
             out_name = ""
             nav_name = os.path.join(path, "nav.md")
+            copyright_name = os.path.join(path, "copyright.md")
             if filename in custom_page_map:
                 in_name = os.path.join(path, filename)
                 out_name = os.path.join(path, custom_page_map[filename])
-            elif filename.endswith(".md") and not filename == "nav.md":
+            elif filename.endswith(".md") and not filename in md_fragments:
                 basename, ext = os.path.splitext(filename)
                 in_name = os.path.join(path, filename)
                 out_name = os.path.join(path, basename + ".html")
@@ -109,6 +116,8 @@ def main(args):
                     page_data.append(f"front_matter=json:{metadata}")
                 if os.path.exists(nav_name):
                     page_data.append(f"nav={nav_name}")
+                if os.path.exists(copyright_name):
+                    page_data.append(f"copyright={copyright_name}")
                 if in_name.endswith("LICENSE"):
                     with open(in_name) as f:
                         src = f.read()
