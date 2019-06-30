@@ -99,7 +99,10 @@ def main(args):
             if filename in custom_page_map:
                 in_name = os.path.join(path, filename)
                 out_name = os.path.join(path, custom_page_map[filename])
-            elif filename.endswith(".md") and not filename in md_fragments:
+            elif os.path.basename(filename) in md_fragments:
+                in_name = ""
+                out_name = ""
+            elif filename.endswith(".md") or filename.endswith(".mmark"): 
                 basename, ext = os.path.splitext(filename)
                 in_name = os.path.join(path, filename)
                 out_name = os.path.join(path, basename + ".html")
