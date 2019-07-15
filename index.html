@@ -27,9 +27,9 @@
 <h1>mkpage</h1>
 
 <p><em>mkpage</em> is a deconstructed, post modern, content management system for generating static websites.
-It is suited to building sites hosted on services like Github Pages or Amazon&rsquo;s S3. It is
-comprised of a set of command line utilities that augment the standard suite of Unix/Posix commands
-available on most Posix based operating systems (e.g. Linux, Mac OS X, Raspberry Pi and Windows systems that
+It is suited to building sites hosted on services like GitHub Pages or Amazon&rsquo;s S3. It is
+comprised of a set of command line utilities that augment the standard suite of Unix/POSIX commands
+available on most POSIX based operating systems (e.g. Linux, Mac OS X, Raspberry Pi and Windows systems that
 have a port of Bash).</p>
 
 <p><em>mkpage</em> can run on machines as small as a Raspberry Pi.  Its small foot print and minimal
@@ -40,7 +40,7 @@ The template markup is similar to the <a href="https://mustache.github.io/">Must
 <a href="http://handlebarsjs.com/">Handlebars</a>. It is also similar to <a href="https://gohugo.io">Hugo</a>&rsquo;s template markup.   <em>mkpage</em> has been easier for us to support when compared with
 more established static site generators like <a href="https://jekyllrb.com/">Jekyll</a> <a href="https://gohugo.io">Hugo</a> and <a href="http://assemble.io/">Assemble</a>.</p>
 
-<p><em>mkpage</em>&rsquo;s minimalism turns into an advantage when you combine <em>mkpage</em> with the standard suite of text processing tools available under your typical Unix/Posix like operating sytems. This makes scripting a <em>mkpage</em> project using languages like Bash and Python relatively straight forward.  Each <em>mkpage</em> utility is independent. You can use as few or as many as you like when you script your website creation process. You wind up with a workflow and build process that best fits your needs.</p>
+<p><em>mkpage</em>&rsquo;s minimalism turns into an advantage when you combine <em>mkpage</em> with the standard suite of text processing tools available under your typical Unix/POSIX like operating systems. This makes scripting a <em>mkpage</em> project using languages like Bash and Python relatively straight forward.  Each <em>mkpage</em> utility is independent. You can use as few or as many as you like when you script your website creation process. You wind up with a workflow and build process that best fits your needs.</p>
 
 <p>The following command line tools come with <em>mkpage</em></p>
 
@@ -161,17 +161,17 @@ for use with browser side search engines like <a href="https://lunrjs.com">Lunrj
 
 <p><em>byline</em> will look inside a markdown file and return the first <em>byline</em> it finds
 or an empty string if it finds none. The <em>byline</em> is identified with a regular
-expression. This regular expression can be overriden with a command line option.</p>
+expression. This regular expression can be overridden with a command line option.</p>
 
 <h4>titleline</h4>
 
-<p><em>titleline</em> will look inside a markdown file and return the first h1 exquivalent title
+<p><em>titleline</em> will look inside a markdown file and return the first h1 equivalent title
 it finds or an empty string if it finds none.</p>
 
 <h4>reldocpath</h4>
 
 <p><em>reldocpath</em> is intended to simplify the calculation of relative
-asset paths (e.g. common css files, images, feeds) when working from
+asset paths (e.g. common CSS files, images, feeds) when working from
 a common project directory.</p>
 
 <h5>Example</h5>
@@ -199,7 +199,7 @@ a common project directory.</p>
 
 <h4>ws</h4>
 
-<p><em>ws</em> is a simple static file webserver.  It is suitable for viewing your local copy
+<p><em>ws</em> is a simple static file web server.  It is suitable for viewing your local copy
 of your static website on your machine.  It runs with minimal resources and by default
 will serve content out to the URL <a href="http://localhost:8000">http://localhost:8000</a>.  It can also be used to host
 a static website and has run well on small Amazon virtual machines as well as Raspberry Pi
@@ -210,7 +210,7 @@ computers acting as local private network web servers.</p>
 <pre><code class="language-shell">    ws Sites/mysite.example.org
 </code></pre>
 
-<p>This would start the webserver up listen for browser requests on <em><a href="http://localhost:8000">http://localhost:8000</a></em>.
+<p>This would start the web server up listen for browser requests on <em><a href="http://localhost:8000">http://localhost:8000</a></em>.
 The content viewable by your web browser would be the files inside the <em>Sites/mysite.example.org</em>
 directory.</p>
 
