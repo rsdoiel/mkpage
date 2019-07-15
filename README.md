@@ -3,9 +3,9 @@
 # mkpage
 
 _mkpage_ is a deconstructed, post modern, content management system for generating static websites.
-It is suited to building sites hosted on services like Github Pages or Amazon's S3. It is 
-comprised of a set of command line utilities that augment the standard suite of Unix/Posix commands 
-available on most Posix based operating systems (e.g. Linux, Mac OS X, Raspberry Pi and Windows systems that 
+It is suited to building sites hosted on services like GitHub Pages or Amazon's S3. It is 
+comprised of a set of command line utilities that augment the standard suite of Unix/POSIX commands 
+available on most POSIX based operating systems (e.g. Linux, Mac OS X, Raspberry Pi and Windows systems that 
 have a port of Bash).
 
 _mkpage_ can run on machines as small as a Raspberry Pi.  Its small foot print and minimal 
@@ -16,7 +16,7 @@ The template markup is similar to the [Mustache](https://mustache.github.io/) an
 [Handlebars](http://handlebarsjs.com/). It is also similar to [Hugo](https://gohugo.io)'s template markup.   _mkpage_ has been easier for us to support when compared with 
 more established static site generators like [Jekyll](https://jekyllrb.com/) [Hugo](https://gohugo.io) and [Assemble](http://assemble.io/).
 
-_mkpage_'s minimalism turns into an advantage when you combine _mkpage_ with the standard suite of text processing tools available under your typical Unix/Posix like operating sytems. This makes scripting a _mkpage_ project using languages like Bash and Python relatively straight forward.  Each _mkpage_ utility is independent. You can use as few or as many as you like when you script your website creation process. You wind up with a workflow and build process that best fits your needs.
+_mkpage_'s minimalism turns into an advantage when you combine _mkpage_ with the standard suite of text processing tools available under your typical Unix/POSIX like operating systems. This makes scripting a _mkpage_ project using languages like Bash and Python relatively straight forward.  Each _mkpage_ utility is independent. You can use as few or as many as you like when you script your website creation process. You wind up with a workflow and build process that best fits your needs.
 
 
 The following command line tools come with _mkpage_ 
@@ -134,17 +134,17 @@ for use with browser side search engines like [Lunrjs](https://lunrjs.com).
 
 *byline* will look inside a markdown file and return the first _byline_ it finds
 or an empty string if it finds none. The _byline_ is identified with a regular
-expression. This regular expression can be overriden with a command line option.
+expression. This regular expression can be overridden with a command line option.
 
 #### titleline
 
-*titleline* will look inside a markdown file and return the first h1 exquivalent title
+*titleline* will look inside a markdown file and return the first h1 equivalent title
 it finds or an empty string if it finds none. 
 
 #### reldocpath
 
 *reldocpath* is intended to simplify the calculation of relative
-asset paths (e.g. common css files, images, feeds) when working from
+asset paths (e.g. common CSS files, images, feeds) when working from
 a common project directory.
 
 ##### Example
@@ -171,7 +171,7 @@ the output would look like
 
 #### ws
 
-*ws* is a simple static file webserver.  It is suitable for viewing your local copy
+*ws* is a simple static file web server.  It is suitable for viewing your local copy
 of your static website on your machine.  It runs with minimal resources and by default
 will serve content out to the URL http://localhost:8000.  It can also be used to host
 a static website and has run well on small Amazon virtual machines as well as Raspberry Pi
@@ -183,7 +183,7 @@ computers acting as local private network web servers.
     ws Sites/mysite.example.org
 ```
 
-This would start the webserver up listen for browser requests on _http://localhost:8000_.
+This would start the web server up listen for browser requests on _http://localhost:8000_.
 The content viewable by your web browser would be the files inside the _Sites/mysite.example.org_
 directory.
 
