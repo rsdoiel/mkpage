@@ -1,8 +1,8 @@
----
 {
     "has_code":true
 }
----
+
+
 # codesnip demo
 
 In this demo code will be presented in code blocks with
