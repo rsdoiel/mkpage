@@ -1,5 +1,5 @@
 //
-// ws.go - A simple web server for static files and limit server side JavaScript
+// ws.go - A simple web server for static files.
 //
 // @author R. S. Doiel, <rsdoiel@caltech.edu>
 //
