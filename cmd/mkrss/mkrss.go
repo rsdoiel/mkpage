@@ -272,7 +272,10 @@ func main() {
 		title := strings.TrimPrefix(mkpage.Grep(titleExp, src), "# ")
 		byline := mkpage.Grep(bylineExp, src)
 		pubDate := mkpage.Grep(dateExp, byline)
-		author := strings.TrimSpace(strings.TrimSuffix(byline[2:], pubDate))
+		author := byline
+		if len(byline) > 2 {
+			author = strings.TrimSpace(strings.TrimSuffix(byline[2:], pubDate))
+		}
 		// Reformat pubDate to conform to RSS2 date formats
 		dt, err := time.Parse(`2006-01-02`, pubDate)
 		if err != nil {
