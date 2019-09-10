@@ -35,7 +35,7 @@
     + [ ] `.draft` (bool)
     + [ ] `.keywords`
     + [ ] `.linkTitle`
-    + [ ] `.markdup` (e.g. markdown, fountain, blackfriday, maybe remarkjs)
+    + [ ] `.markdup` (e.g. markdown, fountain, maybe remarkjs)
     + [ ] `.series`
     + [ ] `.slug`
     + [ ] `.type` (e.g. post, article, homepage)
@@ -43,7 +43,6 @@
     + [ ] `.language`
     + [x] `.markdown` holds map of settings to pass to the gomarkdown engine
     + [x] `.fountain` holds map of settings to pass to the Fountain 2 engine
-    + [x] `.blackfriday`hold map of settings to pass to the old Blackfriday v2 engine
     + [ ] `.remarkjs` holds the settings for our remarkjs engine
 + [ ] mkpage Sitemap support
     + Current sitemap cli is too naive for sites more than a couple dozen pages
@@ -143,7 +142,6 @@
           and that should be handled by the wrapping Python script
 + [ ] Add a tool to generate and search lunr indexes
 + [ ] Add a HugoLike template support to tmplfn use by mkpage.
-+ [ ] make markdown engine (blackfriday v2) configurable from front matter
 + [ ] Add support for metadata taken from Namaste (Name as text) in the directory
 + [ ] Align templating and feature set with Hugo while retaining the approach of simple commands responsible for simple actions in a pipe line
 + [ ] Remove the default template and ship distribution with a set of standard templates

@@ -23,13 +23,6 @@
 </nav>
 
 <section>
-<hr>
-
-<p>{
-    &ldquo;has_code&rdquo;: true</p>
-
-<h2>}</h2>
-
 <h1>The Basics</h1>
 
 <p><em>mkpage</em> uses Go&rsquo;s text/templates for rendering content. This template system was inspired by
@@ -237,7 +230,7 @@ or even be defined in the main template file itself).</p>
 <h2>A note about Markdown dialect</h2>
 
 <p><em>mkpage</em> implements <a href="https://guides.github.com/features/mastering-markdown/#GitHub-flavored-markdown">Github Flavored Markdown</a>
-using the <a href="https://github.com/russross/blackfriday">blackfriday</a> markdown processor.  This is a
+using the <a href="https://github.com/gomarkdown/markdown">gomarkdown</a> markdown processor.  This is a
 superset of <a href="http://daringfireball.net/projects/markdown/">Markdown</a> as created by John Gruber.</p>
 
 <p>The markdown processor is invoked for values with the &ldquo;markdown:&rdquo; hint prefix, files ending
@@ -249,7 +242,7 @@ text).</p>
 
 <footer>
 <span><h1><A href="http://caltech.edu">Caltech</a></h1></span>
-<span>&copy; 2018 <a href="https://www.library.caltech.edu/copyright">Caltech library</a></span>
+<span>&copy; 2019 <a href="https://www.library.caltech.edu/copyright">Caltech library</a></span>
 <address>1200 E California Blvd, Mail Code 1-32, Pasadena, CA 91125-3200</address> 
 <span>Phone: <a href="tel:+1-626-395-3405">(626)395-3405</a></span>
 <span><a href="mailto:library@caltech.edu">Email Us</a></span>

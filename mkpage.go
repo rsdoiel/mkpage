@@ -45,6 +45,7 @@ import (
 	"github.com/gomarkdown/markdown/parser"
 
 	// Mmarkdown implementation
+	"github.com/mmarkdown/mmark/lang"
 	"github.com/mmarkdown/mmark/mast"
 	"github.com/mmarkdown/mmark/mparser"
 	"github.com/mmarkdown/mmark/render/mhtml"
@@ -167,6 +168,7 @@ func SplitFrontMatter(input []byte) (int, []byte, []byte) {
 		parts := bytes.SplitN(bytes.TrimPrefix(input, []byte("%%%\n")), []byte("\n%%%\n"), 2)
 		return ConfigIsTOML, parts[0], parts[1]
 	}
+	// JSON front matter, most Markdown processors.
 	if bytes.HasPrefix(input, []byte("{\n")) {
 		parts := bytes.SplitN(bytes.TrimPrefix(input, []byte("{\n")), []byte("\n}\n"), 2)
 		src := []byte(fmt.Sprintf("{\n%s\n}\n", parts[0]))
@@ -394,9 +396,14 @@ func mmarkProcessor(fName string, input []byte) ([]byte, error) {
 	mparser.AddBibliography(doc)
 	mparser.AddIndex(doc)
 
+	documentLanguage := ""
+	mhtmlOpts := mhtml.RendererOptions{
+		Language: lang.New(documentLanguage),
+	}
+
 	opts := html.RendererOptions{
 		Comments:       [][]byte{[]byte("//"), []byte("#")}, // used for callouts.
-		RenderNodeHook: mhtml.RenderHook,
+		RenderNodeHook: mhtmlOpts.RenderHook,
 		Flags:          htmlFlags, //html.CommonFlags | html.FootnoteNoHRTag | html.FootnoteReturnLinks | html.CompletePage,
 		Generator:      `  <meta name="GENERATOR" content="github.com/caltechylibrary/mkpage using Mmark/gomarkdown processor`,
 	}
@@ -556,7 +563,7 @@ func ConfigMarkdown(config map[string]interface{}) (parser.Extensions, html.Flag
 }
 
 // markdownProcessor applies Markdown processing with overrides
-// for  gomarkdown, mmark and fountain in the
+// for gomarkdown, mmark and fountain in the
 // document's frontmatter.  You need to supply a
 // markdown processor as a func to envoke the preferred default.
 func markdownProcessor(input []byte, defaultProcessor func([]byte) ([]byte, error)) ([]byte, error) {
@@ -598,9 +605,14 @@ func markdownProcessor(input []byte, defaultProcessor func([]byte) ([]byte, erro
 			mparser.AddBibliography(doc)
 			mparser.AddIndex(doc)
 
+			documentLanguage := ""
+			mhtmlOpts := mhtml.RendererOptions{
+				Language: lang.New(documentLanguage),
+			}
+
 			opts := html.RendererOptions{
 				Comments:       [][]byte{[]byte("//"), []byte("#")}, // used for callouts.
-				RenderNodeHook: mhtml.RenderHook,
+				RenderNodeHook: mhtmlOpts.RenderHook,
 				Flags:          htmlFlags,
 				Generator:      `  <meta name="GENERATOR" content="github.com/mmarkdown/mmark Mmark Markdown Processor - mmark.nl`,
 			}
@@ -630,7 +642,7 @@ func markdownProcessor(input []byte, defaultProcessor func([]byte) ([]byte, erro
 			return nil, fmt.Errorf("unknown markup engine")
 		}
 	}
-	return defaultProcessor(input)
+	return defaultProcessor(mdSrc)
 }
 
 // gomarkdownProcessor wraps gomarkdown with overrides for

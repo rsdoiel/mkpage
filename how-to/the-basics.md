@@ -232,7 +232,7 @@ What do you see?
 ## A note about Markdown dialect
 
 _mkpage_ implements [Github Flavored Markdown](https://guides.github.com/features/mastering-markdown/#GitHub-flavored-markdown) 
-using the [blackfriday](https://github.com/russross/blackfriday) markdown processor.  This is a 
+using the [gomarkdown](https://github.com/gomarkdown/markdown) markdown processor.  This is a 
 superset of [Markdown](http://daringfireball.net/projects/markdown/) as created by John Gruber.
 
 The markdown processor is invoked for values with the "markdown:" hint prefix, files ending 

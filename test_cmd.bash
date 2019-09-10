@@ -61,7 +61,7 @@ function test_mkpage() {
 
     # test codesnip support
     if [[ -f "temp.html" ]]; then rm temp.html; fi
-    bin/mkpage content=demo/codesnip/index.md > temp.html
+    bin/mkpage content=demo/codesnip/index.md page.tmpl > temp.html
     EXPECTED=""
     assert_exists "test_mkpage (codesnip html)" "temp.html"
     RESULT=$(cmp demo/codesnip/index.html temp.html)

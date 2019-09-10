@@ -11,7 +11,10 @@
     + github.com/caltechlibrary/tmplfn
     + github.com/caltechlibrary/rss2
 + 3rd Party Go packages used by _mkpage_ project
-    + github.com/russross/blackfriday
+    + github.com/gomarkdown/markdown
+    + github.com/gomarkdown/markdown/parser
+    + github.com/gomarkdown/markdown/html
+    + github.com/mmarkdown/mmark
 
 ## Compiling from source
 

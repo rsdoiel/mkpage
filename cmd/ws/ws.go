@@ -263,7 +263,7 @@ func main() {
 			log.Fatalf("Can't make redirect service, %s", err)
 		}
 	}
-	http.Handle("/", cors.Handle(http.FileServer(http.Dir(docRoot))))
+	http.Handle("/", cors.Handler(http.FileServer(http.Dir(docRoot))))
 
 	if u.Scheme == "https" {
 		if rService != nil {
