@@ -23,6 +23,7 @@
 <li><a href="./byline.html">byline</a></li>
 <li><a href="./ws.html">ws</a></li>
 <li><a href="./frontmatter.html">frontmatter</a></li>
+<li><a href="./mkpongo.html">mkpongo</a></li>
 <li><a href="./urldecode.html">urldecode</a></li>
 <li><a href="./sitemapper.html">sitemapper</a></li>
 <li><a href="./reldocpath.html">reldocpath</a></li>
@@ -71,7 +72,7 @@ Hello {{ name }},
 
 The current weather is
 
-{{ weatherForecast.data.weather[0] }}
+{{ weatherForecast.data.weather.0 }}
 
 Thank you
 
@@ -83,13 +84,11 @@ would be accomplished from the following data sources&ndash;</p>
 
 <ul>
 <li>&ldquo;now&rdquo; and &ldquo;name&rdquo; are strings</li>
-<li>&ldquo;weatherForecast&rdquo; is JSON data retrieved from a URL
-	+ &ldquo;.data.weather&rdquo; is a data path inside the JSON document
-
-<ul>
-<li>let&rsquo;s us pull our the &ldquo;0&rdquo;-th element (i.e. the initial element of the array)</li>
-</ul></li>
-<li>&ldquo;signature&rdquo; comes from a file in our local disc (i.e. examples/signature.txt)</li>
+<li>&ldquo;weatherForecast.data.weather.0&rdquo; is a data path inside the
+JSON document retrieved from a URL, &ldquo;.0&rdquo; references the
+&ldquo;0&rdquo;-th element of the array</li>
+<li>&ldquo;signature&rdquo; comes from a file in our local disc
+(i.e. examples/signature.txt)</li>
 </ul>
 
 <p>That would be expressed on the command line as follows</p>
