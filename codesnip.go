@@ -1,5 +1,4 @@
-//
-// codesnip.go - extracts code snippets from markdown
+// Package mkpage codesnip.go - extracts code snippets from markdown
 //
 // @author R. S. Doiel, <rsdoiel@caltech.edu>
 //
@@ -25,6 +24,9 @@ import (
 	"strings"
 )
 
+// Codesnip works on io.Reader and ioWriter and string used
+// to identified the langauge. It reads a Markdown block looking
+// for code fenses and snips out the code to write to a file.
 func Codesnip(in io.Reader, out io.Writer, language string) error {
 	var (
 		inCodeBlock bool

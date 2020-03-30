@@ -19,6 +19,8 @@
 package mkpage
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"path"
@@ -71,7 +73,8 @@ func TestResolveData(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	expected := string(markdownProcessor(src))
+	buf, err := gomarkdownProcessor(src)
+	expected := string(buf)
 
 	if err := checkMap("Nav", expected, data); err != nil {
 		t.Error(err)
@@ -83,7 +86,8 @@ func TestResolveData(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	expected = string(markdownProcessor(src))
+	buf, err = gomarkdownProcessor(src)
+	expected = string(buf)
 
 	if err := checkMap("Content", expected, data); err != nil {
 		t.Error(err)
@@ -145,7 +149,7 @@ func TestBasic(t *testing.T) {
 + [mygitrepo.org](http://mygitrepo.org)
 + February 31, 2016, Somebody's University, Someplace
 
---
+---
 
 # Slide Two
 
@@ -153,7 +157,7 @@ func TestBasic(t *testing.T) {
 |-------|-------|-------|
 | A     | One   | 1     |
 
---
+---
 
 ## Slide Three
 
@@ -174,9 +178,14 @@ This is slide three, just a random paragraph of text. Blah, blah, blah, blah, bl
 		"<h2>Slide Three</h2>",
 	}
 
-	slides := MarkdownToSlides("test.html", []byte(src))
+	slides, err := MarkdownToSlides("test.html", []byte(src))
+	if err != nil {
+		t.Errorf("MarkdownToSlides(%q, ...) error %s", "test.html", err)
+		t.FailNow()
+	}
 	if len(slides) != 3 {
-		t.Errorf("Was expected three slides %+v\n", slides)
+		src, _ := json.Marshal(slides)
+		t.Errorf("Was expected three slides %+v\n%s", slides, src)
 	}
 
 	keyVals := map[string]string{}
@@ -209,5 +218,75 @@ It was some New Years day...
 	result = Grep(TitleExp, src)
 	if expected != result {
 		t.Errorf("expected %q, got %q for Grep() for title", expected, result)
+	}
+}
+
+func TestCRLFHandling(t *testing.T) {
+	srcRaw := []byte(`
+
+# Title 
+ 
+*Italics* 
+ 
+This is text **in bold** in text. 
+ 
+## List: 
+ 
+-   Item one. 
+-   Item two. 
+-   Item three. 
+ 
+## Topics: 
+ 
+- Item one. 
+- Item two. 
+- Item three. 
+ 
+## Spacing: 
+ 
+-Item one. 
+-Item two. 
+-Item three. 
+ 
+## Plus: 
+ 
++ Item one. 
++ Item two. 
++ Item three. 
+ 
+## Star: 
+ 
+* Item one. 
+* Item two. 
+* Item three. 
+ 
+## Indent: 
+ 
+* Item one. 
+    * Item two. 
+* Item three. 
+ 
+## Numbered 
+ 
+1. One 
+1. Two 
+1. Three 
+ 
+`)
+	srcCRLF := bytes.Replace(srcRaw, []byte("\n"), []byte("\r\n"), -1)
+	srcLF := srcRaw
+	// Render HTML using normalize Unix eol
+	src1, err := gomarkdownProcessor(srcLF)
+	if err != nil {
+		t.Errorf("gomarkdownProcessor(srcCRLF) error %s", err)
+	}
+	// Render HTML using normalize old DOS eol
+	src2, err := gomarkdownProcessor(srcCRLF)
+	if err != nil {
+		t.Errorf("gomarkdownProcessor(srcLF) error %s", err)
+	}
+	if bytes.Compare(src1, src2) != 0 {
+		t.Errorf("expected (eol normalized) ->\n%s\ngot ->\n%s\n",
+			src1, src2)
 	}
 }

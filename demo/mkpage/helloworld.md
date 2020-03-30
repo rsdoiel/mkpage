@@ -1,8 +1,8 @@
----
 {
     "has_code": false
 }
----
+
+
 # Hello World
 
 This is a demo of a simple page that can be processed with mkpage.

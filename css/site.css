@@ -239,6 +239,7 @@ aside ul > ul {
 }
 
 footer {
+     padding-top: 1em;
      position: fixed;
      bottom: 0;
      display: block;

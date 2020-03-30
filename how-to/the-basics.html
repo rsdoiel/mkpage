@@ -71,7 +71,7 @@ The last part of the command instructs <em>mkpage</em> to use our <em>hello-worl
 <code>Hello &lt;no value&gt;</code>. The first example fails because no value is provided and the second fails because the value
 provided doesn&rsquo;t match what is in the template (notice the typo &ldquo;Wrold&rdquo; vs. &ldquo;World&rdquo;).  The next one will display
 an error because <em>text:</em> wasn&rsquo;t included on the value side of the key/value pair.  By default <em>mkpage</em> assumes the
-value is refering to a file and in this case can&rsquo;t find the file Georgina in your current directory.<br />
+value is refering to a file and in this case can&rsquo;t find the file Georgina in your current directory.<br>
 The last two will display <code>Hello Georgina</code> should display since the value for &ldquo;World&rdquo; is provided. The
 last one just ignores &ldquo;Name=text:Fred&rdquo; because name isn&rsquo;t found in the template.</p>
 
@@ -113,9 +113,9 @@ using the &ldquo;if&rdquo; function.</p>
 </code></pre>
 
 <p>In the first line with the <em>if</em> we use &ldquo;.title&rdquo; as the variable, just like &ldquo;.World&rdquo; in our first example.
-In the second line we can refer to the value as &ldquo;.&rdquo; because we used the <em>with</em> conditional.<br />
+In the second line we can refer to the value as &ldquo;.&rdquo; because we used the <em>with</em> conditional.<br>
 The reason we prefix variable names with dot (period) is because we are actually describing a path
-or context of object relationships. I like to think of the starting dot as &ldquo;this here&rdquo; or simply &ldquo;this&rdquo;.<br />
+or context of object relationships. I like to think of the starting dot as &ldquo;this here&rdquo; or simply &ldquo;this&rdquo;.<br>
 So in the &ldquo;with&rdquo; line we are saying &ldquo;with this title do something&rdquo; up until the <code>{{end}}</code>.
 We can refer to &ldquo;.title&rdquo; simply as &ldquo;this thing&rdquo; or <code>{{ . }}</code>, which will be replaced with the value
 of &ldquo;.title&rdquo;.</p>
@@ -230,7 +230,7 @@ or even be defined in the main template file itself).</p>
 <h2>A note about Markdown dialect</h2>
 
 <p><em>mkpage</em> implements <a href="https://guides.github.com/features/mastering-markdown/#GitHub-flavored-markdown">Github Flavored Markdown</a>
-using the <a href="https://github.com/russross/blackfriday">blackfriday</a> markdown processor.  This is a
+using the <a href="https://github.com/gomarkdown/markdown">gomarkdown</a> markdown processor.  This is a
 superset of <a href="http://daringfireball.net/projects/markdown/">Markdown</a> as created by John Gruber.</p>
 
 <p>The markdown processor is invoked for values with the &ldquo;markdown:&rdquo; hint prefix, files ending
@@ -242,7 +242,7 @@ text).</p>
 
 <footer>
 <span><h1><A href="http://caltech.edu">Caltech</a></h1></span>
-<span>&copy; 2018 <a href="https://www.library.caltech.edu/copyright">Caltech library</a></span>
+<span>&copy; 2019 <a href="https://www.library.caltech.edu/copyright">Caltech library</a></span>
 <address>1200 E California Blvd, Mail Code 1-32, Pasadena, CA 91125-3200</address> 
 <span>Phone: <a href="tel:+1-626-395-3405">(626)395-3405</a></span>
 <span><a href="mailto:library@caltech.edu">Email Us</a></span>

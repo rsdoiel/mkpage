@@ -6,17 +6,24 @@
 + [ ] After April 17, 2018 use the new NOAA weather API for example in help and README.md (or replace with a new example)
 + [x] Copyright year needs updating in source files
 + [x] Need to handle Toml, JSON front matter based on their respective start/end delimiters
++ [ ] **sitemapper** needs to respect the 50K/50MB url and size limits per spec, see https://www.sitemaps.org/protocol.html
 
 ## Next (road to v1.0.0)
 
++ [ ] **byline** should pickup a by line from front matter OR the regexp
++ [ ] **titleline** should pickup a title from front matter OR the regexp
++ [ ] **mkslides** should be depreciated in favor of **mkpage** using front matter to indicate an output format of slides.
++ [ ] **sitemapper** should consider front matter in deciding the structure of sitemap.xml, also should allow for more than once sitemap.xml to be generated (E.g. a blog might have its own sitemap, see https://www.sitemaps.org/protocol.html
++ [ ] **frontmatter** needs to handle the YAML vs. TOML issues between Hugo/Assemble style YAML front matter and Mmark style TOML front matter, this should be done via a command line option and possibly by file extension
++ [ ] **mkpage** defaults should be configurable including treating .md as MMark verus .mmark only as MMark file with requiring specifying front matter
 + [ ] Read in mkpage.toml, mkpage.json or mkpage.yaml for mkpage config
-+ [ ] Evaluate switching from Blackfriday to GoMarkdown
-+ [ ] Add support for [Go Markdown](https://github.com/gomarkdown/markdown)
-+ [ ] Add support for [MMark](https://github.com/mmarkdown/mmark)
++ [x] Evaluate switching from Blackfriday to GoMarkdown
++ [x] Add support for [Go Markdown](https://github.com/gomarkdown/markdown)
++ [x] Add support for [MMark](https://github.com/mmarkdown/mmark)
 + [ ] Add support for rendering remarkjs content
-+ [ ] Add support for use "markup" in front matter to pick engine
++ [x] Add support for use "markup" in front matter to pick engine
 + [ ] Add support for passing configuration to markup engine from front matter
-+ [ ] Figure out how to comingle Markdown, Fountain, remarkjs safely 
++ [ ] Figure out how to co-mingle Markdown, Fountain, remarkjs safely 
 + [ ] mkpage front matter based on library metadata practices, codemeta.json and relavant Scheme.org scheme
     + [ ] `.doi` the DOI associated with a page
     + [ ] `.creator` should be an array of creator info (e.g. ORCID, given_name, family_name)
@@ -28,7 +35,7 @@
     + [ ] `.draft` (bool)
     + [ ] `.keywords`
     + [ ] `.linkTitle`
-    + [ ] `.markdup` (e.g. markdown, fountain, blackfriday, maybe remarkjs)
+    + [ ] `.markdup` (e.g. markdown, fountain, maybe remarkjs)
     + [ ] `.series`
     + [ ] `.slug`
     + [ ] `.type` (e.g. post, article, homepage)
@@ -36,7 +43,6 @@
     + [ ] `.language`
     + [x] `.markdown` holds map of settings to pass to the gomarkdown engine
     + [x] `.fountain` holds map of settings to pass to the Fountain 2 engine
-    + [x] `.blackfriday`hold map of settings to pass to the old Blackfriday v2 engine
     + [ ] `.remarkjs` holds the settings for our remarkjs engine
 + [ ] mkpage Sitemap support
     + Current sitemap cli is too naive for sites more than a couple dozen pages
@@ -136,7 +142,6 @@
           and that should be handled by the wrapping Python script
 + [ ] Add a tool to generate and search lunr indexes
 + [ ] Add a HugoLike template support to tmplfn use by mkpage.
-+ [ ] make markdown engine (blackfriday v2) configurable from front matter
 + [ ] Add support for metadata taken from Namaste (Name as text) in the directory
 + [ ] Align templating and feature set with Hugo while retaining the approach of simple commands responsible for simple actions in a pipe line
 + [ ] Remove the default template and ship distribution with a set of standard templates

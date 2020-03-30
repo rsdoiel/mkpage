@@ -22,6 +22,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	//"go/ast"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -36,26 +37,26 @@ import (
 	// 3rd Party Packages
 	"github.com/BurntSushi/toml"
 	"github.com/ghodss/yaml"
+
+	// Gomarkdown implementation of markdown
 	"github.com/gomarkdown/markdown"
-	//"github.com/gomarkdown/markdown/ast"
+	"github.com/gomarkdown/markdown/ast"
 	"github.com/gomarkdown/markdown/html"
 	"github.com/gomarkdown/markdown/parser"
-	/*
-		"github.com/mmarkdown/mmark/mast"
-		"github.com/mmarkdown/mmark/mparser"
-		"github.com/mmarkdown/mmark/render/man"
-		mmarkout "github.com/mmarkdown/mmark/render/markdown"
-		"github.com/mmarkdown/mmark/render/mhtml"
-		"github.com/mmarkdown/mmark/render/xml"
-		"github.com/mmarkdown/mmark/render/xml2"
-	*/
+
+	// Mmarkdown implementation
+	"github.com/mmarkdown/mmark/lang"
+	"github.com/mmarkdown/mmark/mast"
+	"github.com/mmarkdown/mmark/mparser"
+	"github.com/mmarkdown/mmark/render/mhtml"
+
+	// Fountain support for scripts, interviews and narration
 	"github.com/rsdoiel/fountain"
-	// FIXME: Should this be depreciated? duplicative of gomarkdown
-	"gopkg.in/russross/blackfriday.v2"
 )
 
 const (
-	Version = `v0.0.29`
+	// Version holds the semver assocaited with this version of mkpage.
+	Version = `v0.0.31`
 
 	// LicenseText provides a string template for rendering cli license info
 	LicenseText = `
@@ -79,11 +80,17 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 	// JSONPrefix designates a string as JSON formatted content
 	JSONPrefix = "json:"
-	// MarkdownPrefix designates a string as Markdown content
+	// MMarkPrefix designates a string as mmarkdown or MMark content
+	MMarkPrefix = "mmark:"
+	// MarkdownPrefix designates a string as Markdown (common mark) content
+	// to be parsed by 'defaultProcessor' (i.e. gomarkdown)
 	MarkdownPrefix = "markdown:"
+	// GomarkdownPrefix designates a string to be parsed explicitly by
+	// Gomarkdown
+	GomarkdownPrefix = "gomarkdown:"
 	// TextPrefix designates a string as text/plain not needed processing
 	TextPrefix = "text:"
-	// FountainPrefex designates a string as Fountain formatted content
+	// FountainPrefix designates a string as Fountain formatted content
 	FountainPrefix = "fountain:"
 
 	// SOMEDAY: should add XML, BibTeX, YaML support...
@@ -95,10 +102,15 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 	// TitleExp is the default format used by mkpage utilities
 	TitleExp = `^#\s+(\w|\s|.)+$`
 
-	// Front Matter Types
+	// Config types for Front Matter
+
+	// ConfigIsUnknown means front matter and we can't parse it
 	ConfigIsUnknown = iota
+	// ConfigIsYAML means that YAML has been detected in the front matter (per Hugo style fencing)
 	ConfigIsYAML
+	// ConfigIsTOML means we have TOML Front Matter based on Hugo fencing or Mmarkdown fencing
 	ConfigIsTOML
+	// ConfigIsJSON means we have detected JSON front matter
 	ConfigIsJSON
 )
 
@@ -114,23 +126,49 @@ var (
 	// the contents of the defaults folder in this repository.
 	DefaultSlideTemplateSource string
 
-    // Config holds a global config. Uses the same structure as Front Matter
-    Config map[string]interface{}
+	// Config holds a global config.
+	// Uses the same structure as Front Matter in that it is
+	// the result of parsing TOML, YAML or JSON into a
+	// map[string]interface{} tree
+	Config map[string]interface{}
 )
 
-// SplitFronMatter takes a []byte input splits it into front matter
+// normalizeEOL takes a []byte and normalizes the end of line
+// to a `\n' from `\r\n` and `\r`
+func normalizeEOL(input []byte) []byte {
+	if bytes.Contains(input, []byte("\r\n")) {
+		input = bytes.Replace(input, []byte("\r\n"), []byte("\n"), -1)
+	}
+	/*
+		if bytes.Contains(input, []byte("\r")) {
+			input = bytes.Replace(input, []byte("\r"), []byte("\n"), -1)
+		}
+	*/
+	return input
+}
+
+// SplitFrontMatter takes a []byte input splits it into front matter
 // source and Markdown source. If either is missing an empty []byte
 // is returned for the missing element.
 func SplitFrontMatter(input []byte) (int, []byte, []byte) {
-	// YAML front matter uses ---
+	// YAML front matter uses ---, note this conflicts with Mmark practice, do I want to support YAML like this?
 	if bytes.HasPrefix(input, []byte("---\n")) {
 		parts := bytes.SplitN(bytes.TrimPrefix(input, []byte("---\n")), []byte("\n---\n"), 2)
 		return ConfigIsYAML, parts[0], parts[1]
 	}
+	// TOML front matter as used in Hugo
 	if bytes.HasPrefix(input, []byte("+++\n")) {
 		parts := bytes.SplitN(bytes.TrimPrefix(input, []byte("+++\n")), []byte("\n+++\n"), 2)
 		return ConfigIsTOML, parts[0], parts[1]
 	}
+	// TOML front matter identified in Mmark as three % or dashes,
+	// We can support the %, dashes are taken by Hugo style, but
+	// maybe I don't want to support that?
+	if bytes.HasPrefix(input, []byte("%%%\n")) {
+		parts := bytes.SplitN(bytes.TrimPrefix(input, []byte("%%%\n")), []byte("\n%%%\n"), 2)
+		return ConfigIsTOML, parts[0], parts[1]
+	}
+	// JSON front matter, most Markdown processors.
 	if bytes.HasPrefix(input, []byte("{\n")) {
 		parts := bytes.SplitN(bytes.TrimPrefix(input, []byte("{\n")), []byte("\n}\n"), 2)
 		src := []byte(fmt.Sprintf("{\n%s\n}\n", parts[0]))
@@ -141,11 +179,14 @@ func SplitFrontMatter(input []byte) (int, []byte, []byte) {
 }
 
 // ProcessorConfig takes front matter and returns
-// a map[string]interface{}{} containing configuration for a target
-// markup engine.
+// a map[string]interface{} containing configuration
 func ProcessorConfig(configType int, frontMatterSrc []byte) (map[string]interface{}, error) {
-    //FIXME: Need to merge with .Config and return the merged result.
+	//FIXME: Need to merge with .Config and return the merged result.
 	m := map[string]interface{}{}
+	// Do nothing is we have zero front matter to process.
+	if len(frontMatterSrc) == 0 {
+		return m, nil
+	}
 	// Convert Front Matter to JSON
 	switch configType {
 	case ConfigIsYAML:
@@ -173,11 +214,11 @@ func ProcessorConfig(configType int, frontMatterSrc []byte) (map[string]interfac
 	return m, nil
 }
 
-// blackfridayExtensions takes a config (map[string]interface{}) and
-// returns the ORed extenions flags for map["blackfriday"].
-func blackfridayExtensions(config map[string]interface{}) blackfriday.Extensions {
-	ext := blackfriday.NoExtensions
-	if thing, ok := config["blackfriday"]; ok == true {
+// mmarkExtensions takes a config (map[string]interface{}) and
+// returns the ORed exentions flags for map["mmark"]
+func mmarkExtensions(config map[string]interface{}) parser.Extensions {
+	ext := parser.NoExtensions
+	if thing, ok := config["gomarkdown"]; ok == true {
 		extensions := thing.(map[string]interface{})
 		for k, v := range extensions {
 			onoff := false
@@ -195,41 +236,47 @@ func blackfridayExtensions(config map[string]interface{}) blackfriday.Extensions
 			if onoff {
 				switch option {
 				case "NoIntraEmphasis":
-					ext |= blackfriday.NoIntraEmphasis
+					ext |= parser.NoIntraEmphasis
 				case "Tables":
-					ext |= blackfriday.Tables
+					ext |= parser.Tables
 				case "FencedCode":
-					ext |= blackfriday.FencedCode
+					ext |= parser.FencedCode
 				case "Autolink":
-					ext |= blackfriday.Autolink
+					ext |= parser.Autolink
 				case "Strikethrough":
-					ext |= blackfriday.Strikethrough
+					ext |= parser.Strikethrough
 				case "LaxHTMLBlocks":
-					ext |= blackfriday.LaxHTMLBlocks
+					ext |= parser.LaxHTMLBlocks
 				case "SpaceHeadings":
-					ext |= blackfriday.SpaceHeadings
+					ext |= parser.SpaceHeadings
 				case "HardLineBreak":
-					ext |= blackfriday.HardLineBreak
+					ext |= parser.HardLineBreak
 				case "TabSizeEight":
-					ext |= blackfriday.TabSizeEight
+					ext |= parser.TabSizeEight
 				case "Footnotes":
-					ext |= blackfriday.Footnotes
+					ext |= parser.Footnotes
 				case "NoEmptyLineBeforeBlock":
-					ext |= blackfriday.NoEmptyLineBeforeBlock
+					ext |= parser.NoEmptyLineBeforeBlock
 				case "HeadingIDs":
-					ext |= blackfriday.HeadingIDs
+					ext |= parser.HeadingIDs
 				case "Titleblock":
-					ext |= blackfriday.Titleblock
+					ext |= parser.Titleblock
 				case "AutoHeadingIDs":
-					ext |= blackfriday.AutoHeadingIDs
+					ext |= parser.AutoHeadingIDs
 				case "BackslashLineBreak":
-					ext |= blackfriday.BackslashLineBreak
+					ext |= parser.BackslashLineBreak
 				case "DefinitionLists":
-					ext |= blackfriday.DefinitionLists
-				//case "CommonHTMLFlags":
-				//	ext |= blackfriday.CommonHTMLFlags
+					ext |= parser.DefinitionLists
+				case "MathJax":
+					ext |= parser.MathJax
+				case "OrderedListStart":
+					ext |= parser.OrderedListStart
+				case "Attributes":
+					ext |= parser.Attributes
+				case "SuperSubscript":
+					ext |= parser.SuperSubscript
 				case "CommonExtensions":
-					ext |= blackfriday.CommonExtensions
+					ext |= parser.CommonExtensions
 				}
 			}
 		}
@@ -237,11 +284,141 @@ func blackfridayExtensions(config map[string]interface{}) blackfriday.Extensions
 	return ext
 }
 
+// mmarkRenderOptions config (map[string]interface{}) and
+// returns the ORed extenions flags for map["mmark"].
+func mmarkRenderOptions(config map[string]interface{}) html.Flags {
+	flag := html.FlagsNone
+	if thing, ok := config["mmark"]; ok == true {
+		flags := thing.(map[string]interface{})
+		for k, v := range flags {
+			option := k
+			onoff := false
+			switch v.(type) {
+			case int:
+				onoff = v.(int) == 1
+			case int64:
+				onoff = v.(int64) == 1
+			case bool:
+				onoff = v.(bool)
+			case string:
+				onoff = strings.ToLower(v.(string)) == "true"
+			}
+			if onoff {
+				switch option {
+				case "SkipHTML":
+					flag |= html.SkipHTML
+				case "SkipImages":
+					flag |= html.SkipImages
+				case "SkipLinks":
+					flag |= html.SkipLinks
+				case "Safelink":
+					flag |= html.Safelink
+				case "NofollowLinks":
+					flag |= html.NofollowLinks
+				case "NoreferrerLinks":
+					flag |= html.NoreferrerLinks
+				case "HrefTargetBlank":
+					flag |= html.HrefTargetBlank
+				case "CompletePage":
+					flag |= html.CompletePage
+				case "UseXHTML":
+					flag |= html.UseXHTML
+				case "FootnoteReturnLinks":
+					flag |= html.FootnoteReturnLinks
+				case "FootnoteNoHRTag":
+					flag |= html.FootnoteNoHRTag
+				case "Smartypants":
+					flag |= html.Smartypants
+				case "SmartypantsFractions":
+					flag |= html.SmartypantsFractions
+				case "SmartypantsDashes":
+					flag |= html.SmartypantsDashes
+				case "SmartypantsLatexDashes":
+					flag |= html.SmartypantsLatexDashes
+				case "SmartypantsAngledQuotes":
+					flag |= html.SmartypantsAngledQuotes
+				case "SmartypantsQuotesNBSP":
+					flag |= html.SmartypantsQuotesNBSP
+				case "TOC":
+					flag |= html.TOC
+				case "CommonFlags":
+					flag |= html.CommonFlags
+				}
+			}
+		}
+	}
+	return flag
+}
+
+// ConfigMmark tames a map[string]interface{} and updates
+// the configuration returning parser.Extensions and html.Flag
+// based on the processed map. NOTE: Settings for markdown are
+// objects under m["mmark"]. This lets you pass your whole
+// app config map and still have control of the markdown bit
+// independently.
+func ConfigMmark(config map[string]interface{}) (parser.Extensions, html.Flags, error) {
+	ext := mmarkExtensions(config)
+	// Set markdown to Mmark
+	ext |= parser.Mmark
+	htmlFlags := mmarkRenderOptions(config)
+	return ext, htmlFlags, nil
+}
+
+// mmarkProcessor runs gomarkdown engine using the Mmark extentions and an HTML renderer setup
+func mmarkProcessor(fName string, input []byte) ([]byte, error) {
+	configType, frontMatterSrc, mmarkSrc := SplitFrontMatter(input)
+	//NOTE: should inspect front matter for Markdown parsing configuration
+	config, err := ProcessorConfig(configType, frontMatterSrc)
+	if err != nil {
+		return nil, err
+	}
+	ext, htmlFlags, err := ConfigMmark(config)
+	// Used when processing XML versus man or HTML output.
+	parserFlags := parser.FlagsNone
+	p := parser.NewWithExtensions(mparser.Extensions | ext)
+	init := mparser.NewInitial(fName)
+	documentTitle := "" // hack to get document title from TOML title block and then set it here.
+	p.Opts = parser.Options{
+		ParserHook: func(data []byte) (ast.Node, []byte, int) {
+			node, data, consumed := mparser.Hook(data)
+			if t, ok := node.(*mast.Title); ok {
+				if !t.IsTriggerDash() {
+					documentTitle = t.TitleData.Title
+				}
+			}
+			return node, data, consumed
+		},
+		ReadIncludeFn: init.ReadInclude,
+		Flags:         parserFlags,
+	}
+
+	doc := markdown.Parse(mmarkSrc, p)
+	mparser.AddBibliography(doc)
+	mparser.AddIndex(doc)
+
+	documentLanguage := ""
+	mhtmlOpts := mhtml.RendererOptions{
+		Language: lang.New(documentLanguage),
+	}
+
+	opts := html.RendererOptions{
+		Comments:       [][]byte{[]byte("//"), []byte("#")}, // used for callouts.
+		RenderNodeHook: mhtmlOpts.RenderHook,
+		Flags:          htmlFlags, //html.CommonFlags | html.FootnoteNoHRTag | html.FootnoteReturnLinks | html.CompletePage,
+		Generator:      `  <meta name="GENERATOR" content="github.com/caltechylibrary/mkpage using Mmark/gomarkdown processor`,
+	}
+	opts.Title = documentTitle // hack to add-in discovered title
+
+	renderer := html.NewRenderer(opts)
+	out := markdown.Render(doc, renderer)
+	return out, nil
+}
+
 // gomarkdownExtensions takes a config (map[string]interface{}) and
-// returns the ORed extenions flags for map["markdown"].
+// returns the ORed extenions flags for map["gomarkdown"].
 func gomarkdownExtensions(config map[string]interface{}) parser.Extensions {
 	ext := parser.NoExtensions
-	if thing, ok := config["markdown"]; ok == true {
+	if thing, ok := config["gomarkdown"]; ok == true {
 		extensions := thing.(map[string]interface{})
 		for k, v := range extensions {
 			onoff := false
@@ -308,10 +485,10 @@ func gomarkdownExtensions(config map[string]interface{}) parser.Extensions {
 }
 
 // gomarkdownRenderOptions config (map[string]interface{}) and
-// returns the ORed extenions flags for map["markdown"].
+// returns the ORed extenions flags for map["gomarkdown"].
 func gomarkdownRenderOptions(config map[string]interface{}) html.Flags {
 	flag := html.FlagsNone
-	if thing, ok := config["markdown"]; ok == true {
+	if thing, ok := config["gomarkdown"]; ok == true {
 		flags := thing.(map[string]interface{})
 		for k, v := range flags {
 			option := k
@@ -373,10 +550,10 @@ func gomarkdownRenderOptions(config map[string]interface{}) html.Flags {
 	return flag
 }
 
-// ConfigMarkdown tames a map[string]interface{} and updates
+// ConfigMarkdown takes a map[string]interface{} and updates
 // the configuration returning parser.Extensions and html.Flag
 // based on the processed map. NOTE: Settings for markdown are
-// objects under m["markdown"]. This lets you pass your whole
+// objects under m["gomarkdown"]. This lets you pass your whole
 // app config map and still have control of the markdown bit
 // independently.
 func ConfigMarkdown(config map[string]interface{}) (parser.Extensions, html.Flags, error) {
@@ -385,10 +562,12 @@ func ConfigMarkdown(config map[string]interface{}) (parser.Extensions, html.Flag
 	return ext, htmlFlags, nil
 }
 
-// markdownProcessor wraps gomarkdown, mmark, fountain and blackfriday.v2
-// handling the splitting off the front matter if present and configuration
-// via front matter.
-func markdownProcessor(input []byte) ([]byte, error) {
+// markdownProcessor applies Markdown processing with overrides
+// for gomarkdown, mmark and fountain in the
+// document's frontmatter.  You need to supply a
+// markdown processor as a func to envoke the preferred default.
+func markdownProcessor(input []byte, defaultProcessor func([]byte) ([]byte, error)) ([]byte, error) {
+	input = normalizeEOL(input)
 	configType, frontMatterSrc, mdSrc := SplitFrontMatter(input)
 	//NOTE: should inspect front matter for Markdown parsing configuration
 	config, err := ProcessorConfig(configType, frontMatterSrc)
@@ -399,7 +578,48 @@ func markdownProcessor(input []byte) ([]byte, error) {
 	if thing, ok := config["markup"]; ok == true {
 		markup := thing.(string)
 		switch markup {
-		case "markdown":
+		case "mmark":
+			ext, htmlFlags, err := ConfigMmark(config)
+			if err != nil {
+				return nil, err
+			}
+			p := parser.NewWithExtensions(mparser.Extensions | ext)
+			parserFlags := parser.FlagsNone
+			// We're working as if we're getting data from stdin here ...
+			init := mparser.NewInitial("")
+			documentTitle := "" // hack to get document title from TOML title block and then set it here.
+			p.Opts = parser.Options{
+				ParserHook: func(data []byte) (ast.Node, []byte, int) {
+					node, data, consumed := mparser.Hook(data)
+					if t, ok := node.(*mast.Title); ok {
+						if !t.IsTriggerDash() {
+							documentTitle = t.TitleData.Title
+						}
+					}
+					return node, data, consumed
+				},
+				ReadIncludeFn: init.ReadInclude,
+				Flags:         parserFlags,
+			}
+			doc := markdown.Parse(mdSrc, p)
+			mparser.AddBibliography(doc)
+			mparser.AddIndex(doc)
+
+			documentLanguage := ""
+			mhtmlOpts := mhtml.RendererOptions{
+				Language: lang.New(documentLanguage),
+			}
+
+			opts := html.RendererOptions{
+				Comments:       [][]byte{[]byte("//"), []byte("#")}, // used for callouts.
+				RenderNodeHook: mhtmlOpts.RenderHook,
+				Flags:          htmlFlags,
+				Generator:      `  <meta name="GENERATOR" content="github.com/mmarkdown/mmark Mmark Markdown Processor - mmark.nl`,
+			}
+			opts.Title = documentTitle // hack to add-in discovered title
+			renderer := html.NewRenderer(opts)
+			return markdown.Render(doc, renderer), nil
+		case "gomarkdown":
 			ext, htmlFlags, err := ConfigMarkdown(config)
 			if err != nil {
 				return nil, err
@@ -418,25 +638,26 @@ func markdownProcessor(input []byte) ([]byte, error) {
 				return nil, err
 			}
 			return src, nil
-		case "blackfriday":
-			ext := blackfridayExtensions(config)
-			//FIXME: Should support blackfriday.HTMLFlags too
-			if ext == blackfriday.NoExtensions {
-				return blackfriday.Run(mdSrc, blackfriday.WithNoExtensions()), nil
-			} else {
-				return blackfriday.Run(mdSrc, blackfriday.WithExtensions(ext)), nil
-			}
 		default:
 			return nil, fmt.Errorf("unknown markup engine")
 		}
 	}
-	//FIXME: need to check for default mkpage.* (.toml, .yaml, .json)
-	// Default to gomarkdown markdown processor
-	// with CommonExtensions and CommonHTMLFlags
-	p := parser.NewWithExtensions(parser.CommonExtensions)
-	opts := html.RendererOptions{Flags: html.CommonFlags}
-	r := html.NewRenderer(opts)
-	return markdown.ToHTML(mdSrc, p, r), nil
+	return defaultProcessor(mdSrc)
+}
+
+// gomarkdownProcessor wraps gomarkdown with overrides for
+// mmark, and fountain handling the splitting off the front matter if
+// present and configuration via front matter.
+func gomarkdownProcessor(input []byte) ([]byte, error) {
+	input = normalizeEOL(input)
+	return markdownProcessor(input, func(input []byte) ([]byte, error) {
+		// Default to gomarkdown markdown processor
+		// with CommonExtensions and CommonHTMLFlags
+		p := parser.NewWithExtensions(parser.CommonExtensions)
+		opts := html.RendererOptions{Flags: html.CommonFlags}
+		r := html.NewRenderer(opts)
+		return markdown.ToHTML(input, p, r), nil
+	})
 }
 
 // ConfigFountain sets the fountain defaults then applies
@@ -510,8 +731,15 @@ func ResolveData(data map[string]string) (map[string]interface{}, error) {
 		switch {
 		case strings.HasPrefix(val, TextPrefix) == true:
 			out[key] = strings.TrimPrefix(val, TextPrefix)
+		case strings.HasPrefix(val, GomarkdownPrefix) == true:
+			src, err := gomarkdownProcessor([]byte(strings.TrimPrefix(val, GomarkdownPrefix)))
+			if err != nil {
+				return out, err
+			}
+			out[key] = fmt.Sprintf("%s", src)
 		case strings.HasPrefix(val, MarkdownPrefix) == true:
-			src, err := markdownProcessor([]byte(strings.TrimPrefix(val, MarkdownPrefix)))
+			//NOTE: We're using Gomarkdown as our default processor
+			src, err := gomarkdownProcessor([]byte(strings.TrimPrefix(val, MarkdownPrefix)))
 			if err != nil {
 				return out, err
 			}
@@ -550,7 +778,7 @@ func ResolveData(data map[string]string) (map[string]interface{}, error) {
 						}
 						out[key] = o
 					case isContentType(contentTypes, "text/markdown") == true:
-						src, err := markdownProcessor(buf)
+						src, err := gomarkdownProcessor(buf)
 						if err != nil {
 							return nil, err
 						}
@@ -583,7 +811,13 @@ func ResolveData(data map[string]string) (map[string]interface{}, error) {
 				}
 				out[key] = fmt.Sprintf("%s", src)
 			case strings.Compare(ext, ".md") == 0:
-				src, err := markdownProcessor(buf)
+				src, err := gomarkdownProcessor(buf)
+				if err != nil {
+					return nil, err
+				}
+				out[key] = fmt.Sprintf("%s", src)
+			case strings.Compare(ext, ".mmark") == 0:
+				src, err := mmarkProcessor(val, buf)
 				if err != nil {
 					return nil, err
 				}
@@ -685,7 +919,7 @@ func MarkdownToSlides(fname string, mdSource []byte) ([]*Slide, error) {
 
 	lastSlide := len(mdSlides) - 1
 	for i, s := range mdSlides {
-		src, err := markdownProcessor(s)
+		src, err := gomarkdownProcessor(s)
 		if err != nil {
 			return nil, fmt.Errorf("%s slide %d error, %s", fname, i+1, err)
 		}

@@ -152,6 +152,12 @@ func main() {
 					fmt.Fprintf(app.Eout, "Toml error: %s", err)
 					os.Exit(1)
 				}
+			case bytes.HasPrefix(buf, []byte("%%%\n")):
+				// Make sure we have valid Toml
+				if err := toml.Unmarshal(frontMatterSrc, &obj); err != nil {
+					fmt.Fprintf(app.Eout, "Toml error: %s", err)
+					os.Exit(1)
+				}
 			case bytes.HasPrefix(buf, []byte("---\n")):
 				if src, err := yaml.YAMLToJSON(frontMatterSrc); err != nil {
 					fmt.Fprintf(app.Eout, "Yaml to JSON error: %s", err)

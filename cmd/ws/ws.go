@@ -1,5 +1,5 @@
 //
-// ws.go - A simple web server for static files and limit server side JavaScript
+// ws.go - A simple web server for static files.
 //
 // @author R. S. Doiel, <rsdoiel@caltech.edu>
 //
@@ -20,7 +20,6 @@ package main
 
 import (
 	"bytes"
-	"crypto/tls"
 	"encoding/csv"
 	"fmt"
 	"io"
@@ -35,9 +34,7 @@ import (
 	"github.com/caltechlibrary/cli"
 	"github.com/caltechlibrary/mkpage"
 	"github.com/caltechlibrary/wsfn"
-
 	// Other packages
-	"golang.org/x/crypto/acme/autocert"
 )
 
 // Flag options
@@ -221,11 +218,11 @@ func main() {
 		log.Printf("SSL Cert %s", sslCert)
 	}
 	log.Printf("Listening for %s", uri)
-
 	cors := wsfn.CORSPolicy{
 		Origin: CORSOrigin,
 	}
 	// Setup redirects defined the redirects CSV
+	var rService *wsfn.RedirectService
 	if redirectsCSV != "" {
 		src, err := ioutil.ReadFile(redirectsCSV)
 		if err != nil {
@@ -234,6 +231,8 @@ func main() {
 		r := csv.NewReader(bytes.NewReader(src))
 		// Allow support for comment rows
 		r.Comment = '#'
+		// Make a redirect map[string]string
+		rmap := map[string]string{}
 		for {
 			row, err := r.Read()
 			if err == io.EOF {
@@ -256,70 +255,26 @@ func main() {
 				} else {
 					destination = "/" + row[1]
 				}
-				wsfn.AddRedirectRoute(target, destination)
+				rmap[target] = destination
 			}
+		}
+		rService, err = wsfn.MakeRedirectService(rmap)
+		if err != nil {
+			log.Fatalf("Can't make redirect service, %s", err)
 		}
 	}
-	http.Handle("/", cors.Handle(http.FileServer(http.Dir(docRoot))))
-	if letsEncrypt == true {
-		// Note: use a sensible value for data directory
-		// this is where cached certificates are stored
-		cwd, err := os.Getwd()
-		if err != nil {
-			log.Fatal("Can't determine current working directory before creating etc/acme")
-		}
-		if docRoot == "." || docRoot == cwd {
-			log.Fatal("Can't create etc/acme in shared document root")
-		}
-		cacheDir := "etc/acme"
-		os.MkdirAll(cacheDir, 0700)
-		m := autocert.Manager{
-			Prompt:     autocert.AcceptTOS,
-			HostPolicy: autocert.HostWhitelist(u.Host),
-			Cache:      autocert.DirCache(cacheDir),
-		}
-		sSvr := &http.Server{
-			Addr:      ":https",
-			TLSConfig: &tls.Config{GetCertificate: m.GetCertificate},
-			Handler:   wsfn.RequestLogger(wsfn.StaticRouter(http.DefaultServeMux)),
-		}
-		// Launch the TLS version
-		go func() {
-			log.Fatal(sSvr.ListenAndServeTLS("", ""))
-		}()
+	http.Handle("/", cors.Handler(http.FileServer(http.Dir(docRoot))))
 
-		// Launch http redirect to TLS version
-		rmux := http.NewServeMux()
-		rmux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-			var target string
-			if strings.HasPrefix(r.URL.Path, "/") == false {
-				target = u.String() + "/" + r.URL.Path
-			} else {
-				target = u.String() + r.URL.Path
-			}
-			if len(r.URL.RawQuery) > 0 {
-				target += "?" + r.URL.RawQuery
-			}
-			wsfn.ResponseLogger(r, http.StatusTemporaryRedirect, fmt.Errorf("redirecting %s to %s", r.URL.String(), target))
-			http.Redirect(w, r, target, http.StatusTemporaryRedirect)
-		})
-		pSvr := &http.Server{
-			Addr:    ":http",
-			Handler: wsfn.RequestLogger(rmux),
-		}
-		log.Printf("Redirecting http://%s to to %s", u.Host, u.String())
-		err = pSvr.ListenAndServe()
-		cli.ExitOnError(app.Eout, err, quiet)
-	} else if u.Scheme == "https" {
-		if wsfn.HasRedirectRoutes() {
-			err = http.ListenAndServeTLS(u.Host, sslCert, sslKey, wsfn.RequestLogger(wsfn.StaticRouter(wsfn.RedirectRouter(http.DefaultServeMux))))
+	if u.Scheme == "https" {
+		if rService != nil {
+			err = http.ListenAndServeTLS(u.Host, sslCert, sslKey, wsfn.RequestLogger(wsfn.StaticRouter(rService.RedirectRouter(http.DefaultServeMux))))
 		} else {
 			err = http.ListenAndServeTLS(u.Host, sslCert, sslKey, wsfn.RequestLogger(wsfn.StaticRouter(http.DefaultServeMux)))
 		}
 		cli.ExitOnError(app.Eout, err, quiet)
 	} else {
-		if wsfn.HasRedirectRoutes() {
-			err = http.ListenAndServe(u.Host, wsfn.RequestLogger(wsfn.StaticRouter(wsfn.RedirectRouter(http.DefaultServeMux))))
+		if rService != nil {
+			err = http.ListenAndServe(u.Host, wsfn.RequestLogger(wsfn.StaticRouter(rService.RedirectRouter(http.DefaultServeMux))))
 		} else {
 			err = http.ListenAndServe(u.Host, wsfn.RequestLogger(wsfn.StaticRouter(http.DefaultServeMux)))
 		}
