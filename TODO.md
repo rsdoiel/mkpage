@@ -3,7 +3,6 @@
 
 ## Bugs
 
-+ [ ] After April 17, 2018 use the new NOAA weather API for example in help and README.md (or replace with a new example)
 + [ ] **sitemapper** needs to respect the 50K/50MB url and size limits per spec, see https://www.sitemaps.org/protocol.html
 
 ## Next (road to v1.0.0)

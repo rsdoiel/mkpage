@@ -1,7 +1,7 @@
 //
 // mkpongo is an experimental in a light weight markup
 // (mmark, markdown, fountain) processing and
-// a Django/Jinja template processor called Pongo2.
+// Pongo2 (Django/Jinja) template processor.
 //
 // @author R. S. Doiel, <rsdoiel@caltech.edu>
 //
@@ -41,7 +41,7 @@ Using the key/value pairs populate the template(s) and render to stdout.
 
 EXAMPLE
 
-Template (named "examples/weather.tmpl")
+Template (named "examples/pongo/weather.tmpl")
 
     Date: {{ now }}
 
@@ -49,20 +49,21 @@ Template (named "examples/weather.tmpl")
     
     The current weather is
 
-    {{ weatherForecast.data.weather[0] }}
+    {{ weatherForecast.data.weather.0 }}
 
     Thank you
 
-    {{signature}}
+    {{ signature }}
 
-Render the template above (i.e. examples/weather.tmpl) would be 
-accomplished from the following data sources--
+Render the template above (i.e. examples/pongo/weather.tmpl) 
+would be accomplished from the following data sources--
 
  + "now" and "name" are strings
- + "weatherForecast" is JSON data retrieved from a URL
- 	+ ".data.weather" is a data path inside the JSON document
-	+ let's us pull our the "0"-th element (i.e. the initial element of the array)
- + "signature" comes from a file in our local disc (i.e. examples/signature.txt)
+ + "weatherForecast.data.weather.0" is a data path inside the 
+    JSON document retrieved from a URL, ".0" references the
+    "0"-th element of the array
+ + "signature" comes from a file in our local disc 
+   (i.e. examples/signature.txt)
 
 That would be expressed on the command line as follows
 
@@ -100,7 +101,7 @@ func main() {
 	appName := app.AppName()
 
 	// Document expected parameters
-	app.SetParams(`[KEY/VALUE DATA PAIRS]`, `[TEMPLATE_FILENAME]`)
+	app.SetParams(`[KEY/VALUE DATA PAIRS]`, `TEMPLATE_FILENAME`)
 
 	// Add Help docs
 	app.AddHelp("license", []byte(fmt.Sprintf(mkpage.LicenseText, appName, mkpage.Version)))

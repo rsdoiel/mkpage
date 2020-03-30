@@ -31,51 +31,55 @@
 </nav>
 
 <section>
-<h1>mkpongo</h1>
+<h1>USAGE</h1>
 
-<h2>USAGE</h2>
-
-<pre><code>mkpongo [OPTION] [KEY/VALUE DATA PAIRS] TEMPLATE_FILENAME
+<pre><code>mkpongo [OPTIONS] [KEY/VALUE DATA PAIRS] TEMPLATE_FILENAME
 </code></pre>
 
-<h2>SYNOPSIS</h2>
+<h2>DESCRIPTION</h2>
+
+<p>SYNOPSIS</p>
 
 <p>Using the key/value pairs populate the template(s) and render to stdout.</p>
 
 <h2>OPTIONS</h2>
 
-<pre><code>	-default-template	Use the default template
-	-h	show help
-	-help	show help
-	-l	show license
-	-license	show license
-	-s	display the default template
-	-show-template	display the default template
-	-t	colon delimited list of templates to use
-	-templates	colon delimited list of templates to use
-	-v	show version
-	-version	show version
+<p>Below are a set of options available.</p>
+
+<pre><code>    -code               outout just code blocks for language, e.g. shell or json
+    -codesnip           output just the code bocks
+    -examples           display example(s)
+    -generate-manpage   generate man page
+    -generate-markdown  generate markdown documentation
+    -h, -help           display help
+    -i, -input          input filename
+    -l, -license        display license
+    -o, -output         output filename
+    -quiet              suppress error messages
+    -v, -version        display version
 </code></pre>
 
-<h2>EXAMPLE</h2>
+<h2>EXAMPLES</h2>
+
+<p>EXAMPLE</p>
 
 <p>Template (named &ldquo;examples/pongo/weather.tmpl&rdquo;)</p>
 
-<pre><code>    Date: {{ now}}
+<pre><code>Date: {{ now }}
 
-    Hello {{ name }},
-    
-    The current weather is
+Hello {{ name }},
 
-    {{ weatherForecast.data.weather[0] }}
+The current weather is
 
-    Thank you
+{{ weatherForecast.data.weather[0] }}
 
-    {{ signature }}
+Thank you
+
+{{ signature }}
 </code></pre>
 
-<p>Render the template above (i.e. examples/weather.tmpl) would be accomplished from
-the following data sources&ndash;</p>
+<p>Render the template above (i.e. examples/pongo/weather.tmpl)
+would be accomplished from the following data sources&ndash;</p>
 
 <ul>
 <li>&ldquo;now&rdquo; and &ldquo;name&rdquo; are strings</li>
@@ -83,23 +87,23 @@ the following data sources&ndash;</p>
 	+ &ldquo;.data.weather&rdquo; is a data path inside the JSON document
 
 <ul>
-<li>pull our the &ldquo;0&rdquo;-th element (i.e. the initial element of the array)</li>
+<li>let&rsquo;s us pull our the &ldquo;0&rdquo;-th element (i.e. the initial element of the array)</li>
 </ul></li>
 <li>&ldquo;signature&rdquo; comes from a file in our local disc (i.e. examples/signature.txt)</li>
 </ul>
 
 <p>That would be expressed on the command line as follows</p>
 
-<pre><code class="language-shell">    mkpongo &quot;now=text:$(date)&quot; &quot;name=text:Little Frieda&quot; \
-        &quot;weatherForecast=http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&amp;lon=144.74977715100056&amp;FcstType=json&quot; \
-        signature=examples/signature.txt \
-        examples/pongo/weather.tmpl     
+<pre><code>mkpongo &quot;now=text:$(date)&quot; &quot;name=text:Little Frieda&quot; \
+    &quot;weatherForecast=http://forecast.weather.gov/MapClick.php?lat=13.47190933300044&amp;lon=144.74977715100056&amp;FcstType=json&quot; \
+    signature=examples/signature.txt \
+    examples/pongo/weather.tmpl     
 </code></pre>
 
-<p>Pongo2 is a Golang implementation of a Django/Jinja2 like
-template engine.</p>
+<p>Pongo2 is a Django/Jinga2 inspired template langauge
+implemeted in Go.</p>
 
-<pre><code>      https://github.com/flosch/pongo2
+<pre><code>  https://github.com/flosch/pongo2
 </code></pre>
 
 </section>

@@ -31,11 +31,11 @@ func MakePongo(wr io.Writer, templateName string, keyValues map[string]string) e
 	if err != nil {
 		return fmt.Errorf("Can't resolve data source %s", err)
 	}
-	tmpl, err := pongo2.FromFile(templateName)
+	tpl, err := pongo2.FromFile(templateName)
 	if err != nil {
 		return fmt.Errorf("Reading Template %q, %s", templateName, err)
 	}
-	out, err := tmpl.Execute(data)
+	out, err := tpl.Execute(data)
 	if err != nil {
 		return fmt.Errorf("Template %q, %s", templateName, err)
 	}
